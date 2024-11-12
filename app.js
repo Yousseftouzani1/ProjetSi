@@ -2,6 +2,7 @@ const express = require('express');
 const oracledb = require('oracledb');
 const dbConfig = require('./dbConfig');  // Assurez-vous que ce fichier est bien configuré
 
+
 const app = express();
 const port = 3000;
 
@@ -32,30 +33,40 @@ app.get('/test-db', async (req, res) => {
   }
 });
 
+// Route pour récupérer les données de la table Etudiant
+app.get('/data', async (req, res) => {
+  let connection;
+  try {
+    connection = await oracledb.getConnection(dbConfig);
+
+    // Exécutez une requête pour récupérer les données
+    const result = await connection.execute(`SELECT nom FROM Etudiant`);
+    
+    // Affichez le résultat dans la console pour le débogage
+    console.log('Résultat brut:', result);
+    
+    if (result.rows.length === 0) {
+      res.status(404).json({ message: 'Aucune donnée trouvée dans la table Etudiant' });
+    } else {
+      res.json(result.rows); // Retourne les données
+    }
+
+  } catch (err) {
+    console.error('Erreur lors de la récupération des données:', err);
+    res.status(500).json({ error: 'Erreur lors de la récupération des données' });
+
+  } finally {
+    if (connection) {
+      try {
+        await connection.close();
+      } catch (err) {
+        console.error('Erreur lors de la fermeture de la connexion:', err);
+      }
+    }
+  }
+});
+
 // Démarrage du serveur
 app.listen(port, () => {
   console.log(`Serveur en cours d'exécution sur http://localhost:${port}`);
 });
-app.get('/data', async (req, res) => {
-    let connection;
-    try {
-      connection = await oracledb.getConnection(dbConfig);
-  
-      const result = await connection.execute(`SELECT * FROM your_table_name`);  // Remplace 'your_table_name' par le nom de ta table
-      res.json(result.rows);
-  
-    } catch (err) {
-      console.error('Erreur lors de la récupération des données:', err);
-      res.status(500).json({ error: 'Erreur lors de la récupération des données' });
-  
-    } finally {
-      if (connection) {
-        try {
-          await connection.close();
-        } catch (err) {
-          console.error('Erreur lors de la fermeture de la connexion:', err);
-        }
-      }
-    }
-  });
-  
