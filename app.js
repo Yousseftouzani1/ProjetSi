@@ -1,6 +1,6 @@
 const express = require('express');
 const oracledb = require('oracledb');
-const dbConfig = require('./dbConfig');  // Assurez-vous que ce fichier est bien configuré
+const dbConfig = require('./database/dbConfig');  // Assurez-vous que ce fichier est bien configuré
 
 
 const app = express();
