@@ -86,15 +86,32 @@
             <button type="submit">Login École</button>
         </form>
     </div>
-
     <script>
         // Gestionnaire pour le formulaire Étudiant
         document.getElementById('loginEtudiantForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             const username = document.getElementById('etudiantUsername').value;
             const password = document.getElementById('etudiantPassword').value;
+            try {
+                const response = await fetch('http://localhost:4000/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include', // Include cookies
+                    body: JSON.stringify({ username, password })
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    alert(data.message);
+                    window.location.href = '../Etudiant/Etudiant.html';
 
-            await handleLogin('http://localhost:4000/login', { username, password });
+                } else {
+                    alert('Login failed');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred');
+            }
+            //await handleLogin2('http://localhost:4000/login', { username, password },'../Etudiant/Etudiant.html');
         });
 
         // Gestionnaire pour le formulaire Entreprise
@@ -103,7 +120,8 @@
             const nom = document.getElementById('entrepriseNom').value;
             const mdp_entreprise = document.getElementById('entreprisePassword').value;
 
-            await handleLogin('http://localhost:4000/loginEntreprise', { nom, mdp_entreprise });
+            await handleLogin2('http://localhost:4000/loginEntreprise', { nom, mdp_entreprise },'../Entreprise/Entreprise.html');
+
         });
 
         // Gestionnaire pour le formulaire École
@@ -120,12 +138,36 @@
             try {
                 const response = await fetch(url, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 'Content-Type': 'application/json' }, 
+                       credentials: 'include', // Include cookies in the request
                     body: JSON.stringify(data)
                 });
 
                 if (response.ok) {
                     alert('Connexion réussie !');
+                } else {
+                    const errorText = await response.text();
+                    console.error('Erreur:', errorText);
+                    alert('Échec de la connexion. Vérifiez vos informations.');
+                }
+            } catch (error) {
+                console.error('Erreur de connexion:', error);
+                alert('Une erreur s\'est produite lors de la tentative de connexion.');
+            }
+        }
+        //   fct de gestion de de login avec lien de la page de bord d el utulisateur 
+        async function handleLogin2(url, data,redirectUrl) {
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'include', // Include cookies in the request
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    alert('Connexion réussie !');
+                    window.location.href = redirectUrl;
                 } else {
                     const errorText = await response.text();
                     console.error('Erreur:', errorText);

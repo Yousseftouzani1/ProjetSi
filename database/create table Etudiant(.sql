@@ -151,5 +151,11 @@ ALTER TABLE Etudiant DROP COLUMN mdp_etudiant;
 ALTER TABLE Etudiant MODIFY username NOT NULL;
 ALTER TABLE Etudiant MODIFY password NOT NULL;
 -- ////////////////////
-SELECT * FROM Entreprise ;
+SELECT * FROM Etudiant ;
 
+INSERT INTO Etudiant (id_etudiant,username, password)
+VALUES (1,'johndoe', 'securepassword123');
+COMMIT;
+INSERT INTO Entreprise (id_entreprise,nom, mdp_entreprise)
+VALUES (1,'ensias', 'password1234');
+COMMIT;
