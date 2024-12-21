@@ -1,18 +1,40 @@
 const express = require('express');
 const oracledb = require('oracledb');
+const path = require('path');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
+// Configuration Oracle DB
+const dbConfig = require('../database/dbConfig');
 const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 3000;
-
+const testroute=require('../gest_ecole/gest.ecole');
+app.use('/getdata',testroute);
 // Middleware
 app.use(express.json());
 app.use(cookieParser());
-//const cors = require('cors');
-//app.use(cors({ origin: 'http://localhost:3000', credentials: true })); // Adjust the origin as needed
+// Serve static files from the 'authentification' folder
+app.use(express.static(path.join(__dirname, 'authentification')));
+
+// Serve the root page (index.html)
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'loginpage.html'));
+});
+app.get('/test.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'test.html'));
+});
+// Allow images, scripts, and styles from the same origin
+/*app.use(helmet.contentSecurityPolicy({
+    directives: {
+        defaultSrc: ["'self'"], // Allow resources from the same origin
+        imgSrc: ["'self'", "data:", "http://127.0.0.1:5500"], // Allow images
+        scriptSrc: ["'self'"], // Allow scripts
+        styleSrc: ["'self'", "'unsafe-inline'"], // Allow styles
+        connectSrc: ["'self'", "http://localhost:3000"], // Allow API calls
+    },
+}));*/
 const allowedOrigins = ['http://127.0.0.1:5500', 'http://localhost:3000']; // Add all potential origins
 app.use(cors({
     origin: (origin, callback) => {
@@ -23,10 +45,8 @@ app.use(cors({
         }
     },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify the HTTP methods you support
+    methods: ['GET', 'POST', 'PUT', 'DELETE'] // Specify the HTTP methods you support
 }));
-// Configuration Oracle DB
-const dbConfig = require('../database/dbConfig');
 
 // Route: Enregistrement d'un utilisateur
 app.post('/register', async (req, res) => {
@@ -92,8 +112,8 @@ app.post('/login', async (req, res) => {
         // Envoyer le token dans un cookie HTTP-only
         res.cookie('access_token', accessToken, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'Lax',
+            secure: false,//process.env.NODE_ENV === 'production',
+           sameSite: 'lax',
         });
 
         res.json({ message: 'Login successful!' });
@@ -125,9 +145,12 @@ function authenticateToken(req, res, next) {
 
 // Route protégée
 app.get('/protected', authenticateToken, (req, res) => {
-    res.json({ message: `Welcome, ${req.user.username}!` });
+    res.status(200).json({ 
+        message: `Welcome to the protected page, ${req.user.username}!`,
+        username: req.user.username
+    });
 });
-app.get('/get',async(req,res)=>{
+/*app.get('/get',async(req,res)=>{
     connection = await oracledb.getConnection(dbConfig);
         const result = await connection.execute(
             `SELECT password FROM Etudiant `,
@@ -135,7 +158,7 @@ app.get('/get',async(req,res)=>{
         );
         res.json({ message: result  });
         
-})
+})*/
 // Lancer le serveur
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);

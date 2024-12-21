@@ -17,8 +17,9 @@
     /* Navbar Styles */
     .navbar-custom {
       background: linear-gradient(90deg, #ff7936, #ff8d54);
+      position: fixed;
+      top: 0;
       height: 100px;
-      position: relative;
       display: flex;
       align-items: center;
       padding: 0 20px;
@@ -207,6 +208,31 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async ()=>{
+      const cardsWrapper = document.querySelector('.cards-wrapper');
+      try{
+        const response = await fetch('http://localhost:4002/offre');
+        const data = await response.json();
+
+        cardsWrapper.innerHTML = '';
+        data.forEach(offre => {
+      const cardElement = document.createElement('div');
+      cardElement.classList.add('dashboard-card');
+
+      cardElement.innerHTML = `
+        <h3>${offre.titre}</h3>
+        <p>${offre.description}</p>
+        <button class="see-more-btn">See More</button>
+      `;
+
+      cardsWrapper.appendChild(cardElement);
+    });
+      }catch(err){
+        console.error('Error fetching data:', err);
+      }
+    });
+  </script>
 </body>
 </html>
   

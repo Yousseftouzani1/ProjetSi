@@ -29,7 +29,7 @@ app.use(cors({
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify the HTTP methods you support
 }));
-
+//const path = require('path');
 
 const authentificate_token =(req,res,next)=>{
     /*const token = req.cookies.ACCESS_TOKEN_KEY;*/  
@@ -57,4 +57,32 @@ app.get('/displayCandidature', authentificate_token, async (req, res) => {
 });
 app.get('/getdata', (req,res)=>{
     res.send("hello");
+});
+app.get('/offre', async (req, res) => {
+    let connection;
+    try {
+        connection = await oracledb.getConnection(dbConfig); // Utilisez getConnection
+        const result = await connection.execute(
+            'SELECT TITRE, DESCRIPTION FROM Offre_Stage',
+            {}, // Aucun paramètre
+            { outFormat: oracledb.OUT_FORMAT_OBJECT } // Format objet
+        );
+
+        // Map des résultats pour extraire les titres et descriptions
+        res.json(result.rows.map(row => ({
+            titre: row.TITRE,
+            description: row.DESCRIPTION,
+        })));
+    } catch (err) {
+        console.error('Database error:', err); // Log l'erreur dans le terminal
+        res.status(500).json({ error: 'Internal server error' }); // Réponse JSON en cas d'erreur
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (err) {
+                console.error('Error closing connection:', err);
+            }
+        }
+    }
 });
