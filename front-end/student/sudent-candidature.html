@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Candidatures</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Calibri&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Calibri Light', sans-serif;
+      background: linear-gradient(135deg, #FEF1E6, #F9D8B7);
+      min-height: 100vh;
+    }
+
+    .navbar-custom {
+      background: linear-gradient(90deg, #ff7936, #ff8d54);
+      height: 100px;
+      position: fixed;
+      width: 100%;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .leaf {
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0.2);
+      clip-path: polygon(50% 0%, 75% 25%, 100% 50%, 75% 75%, 50% 100%, 25% 75%, 0% 50%, 25% 25%);
+      transform-origin: center;
+      animation: floatLeaf 6s infinite ease-in-out;
+    }
+
+    @keyframes floatLeaf {
+      0%, 100% { transform: translateY(0) rotate(var(--rotation)); }
+      50% { transform: translateY(-10px) rotate(var(--rotation)); }
+    }
+
+    .leaf-1 { width: 100px; height: 60px; top: 10px; left: 20px; --rotation: 30deg; }
+    .leaf-2 { width: 80px; height: 50px; top: 20px; right: 50px; --rotation: -30deg; }
+    .leaf-3 { width: 140px; height: 90px; bottom: 0; left: 60px; --rotation: 15deg; }
+    .leaf-4 { width: 60px; height: 40px; top: -10px; left: 150px; --rotation: -45deg; }
+    .leaf-5 { width: 120px; height: 70px; bottom: 0; right: 150px; --rotation: 45deg; }
+
+    .profile-container {
+      position: relative;
+      margin-left: auto;
+    }
+
+    .profile-icon {
+      width: 40px;
+      height: 40px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .profile-icon:hover {
+      transform: scale(1.1);
+      background-color: #fdc19d;
+    }
+
+    .profile-dropdown {
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 0;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      min-width: 150px;
+      z-index: 1000;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .profile-dropdown a {
+      display: block;
+      padding: 12px 20px;
+      color: #333;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .profile-dropdown a:hover {
+      background-color: #f8f8f8;
+      padding-left: 25px;
+    }
+
+    .profile-dropdown .logout {
+      color: #dc3545;
+      border-top: 1px solid #eee;
+    }
+
+    .side-menu {
+      position: fixed;
+      top: 100px;
+      left: 0;
+      width: 200px;
+      height: calc(100% - 100px);
+      background: linear-gradient(180deg, #ff7936, #ff8d54);
+      padding: 20px;
+      color: white;
+    }
+
+    .transition-shape {
+      position: fixed;
+      top: 100px;
+      left: 0;
+      width: 200px;
+      height: 50px;
+      background: linear-gradient(180deg, #ff7936, #ff8d54);
+      clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 50%);
+      z-index: 999;
+    }
+
+    .side-menu ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    .side-menu li {
+      margin: 15px 0;
+    }
+
+    .side-menu a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: block;
+      padding: 10px 15px;
+      border-radius: 5px;
+    }
+
+    .side-menu a:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+
+    .main-content {
+      margin-left: 220px;
+      padding-top: 120px;
+      padding-right: 20px;
+    }
+
+    .welcome-message {
+      font-size: 2.5rem;
+      font-weight: 300;
+      color: #ff7936;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .cards-wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      padding: 20px;
+    }
+
+    .dashboard-card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .dashboard-card h3 {
+      color: #ff7936;
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+    }
+
+    .dashboard-card p {
+      color: #666;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .voir-plus-btn {
+      background-color: #ff7936;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      width: 150px;
+    }
+
+    .voir-plus-btn:hover {
+      background-color: #ff8d54;
+      transform: scale(1.05);
+    }
+
+    /* Modal Styles */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 10001;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 600px;
+      position: relative;
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+    }
+
+    .modal-header {
+      border-bottom: 2px solid #ff7936;
+      padding-bottom: 15px;
+      margin-bottom: 20px;
+    }
+
+    .modal-body {
+      margin-bottom: 20px;
+    }
+
+    .status-tag {
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 15px;
+      font-size: 0.9rem;
+      margin-top: 10px;
+      background-color: #fff3e6;
+      color: #ff7936;
+    }
+    .status-tag {
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 15px;
+      font-size: 0.9rem;
+      margin-top: 10px;
+    }
+
+    .status-waiting {
+      background-color: #fff3e6;
+      color: #4b4b4b;
+    }
+
+    .status-accepted {
+      background-color: #e6ffe6;
+      color: #28a745;
+    }
+
+    .status-rejected {
+      background-color: #ffe6e6;
+      color: #dc3545;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-custom">
+    <div class="container-fluid">
+      <a class="navbar-brand text-white" href="#">Internship Management</a>
+      <div class="profile-container">
+        <div class="profile-icon" onclick="toggleDropdown()">
+          <span style="font-size: 20px; color: #ff7936;">👤</span>
+        </div>
+        <div class="profile-dropdown" id="profileDropdown">
+          <a href="#" id="userName">John Doe</a>
+          <a href="#">Settings</a>
+          <a href="#" class="logout">Log Out</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="leaf leaf-1"></div>
+    <div class="leaf leaf-2"></div>
+    <div class="leaf leaf-3"></div>
+    <div class="leaf leaf-4"></div>
+    <div class="leaf leaf-5"></div>
+  </nav>
+
+  <div class="transition-shape"></div>
+
+  <div class="side-menu">
+    <ul>
+      <li><a href="#"><i class="fas fa-briefcase me-2"></i>Offers publié</a></li>
+      <li><a href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+      <li><a href="#"><i class="fas fa-file me-2"></i>Candidatures</a></li>
+      <li><a href="#"><i class="fas fa-graduation-cap me-2"></i>Stage</a></li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <div class="welcome-message">Les candidatures</div>
+    
+    <div class="cards-wrapper">
+      <div class="dashboard-card">
+        <h3>Stage Frontend Developer</h3>
+        <p>Application for frontend development position at TechCorp Solutions.</p>
+        <button class="voir-plus-btn" onclick="showDetails('frontend')">Voir plus</button>
+      </div>
+      
+      <div class="dashboard-card">
+        <h3>Stage UX Designer</h3>
+        <p>Application for UX design internship at Creative Designs Inc.</p>
+        <button class="voir-plus-btn" onclick="showDetails('ux')">Voir plus</button>
+      </div>
+      
+      <div class="dashboard-card">
+        <h3>Stage Data Analyst</h3>
+        <p>Application for data analysis position at DataTech Industries.</p>
+        <button class="voir-plus-btn" onclick="showDetails('data')">Voir plus</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="detailsModal">
+    <div class="modal-content">
+      <span class="close-modal" onclick="closeModal()">&times;</span>
+      <div class="modal-header">
+        <h2 id="modalTitle"></h2>
+        <span class="status-tag" id="modalStatus"></span>
+      </div>
+      <div class="modal-body" id="modalBody">
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleDropdown() {
+      const dropdown = document.getElementById('profileDropdown');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    window.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('profileDropdown');
+      if (!e.target.closest('.profile-container')) {
+        dropdown.style.display = 'none';
+      }
+    });
+
+    function showDetails(type) {
+      const modal = document.getElementById('detailsModal');
+      const title = document.getElementById('modalTitle');
+      const status = document.getElementById('modalStatus');
+      const body = document.getElementById('modalBody');
+
+      const details = {
+        frontend: {
+          title: 'Stage Frontend Developer - TechCorp Solutions',
+          status: 'En cours de traitement',
+          content: `
+            <p><strong>Company:</strong> TechCorp Solutions</p>
+            <p><strong>Location:</strong> Casablanca, Maroc</p>
+            <p><strong>Duration:</strong> 6 months</p>
+            <p><strong>Applied on:</strong> January 15, 2025</p>
+            <p><strong>Requirements:</strong> HTML, CSS, JavaScript, React</p>
+            <p><strong>Description:</strong> Development of modern web applications using React and related technologies...</p>
+          `
+        },
+        ux: {
+          title: 'Stage UX Designer - Creative Designs Inc.',
+          status: 'En attente',
+          content: `
+            <p><strong>Company:</strong> Creative Designs Inc.</p>
+            <p><strong>Location:</strong> Rabat, Maroc</p>
+            <p><strong>Duration:</strong> 4 months</p>
+            <p><strong>Applied on:</strong> January 10, 2025</p>
+            <p><strong>Requirements:</strong> Figma, Adobe XD, UI/UX principles</p>
+            <p><strong>Description:</strong> Design user interfaces and improve user experience for web and mobile applications...</p>
+          `
+        },
+        data: {
+          title: 'Stage Data Analyst - DataTech Industries',
+          status: 'Accepté',
+          content: `
+            <p><strong>Company:</strong> DataTech Industries</p>
+            <p><strong>Location:</strong> Tanger, Maroc</p>
+            <p><strong>Duration:</strong> 3 months</p>
+            <p><strong>Applied on:</strong> January 5, 2025</p>
+            <p><strong>Requirements:</strong> Python, SQL, Data Visualization</p>
+            <p><strong>Description:</strong> Analyze large datasets and create meaningful insights using advanced analytics tools...</p>
+          `
+        }
+      };
+
+      title.textContent = details[type].title;
+      status.textContent = details[type].status;
+      body.innerHTML = details[type].content;
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('detailsModal').style.display = 'none';
+    }
+
+    window.addEventListener('click', (e) => {
+      const modal = document.getElementById('detailsModal');
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+
+    
+    function toggleDropdown() {
+      const dropdown = document.getElementById('profileDropdown');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    window.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('profileDropdown');
+      if (!e.target.closest('.profile-container')) {
+        dropdown.style.display = 'none';
+      }
+    });
+
+    function getStatusClass(status) {
+      switch(status.toLowerCase()) {
+        case 'en attente':
+          return 'status-waiting';
+        case 'accepté':
+          return 'status-accepted';
+        case 'rejeté':
+          return 'status-rejected';
+        default:
+          return 'status-waiting';
+      }
+    }
+
+    function showDetails(type) {
+      const modal = document.getElementById('detailsModal');
+      const title = document.getElementById('modalTitle');
+      const status = document.getElementById('modalStatus');
+      const body = document.getElementById('modalBody');
+
+      const details = {
+        frontend: {
+          title: 'Stage Frontend Developer - TechCorp Solutions',
+          status: 'En attente',
+          content: `
+            <p><strong>Company:</strong> TechCorp Solutions</p>
+            <p><strong>Location:</strong> Casablanca, Maroc</p>
+            <p><strong>Duration:</strong> 6 months</p>
+            <p><strong>Applied on:</strong> January 15, 2025</p>
+            <p><strong>Requirements:</strong> HTML, CSS, JavaScript, React</p>
+            <p><strong>Description:</strong> Development of modern web applications using React and related technologies...</p>
+          `
+        },
+        ux: {
+          title: 'Stage UX Designer - Creative Designs Inc.',
+          status: 'Rejeté',
+          content: `
+            <p><strong>Company:</strong> Creative Designs Inc.</p>
+            <p><strong>Location:</strong> Rabat, Maroc</p>
+            <p><strong>Duration:</strong> 4 months</p>
+            <p><strong>Applied on:</strong> January 10, 2025</p>
+            <p><strong>Requirements:</strong> Figma, Adobe XD, UI/UX principles</p>
+            <p><strong>Description:</strong> Design user interfaces and improve user experience for web and mobile applications...</p>
+          `
+        },
+        data: {
+          title: 'Stage Data Analyst - DataTech Industries',
+          status: 'Accepté',
+          content: `
+            <p><strong>Company:</strong> DataTech Industries</p>
+            <p><strong>Location:</strong> Tanger, Maroc</p>
+            <p><strong>Duration:</strong> 3 months</p>
+            <p><strong>Applied on:</strong> January 5, 2025</p>
+            <p><strong>Requirements:</strong> Python, SQL, Data Visualization</p>
+            <p><strong>Description:</strong> Analyze large datasets and create meaningful insights using advanced analytics tools...</p>
+          `
+        }
+      };
+
+      title.textContent = details[type].title;
+      status.textContent = details[type].status;
+      status.className = `status-tag ${getStatusClass(details[type].status)}`;
+      body.innerHTML = details[type].content;
+      modal.style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('detailsModal').style.display = 'none';
+    }
+
+    window.addEventListener('click', (e) => {
+      const modal = document.getElementById('detailsModal');
+      if (e.target === modal) {
+        closeModal();
+      }
+    });
+
+    
+    </script>
+    
+    
+        
+    </body>
+    </html>

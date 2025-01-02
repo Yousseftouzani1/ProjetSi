@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offres</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Calibri&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Calibri Light', sans-serif;
+      background: linear-gradient(135deg, #FEF1E6, #F9D8B7);
+    }
+
+    /* Navbar Styles */
+    .navbar-custom {
+      background: linear-gradient(90deg, #ff7936, #ff8d54);
+      height: 100px;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      padding: 0 20px;
+      
+    }
+
+    /* Leaf Shapes with Animation */
+    .leaf {
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0.2);
+      clip-path: polygon(50% 0%, 75% 25%, 100% 50%, 75% 75%, 50% 100%, 25% 75%, 0% 50%, 25% 25%);
+      transform-origin: center;
+      animation: floatLeaf 6s infinite ease-in-out;
+    }
+
+    @keyframes floatLeaf {
+      0%, 100% { transform: translateY(0) rotate(var(--rotation)); }
+      50% { transform: translateY(-10px) rotate(var(--rotation)); }
+    }
+
+    .leaf-1 { width: 100px; height: 60px; top: 10px; left: 20px; --rotation: 30deg; }
+    .leaf-2 { width: 80px; height: 50px; top: 20px; right: 50px; --rotation: -30deg; }
+    .leaf-3 { width: 140px; height: 90px; bottom: 0; left: 60px; --rotation: 15deg; }
+    .leaf-4 { width: 60px; height: 40px; top: -10px; left: 150px; --rotation: -45deg; }
+    .leaf-5 { width: 120px; height: 70px; bottom: 0; right: 150px; --rotation: 45deg; }
+
+    /* Profile Container */
+    .profile-container {
+      position: relative;
+      margin-left: auto;
+    }
+
+    .profile-icon {
+      width: 40px;
+      height: 40px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .profile-icon:hover {
+      background-color: #fdc19d;
+      transform: scale(1.1);
+    }
+
+    .profile-dropdown {
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 0;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      min-width: 180px;
+      z-index: 1000;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .profile-dropdown a {
+      display: block;
+      padding: 12px 20px;
+      color: #333;
+      text-decoration: none;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .profile-dropdown a:hover {
+      background-color: #f8f8f8;
+      padding-left: 25px;
+    }
+
+    .profile-dropdown .logout {
+      color: #dc3545;
+      border-top: 1px solid #eee;
+    }
+
+    /* Side Menu with Transition Shape */
+    .side-menu {
+      position: fixed;
+      top: 100px;
+      left: 0;
+      width: 200px;
+      height: calc(100% - 100px);
+      background: linear-gradient(180deg, #ff7936, #ff8d54);
+      padding: 20px;
+      color: white;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .transition-shape {
+      position: fixed;
+      top: 100px;
+      left: 0;
+      width: 200px;
+      height: 50px;
+      background: linear-gradient(180deg, #ff7936, #ff8d54);
+      clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 50%);
+      z-index: 999;
+    }
+
+    .side-menu ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    .side-menu li {
+      margin: 15px 0;
+    }
+
+    .side-menu a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .side-menu i {
+      min-width: 20px;
+      margin-right: 8px;
+    }
+
+    .side-menu a:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: 220px;
+      padding-top: 120px;
+    }
+
+    .welcome-message {
+      font-size: 2.5rem;
+      font-weight: 300;
+      color: #333;
+      text-align: center;
+      margin-bottom: 40px;
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Dashboard Cards */
+    .cards-wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      padding: 20px;
+      animation: fadeIn 1s ease-out;
+    }
+
+
+    .dashboard-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .competency-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 10px 0;
+      justify-content: center;
+    }
+
+    .pill {
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    /* Different color variants for pills */
+    .pill:nth-child(3n+1) {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .pill:nth-child(3n+2) {
+      background: #2196F3;
+      color: white;
+    }
+
+    .pill:nth-child(3n+3) {
+      background: #9C27B0;
+      color: white;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .dashboard-card h3 {
+      font-weight: 500;
+      color: #5B84C4;
+      margin-bottom: 15px;
+    }
+
+    .see-more-btn {
+      background-color: #193A6F;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .see-more-btn:hover {
+      background-color: #ff5722;
+      transform: scale(1.05);
+    }
+  
+
+    @media (max-width: 768px) {
+      .side-menu {
+        transform: translateX(-200px);
+        transition: transform 0.3s ease;
+      }
+
+      .main-content {
+        margin-left: 0;
+        padding: 120px 20px 20px;
+      }
+
+      .cards-wrapper {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-custom">
+    <div class="container-fluid d-flex align-items-center">
+      <a class="navbar-brand text-white" href="#">Internship Management</a>
+      <div class="profile-container">
+        <div class="profile-icon" onclick="toggleDropdown()">
+          <span style="font-size: 20px; color: #FE691E;">👤</span>
+        </div>
+        <div class="profile-dropdown" id="profileDropdown">
+          <a href="#" id="userName">User Name</a>
+          <a href="#">Settings</a>
+          <a href="#" class="logout">Log Out</a>
+        </div>
+      </div>
+    </div>
+    
+    <div class="leaf leaf-1"></div>
+    <div class="leaf leaf-2"></div>
+    <div class="leaf leaf-3"></div>
+    <div class="leaf leaf-4"></div>
+    <div class="leaf leaf-5"></div>
+  </nav>
+
+  <div class="transition-shape"></div>
+
+  <div class="side-menu">
+    <ul>
+      <li><a href="#"><i class="fas fa-briefcase me-2"></i>Offers</a></li>
+      <li><a href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+      <li><a href="#"><i class="fas fa-chart-line me-2"></i>Dashboard</a></li>
+      <li><a href="#"><i class="fas fa-file me-2"></i>Mes Candidatures</a></li>
+    </ul>
+  </div>
+
+ 
+      <div class="main-content">
+        <div class="welcome-message">Welcome back, Student!</div>
+  
+        <div class="cards-wrapper">
+          <div class="dashboard-card">
+            <h3>Offers</h3>
+            <p>Explore available internship opportunities tailored for you.</p>
+            <div class="competency-pills">
+              <span class="pill">Python</span>
+              <span class="pill">React</span>
+              <span class="pill">Project Management</span>
+            </div>
+            <button class="see-more-btn">See More</button>
+          </div>
+      
+          <div class="dashboard-card">
+            <h3>Profile</h3>
+            <p>Manage your professional profile and credentials.</p>
+            <div class="competency-pills">
+              <span class="pill">Communication</span>
+              <span class="pill">Leadership</span>
+              <span class="pill">Team Work</span>
+            </div>
+            <button class="see-more-btn">See More</button>
+          </div>
+      
+          <div class="dashboard-card">
+            <h3>Dashboard</h3>
+            <p>Track your applications and internship progress.</p>
+            <div class="competency-pills">
+              <span class="pill">Data Analysis</span>
+              <span class="pill">Problem Solving</span>
+              <span class="pill">Organization</span>
+            </div>
+            <button class="see-more-btn">See More</button>
+          </div>
+        </div>
+      </div>
+  </div>
+
+  <script>
+    function toggleDropdown() {
+      const dropdown = document.getElementById('profileDropdown');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    window.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('profileDropdown');
+      if (!e.target.closest('.profile-container')) {
+        dropdown.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>

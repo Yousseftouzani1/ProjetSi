@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Calibri&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Calibri Light', sans-serif;
+      background: linear-gradient(135deg, #E6F0FF, #B7D8F9);
+      min-height: 100vh;
+    }
+
+    .navbar-custom {
+      background: linear-gradient(90deg, #193A6F, #2C4F90);
+      height: 100px;
+      position: fixed;
+      width: 100%;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .leaf {
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0.2);
+      clip-path: polygon(50% 0%, 75% 25%, 100% 50%, 75% 75%, 50% 100%, 25% 75%, 0% 50%, 25% 25%);
+      transform-origin: center;
+      animation: floatLeaf 6s infinite ease-in-out;
+    }
+
+    @keyframes floatLeaf {
+      0%, 100% { transform: translateY(0) rotate(var(--rotation)); }
+      50% { transform: translateY(-10px) rotate(var(--rotation)); }
+    }
+
+    .leaf-1 { width: 100px; height: 60px; top: 10px; left: 20px; --rotation: 30deg; }
+    .leaf-2 { width: 80px; height: 50px; top: 20px; right: 50px; --rotation: -30deg; }
+    .leaf-3 { width: 140px; height: 90px; bottom: 0; left: 60px; --rotation: 15deg; }
+    .leaf-4 { width: 60px; height: 40px; top: -10px; left: 150px; --rotation: -45deg; }
+    .leaf-5 { width: 120px; height: 70px; bottom: 0; right: 150px; --rotation: 45deg; }
+
+    .profile-container {
+      position: relative;
+      margin-left: auto;
+    }
+
+    .profile-icon {
+      width: 40px;
+      height: 40px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .profile-icon:hover {
+      transform: scale(1.1);
+      background-color: #f0f0f0;
+    }
+
+    .profile-dropdown {
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 0;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      min-width: 150px;
+      z-index: 1000;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .profile-dropdown a {
+      display: block;
+      padding: 12px 20px;
+      color: #333;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .profile-dropdown a:hover {
+      background-color: #f8f8f8;
+      padding-left: 25px;
+    }
+
+    .profile-dropdown .logout {
+      color: #dc3545;
+      border-top: 1px solid #eee;
+    }
+
+    .side-menu {
+      position: fixed;
+      top: 100px;
+      left: 0;
+      width: 200px;
+      height: calc(100% - 100px);
+      background: linear-gradient(180deg, #193A6F, #2C4F90);
+      padding: 20px;
+      color: white;
+    }
+
+    .side-menu ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    .side-menu li {
+      margin: 15px 0;
+    }
+
+    .side-menu a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: block;
+      padding: 10px 15px;
+      border-radius: 5px;
+    }
+
+    .side-menu a:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+
+    .main-content {
+      margin-left: 220px;
+      padding-top: 120px;
+    }
+
+    .welcome-message {
+      font-size: 2.5rem;
+      font-weight: 300;
+      color: #193A6F;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .transition-shape {
+      position: fixed;
+      top: 100px;
+      left: 0;
+      width: 200px;
+      height: 50px;
+      background: linear-gradient(180deg, #193A6F, #2C4F90);
+      clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 50%);
+      z-index: 999;
+    }
+
+    .cards-wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      padding: 20px;
+    }
+
+    .dashboard-card {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .dashboard-card h3 {
+      color: #FF7936;
+      margin-bottom: 15px;
+      font-size: 1.5rem;
+    }
+
+    .dashboard-card p {
+      color: #666;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .card-buttons {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+    }
+
+    .see-more-btn {
+      background-color: #FF7936;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .see-more-btn:hover {
+      background-color: #E65F22;
+      transform: scale(1.05);
+    }
+
+    .supprimer-btn {
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .supprimer-btn:hover {
+      background-color: #c82333;
+      transform: scale(1.05);
+    }
+
+    .modal-custom {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 10001;
+      animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .modal-content-custom {
+      position: relative;
+      background-color: white;
+      width: 90%;
+      max-width: 600px;
+      margin: 50px auto;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+      animation: slideIn 0.3s ease-in-out;
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(-100px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .close-modal {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+      transition: color 0.3s ease;
+    }
+
+    .close-modal:hover {
+      color: #333;
+    }
+
+    .modal-title {
+      color: #193A6F;
+      margin-bottom: 20px;
+      font-size: 1.8rem;
+    }
+
+    .modal-description {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    @keyframes fadeOut {
+      from { opacity: 1; transform: translateY(0); }
+      to { opacity: 0; transform: translateY(-20px); }
+    }
+    .add-offer-btn {
+  background: linear-gradient(135deg, #193A6F, #2C4F90);
+  color: white;
+  border: none;
+  font-size: 1.2rem;
+  padding: 15px 30px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(25, 58, 111, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.add-offer-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(25, 58, 111, 0.4);
+  background: linear-gradient(135deg, #2C4F90, #193A6F);
+}
+
+.add-offer-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 2px 10px rgba(25, 58, 111, 0.3);
+}
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-custom">
+    <div class="container-fluid">
+      <a class="navbar-brand text-white" href="#">Internship Management</a>
+      <div class="profile-container">
+        <div class="profile-icon" onclick="toggleDropdown()">
+          <span style="font-size: 20px; color: #193A6F;">👤</span>
+        </div>
+        <div class="profile-dropdown" id="profileDropdown">
+          <a href="#" id="userName">John Doe</a>
+          <a href="#">Settings</a>
+          <a href="#" class="logout">Log Out</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="leaf leaf-1"></div>
+    <div class="leaf leaf-2"></div>
+    <div class="leaf leaf-3"></div>
+    <div class="leaf leaf-4"></div>
+    <div class="leaf leaf-5"></div>
+  </nav>
+
+  <div class="transition-shape"></div>
+
+  <div class="side-menu">
+    <ul>
+      <li><a href="#"><i class="fas fa-briefcase me-2"></i>Offers publié</a></li>
+      <li><a href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+      <li><a href="#"><i class="fas fa-file me-2"></i>Candidatures</a></li>
+      <li><a href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <div class="welcome-message">Welcome to Your Dashboard</div>
+
+    <div class="text-end mb-4">
+      <button class="add-offer-btn">
+        <i class="fas fa-plus-circle me-2"></i>
+        Add Offer
+      </button>
+    </div>
+
+    <div class="cards-wrapper">
+      <div class="dashboard-card" id="card-1">
+        <h3>Offers</h3>
+        <p>Find and apply to the best internship opportunities available for you.</p>
+        <div class="card-buttons">
+          <button class="see-more-btn" onclick="openModal('modal-1')">See More</button>
+          <button class="supprimer-btn" onclick="deleteCard('card-1')">Supprimer</button>
+        </div>
+      </div>
+
+      <div class="dashboard-card" id="card-2">
+        <h3>Profile</h3>
+        <p>Manage your professional profile and keep your information up to date.</p>
+        <div class="card-buttons">
+          <button class="see-more-btn" onclick="openModal('modal-2')">See More</button>
+          <button class="supprimer-btn" onclick="deleteCard('card-2')">Supprimer</button>
+        </div>
+      </div>
+
+      <div class="dashboard-card" id="card-3">
+        <h3>Applications</h3>
+        <p>Track and manage all your ongoing internship applications.</p>
+        <div class="card-buttons">
+          <button class="see-more-btn" onclick="openModal('modal-3')">See More</button>
+          <button class="supprimer-btn" onclick="deleteCard('card-3')">Supprimer</button>
+        </div>
+      </div>
+
+      <div class="dashboard-card" id="card-4">
+        <h3>Reports</h3>
+        <p>View and download your internship progress reports.</p>
+        <div class="card-buttons">
+          <button class="see-more-btn" onclick="openModal('modal-4')">See More</button>
+          <button class="supprimer-btn" onclick="deleteCard('card-4')">Supprimer</button>
+        </div>
+      </div>
+
+      <div class="dashboard-card" id="card-5">
+        <h3>Feedback</h3>
+        <p>Share your experience and provide valuable feedback.</p>
+        <div class="card-buttons">
+          <button class="see-more-btn" onclick="openModal('modal-5')">See More</button>
+          <button class="supprimer-btn" onclick="deleteCard('card-5')">Supprimer</button>
+        </div>
+      </div>
+
+      <div class="dashboard-card" id="card-6">
+        <h3>Resources</h3>
+        <p>Access helpful guides and learning materials for your internship.</p>
+        <div class="card-buttons">
+          <button class="see-more-btn" onclick="openModal('modal-6')">See More</button>
+          <button class="supprimer-btn" onclick="deleteCard('card-6')">Supprimer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modals -->
+  <div class="modal-custom" id="modal-1">
+    <div class="modal-content-custom">
+      <span class="close-modal" onclick="closeModal('modal-1')">&times;</span>
+      <h2 class="modal-title">Offers Details</h2>
+      <div class="modal-description">
+        <h4>Available Positions:</h4>
+        <ul>
+          <li>Software Development Intern</li>
+          <li>Data Analysis Intern</li>
+          <li>UI/UX Design Intern</li>
+        </ul>
+        
+        <h4>Requirements:</h4>
+        <p>Currently enrolled in a relevant degree program with a minimum GPA of 3.0. Strong problem-solving skills and ability to work in a team environment.</p>
+        
+        <h4>Duration:</h4>
+        <p>3-6 months, full-time position</p>
+        
+        <h4>Benefits:</h4>
+        <p>Competitive stipend, flexible working hours, mentorship program, and possibility of full-time employment after successful completion.</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('modal-1')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-custom" id="modal-2">
+    <div class="modal-content-custom">
+      <span class="close-modal" onclick="closeModal('modal-2')">&times;</span>
+      <h2 class="modal-title">Offers Details</h2>
+      <div class="modal-description">
+        <h4>Available Positions:</h4>
+        <ul>
+          <li>Software Development Intern</li>
+          <li>Data Analysis Intern</li>
+          <li>UI/UX Design Intern</li>
+        </ul>
+        
+        <h4>Requirements:</h4>
+        <p>Currently enrolled in a relevant degree program with a minimum GPA of 3.0. Strong problem-solving skills and ability to work in a team environment.</p>
+        
+        <h4>Duration:</h4>
+        <p>3-6 months, full-time position</p>
+        
+        <h4>Benefits:</h4>
+        <p>Competitive stipend, flexible working hours, mentorship program, and possibility of full-time employment after successful completion.</p>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="closeModal('modal-2')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Previous script content remains
+    function toggleDropdown() {
+      const dropdown = document.getElementById('profileDropdown');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    // Close dropdown when clicking outside
+    window.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('profileDropdown');
+      if (!e.target.closest('.profile-container')) {
+        dropdown.style.display = 'none';
+      }
+    });
+
+    // New functions for modal and delete functionality
+    function openModal(modalId) {
+      document.getElementById(modalId).style.display = 'block';
+      document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    }
+
+    function closeModal(modalId) {
+      document.getElementById(modalId).style.display = 'none';
+      document.body.style.overflow = 'auto'; // Restore scrolling
+    }
+
+    function deleteCard(cardId) {
+      if (confirm('Are you sure you want to delete this item?')) {
+        const card = document.getElementById(cardId);
+        card.style.animation = 'fadeOut 0.3s ease-in-out';
+        setTimeout(() => {
+          card.remove();
+        }, 300);
+      }
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+      const modals = document.getElementsByClassName('modal-custom');
+      for (let modal of modals) {
+        if (event.target === modal) {
+          modal.style.display = 'none';
+          document.body.style.overflow = 'auto';
+        }
+      }
+    }
+  </script>
+</body>
+</html>
