@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion École</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        h2 {
+            text-align: center;
+            margin-top: 20px;
+            color: #2c3e50;
+        }
+
+        .section {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin: 20px 0;
+        }
+
+        .btn-primary {
+            background-color: #3498db;
+            border: none;
+        }
+
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-success {
+            background-color: #2ecc71;
+        }
+
+        .btn-success:hover {
+            background-color: #27ae60;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Portail de Gestion - École</h2>
+
+        <!-- Section: Entreprises inscrites -->
+        <div class="section">
+            <h3>Entreprises Inscrites</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Adresse</th>
+                        <th>Ville</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody id="companyList">
+                    <!-- Les entreprises seront ajoutées dynamiquement ici -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section: Inscription d'étudiants -->
+        <div class="section">
+            <h3>Inscrire un Étudiant</h3>
+            <form id="studentForm">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="studentName" class="form-label">Nom de l'étudiant</label>
+                        <input type="text" id="studentName" class="form-control" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="studentEmail" class="form-label">Email</label>
+                        <input type="email" id="studentEmail" class="form-control" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="studentFiliere" class="form-label">Filière</label>
+                        <input type="text" id="studentFiliere" class="form-control" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="studentCursus" class="form-label">Cursus</label>
+                        <input type="text" id="studentCursus" class="form-control" required>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="studentYear" class="form-label">Année</label>
+                        <input type="number" id="studentYear" class="form-control" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Inscrire</button>
+            </form>
+        </div>
+
+        <!-- Section: Étudiants sans stage -->
+        <div class="section">
+            <h3>Étudiants sans Stage</h3>
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Nom</th>
+                        <th>Filière</th>
+                        <th>Cursus</th>
+                        <th>Email</th>
+                    </tr>
+                </thead>
+                <tbody id="unplacedStudentsList">
+                    <!-- Les étudiants sans stage seront ajoutés dynamiquement ici -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Section: Statistiques des Étudiants -->
+        <div class="section">
+            <h3>Statistiques des Étudiants</h3>
+            <div>
+                <p>Total Étudiants : <span id="totalStudents">0</span></p>
+                <p>Total Étudiants sans Stage : <span id="totalUnplaced">0</span></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Récupérer les entreprises inscrites (simulé avec des données statiques)
+        function loadCompanies() {
+            const companies = [
+                { name: "Entreprise A", address: "Rue 1", city: "Casablanca", email: "contact@entreprisea.com" },
+                { name: "Entreprise B", address: "Rue 2", city: "Rabat", email: "contact@entrepriseb.com" },
+            ];
+
+            const companyList = document.getElementById('companyList');
+            companies.forEach(company => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${company.name}</td>
+                    <td>${company.address}</td>
+                    <td>${company.city}</td>
+                    <td>${company.email}</td>
+                `;
+                companyList.appendChild(row);
+            });
+        }
+
+        // Inscrire un étudiant
+        document.getElementById('studentForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            const student = {
+                name: document.getElementById('studentName').value,
+                email: document.getElementById('studentEmail').value,
+                filiere: document.getElementById('studentFiliere').value,
+                cursus: document.getElementById('studentCursus').value,
+                year: document.getElementById('studentYear').value,
+            };
+
+            alert(`Étudiant inscrit : ${student.name}`);
+            // Envoyer l'étudiant au backend avec fetch
+        });
+
+        // Récupérer les étudiants sans stage (simulé avec des données statiques)
+        function loadUnplacedStudents() {
+            const students = [
+                { name: "Étudiant 1", filiere: "Informatique", cursus: "Licence", email: "etudiant1@gmail.com" },
+                { name: "Étudiant 2", filiere: "Économie", cursus: "Master", email: "etudiant2@gmail.com" },
+            ];
+
+            const unplacedList = document.getElementById('unplacedStudentsList');
+            const totalUnplaced = document.getElementById('totalUnplaced');
+            totalUnplaced.textContent = students.length;
+
+            students.forEach(student => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${student.name}</td>
+                    <td>${student.filiere}</td>
+                    <td>${student.cursus}</td>
+                    <td>${student.email}</td>
+                `;
+                unplacedList.appendChild(row);
+            });
+        }
+
+        // Charger les statistiques
+        function loadStatistics() {
+            const totalStudents = 50; // Simulé
+            document.getElementById('totalStudents').textContent = totalStudents;
+        }
+
+        // Charger les données au démarrage
+        loadCompanies();
+        loadUnplacedStudents();
+        loadStatistics();
+    </script>
+</body>
+</html>

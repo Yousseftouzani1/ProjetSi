@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Offres</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+        input, textarea, select, button {
+            display: block;
+            margin: 10px 0;
+            padding: 10px;
+            width: 100%;
+        }
+        button {
+            width: auto;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>Gestion des Offres</h1>
+
+    <!-- Formulaire pour ajouter une offre -->
+    <h2>Ajouter une offre</h2>
+    <form id="addOfferForm">
+        <input type="text" id="titre" placeholder="Titre de l'offre" required>
+        <textarea id="description" placeholder="Description de l'offre" required></textarea>
+        <input type="number" id="id_gest_entreprise" placeholder="ID du gestionnaire d'entreprise" required>
+        <input type="number" id="id_tuteur" placeholder="ID du tuteur" required>
+        <button type="submit">Ajouter l'offre</button>
+    </form>
+
+    <!-- Liste des offres -->
+    <h2>Liste des offres</h2>
+    <table id="offersTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Titre</th>
+                <th>Description</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+
+    <!-- Formulaire pour associer des compétences -->
+    <h2>Associer des compétences à une offre</h2>
+    <form id="associateCompetenceForm">
+        <input type="number" id="id_stage" placeholder="ID de l'offre" required>
+        <input type="text" id="competences" placeholder="IDs des compétences (séparés par des virgules)" required>
+        <button type="submit">Associer les compétences</button>
+    </form>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:4000/api/offres'; // Adapter à l'URL de votre backend
+
+        // Fonction pour afficher les offres dans le tableau
+        async function fetchOffers() {
+            const response = await fetch(`${API_BASE_URL}/get`);
+            const offers = await response.json();
+            const tableBody = document.querySelector('#offersTable tbody');
+            tableBody.innerHTML = ''; // Réinitialiser le tableau
+            offers.forEach(offer => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${offer.ID_STAGE}</td>
+                    <td>${offer.TITRE}</td>
+                    <td>${offer.DESCRIPTION}</td>
+                    <td>
+                        <button onclick="deleteOffer(${offer.ID_STAGE})">Supprimer</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Fonction pour ajouter une offre
+        document.getElementById('addOfferForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const titre = document.getElementById('titre').value;
+            const description = document.getElementById('description').value;
+            const id_gest_entreprise = document.getElementById('id_gest_entreprise').value;
+            const id_tuteur = document.getElementById('id_tuteur').value;
+
+            const response = await fetch(`${API_BASE_URL}/add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ titre, description, id_gest_entreprise, id_tuteur })
+            });
+
+            if (response.ok) {
+                alert('Offre ajoutée avec succès !');
+                fetchOffers(); // Actualiser la liste des offres
+            } else {
+                alert('Erreur lors de l\'ajout de l\'offre.');
+            }
+        });
+
+        // Fonction pour supprimer une offre
+        async function deleteOffer(id) {
+            const response = await fetch(`${API_BASE_URL}/delete/${id}`, { method: 'DELETE' });
+            if (response.ok) {
+                alert('Offre supprimée avec succès !');
+                fetchOffers(); // Actualiser la liste des offres
+            } else {
+                alert('Erreur lors de la suppression de l\'offre.');
+            }
+        }
+
+        // Fonction pour associer des compétences à une offre
+        document.getElementById('associateCompetenceForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const id_stage = document.getElementById('id_stage').value;
+            const competences = document.getElementById('competences').value.split(',').map(Number);
+
+            const response = await fetch(`${API_BASE_URL}/associateCompetences`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id_stage, competences })
+            });
+
+            if (response.ok) {
+                alert('Compétences associées avec succès !');
+            } else {
+                alert('Erreur lors de l\'association des compétences.');
+            }
+        });
+
+        // Charger les offres au chargement de la page
+        fetchOffers();
+    </script>
+</body>
+</html>

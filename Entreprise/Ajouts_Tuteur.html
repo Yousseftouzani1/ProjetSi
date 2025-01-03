@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ajouter des Tuteurs</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+    }
+
+    h1 {
+      text-align: center;
+      color: #0073e6;
+      margin: 20px 0;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+    }
+
+    .form-group {
+      margin-bottom: 15px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 1em;
+    }
+
+    button {
+      background: #0073e6;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 1em;
+    }
+
+    button:hover {
+      background: #005bb5;
+    }
+
+    .upload-section {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .upload-section input {
+      display: block;
+      margin: 10px auto;
+    }
+
+    .upload-section button {
+      display: block;
+      margin: 10px auto;
+    }
+  </style>
+</head>
+<body>
+  <h1>Ajouter des Tuteurs</h1>
+  <div class="container">
+    <form id="tuteurForm">
+      <h2>Ajouter un Tuteur via le Formulaire</h2>
+      <div class="form-group">
+        <label for="nom">Nom du Tuteur</label>
+        <input type="text" id="nom" name="nom" required>
+      </div>
+      <div class="form-group">
+        <label for="id_gest">ID Gestionnaire Entreprise</label>
+        <input type="number" id="id_gest" name="id_gest" required>
+      </div>
+      <button type="submit">Ajouter le Tuteur</button>
+    </form>
+
+    <div class="upload-section">
+      <h2>Ou Ajouter des Tuteurs via un Fichier Excel</h2>
+      <input type="file" id="excelFile" accept=".xlsx">
+      <button onclick="uploadExcel()">Uploader et Ajouter</button>
+    </div>
+  </div>
+
+  <script>
+    // Soumission du formulaire
+    const tuteurForm = document.getElementById('tuteurForm');
+    tuteurForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const nom = document.getElementById('nom').value;
+      //const idGest = document.getElementById('id_gest').value;
+
+      const response = await fetch('/add-tuteur', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ nom }),
+      });
+
+      if (response.ok) {
+        alert('Tuteur ajouté avec succès!');
+        tuteurForm.reset();
+      } else {
+        alert('Erreur lors de l\'ajout du tuteur.');
+      }
+    });
+
+    // Upload et traitement du fichier Excel
+    async function uploadExcel() {
+      const excelFile = document.getElementById('excelFile').files[0];
+
+      if (!excelFile) {
+        alert('Veuillez sélectionner un fichier Excel.');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', excelFile);
+
+      const response = await fetch('/upload-excel', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        alert('Fichier Excel traité avec succès!');
+      } else {
+        alert('Erreur lors du traitement du fichier Excel.');
+      }
+    }
+  </script>
+</body>
+</html>

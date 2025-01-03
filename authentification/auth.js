@@ -17,7 +17,6 @@ app.use(express.json());
 app.use(cookieParser());
 // Serve static files from the 'authentification' folder
 app.use(express.static(path.join(__dirname, 'authentification')));
-
 // Serve the root page (index.html)
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'loginpage.html'));
@@ -25,16 +24,9 @@ app.get('/', (req, res) => {
 app.get('/test.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'test.html'));
 });
-// Allow images, scripts, and styles from the same origin
-/*app.use(helmet.contentSecurityPolicy({
-    directives: {
-        defaultSrc: ["'self'"], // Allow resources from the same origin
-        imgSrc: ["'self'", "data:", "http://127.0.0.1:5500"], // Allow images
-        scriptSrc: ["'self'"], // Allow scripts
-        styleSrc: ["'self'", "'unsafe-inline'"], // Allow styles
-        connectSrc: ["'self'", "http://localhost:3000"], // Allow API calls
-    },
-}));*/
+app.get('/ajouterEtudiant', (req, res) => {
+    res.sendFile(path.join(__dirname, '../Ecole/create_etud.html'));
+});
 const allowedOrigins = ['http://127.0.0.1:5500', 'http://localhost:3000']; // Add all potential origins
 app.use(cors({
     origin: (origin, callback) => {
@@ -48,6 +40,11 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE'] // Specify the HTTP methods you support
 }));
 
+const { authenticateToken } = require('./authMid');
+
+const authRouter = require('./routerAuth');
+app.use(authRouter)
+/*
 // Route: Enregistrement d'un utilisateur
 app.post('/register', async (req, res) => {
     const { username, password } = req.body;
@@ -76,7 +73,6 @@ app.post('/register', async (req, res) => {
         if (connection) await connection.close();
     }
 });
-
 // Route: Connexion de l'utilisateur
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
@@ -124,7 +120,6 @@ app.post('/login', async (req, res) => {
         if (connection) await connection.close();
     }
 });
-
 // Middleware: Vérification du token
 function authenticateToken(req, res, next) {
     const token = req.cookies.access_token;
@@ -143,13 +138,6 @@ function authenticateToken(req, res, next) {
     });
 }
 
-// Route protégée
-app.get('/protected', authenticateToken, (req, res) => {
-    res.status(200).json({ 
-        message: `Welcome to the protected page, ${req.user.username}!`,
-        username: req.user.username
-    });
-});
 /*app.get('/get',async(req,res)=>{
     connection = await oracledb.getConnection(dbConfig);
         const result = await connection.execute(
@@ -159,7 +147,14 @@ app.get('/protected', authenticateToken, (req, res) => {
         res.json({ message: result  });
         
 })*/
-// Lancer le serveur
+// Lancer le serveur */
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
+});
+// Route protégée
+app.get('/protected', authenticateToken, (req, res) => {
+    res.status(200).json({ 
+        message: `Welcome to the protected page, ${req.user.username}!`,
+        username: req.user.username
+    });
 });

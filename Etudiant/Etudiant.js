@@ -6,17 +6,14 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser'); // Middleware for cookies
 const app = express();
 const port = 4002;
-app.listen(port, () => {
-    console.log(`Serveur en cours d'exécution sur http://localhost:${port}`);
-  });
+const candidater = require('./Candidater');
+const conv=require('./Convocation');
+const stage = require('./stage');
+app.use(candidater);
+app.use(conv);
+app.use(stage );
 app.use(express.json());
 app.use(cookieParser());
-
-// Specify the frontend's origin and allow credentials
-/*app.use(cors({
-    origin: 'http://127.0.0.1:5500', // Replace with your frontend's URL
-    credentials: true               // Allow sending cookies
-}));*/
 const allowedOrigins = ['http://127.0.0.1:5500', 'http://localhost:5500']; // Add all potential origins
 app.use(cors({
     origin: (origin, callback) => {
@@ -29,8 +26,6 @@ app.use(cors({
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify the HTTP methods you support
 }));
-//const path = require('path');
-
 const authentificate_token =(req,res,next)=>{
     /*const token = req.cookies.ACCESS_TOKEN_KEY;*/  
     const token = req.cookies.access_token; // Corrected line
@@ -55,27 +50,29 @@ app.get('/displayCandidature', authentificate_token, async (req, res) => {
         if (connection) await connection.close();
     }
 });
-app.get('/getdata', (req,res)=>{
-    res.send("hello");
-});
-app.get('/offre', async (req, res) => {
+// visualiser les stages courant 
+app.get('/stagesEnCours', async (req, res) => {
     let connection;
     try {
-        connection = await oracledb.getConnection(dbConfig); // Utilisez getConnection
+        connection = await oracledb.getConnection(dbConfig);
         const result = await connection.execute(
-            'SELECT TITRE, DESCRIPTION FROM Offre_Stage',
-            {}, // Aucun paramètre
-            { outFormat: oracledb.OUT_FORMAT_OBJECT } // Format objet
+            `SELECT id_stage, date_debut, date_fin
+             FROM Stage 
+             WHERE status_stage = 'en cours'`,
+            {},
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }
         );
 
-        // Map des résultats pour extraire les titres et descriptions
         res.json(result.rows.map(row => ({
+            id_stage: row.ID_STAGE,
             titre: row.TITRE,
             description: row.DESCRIPTION,
+            date_debut: row.DATE_DEBUT,
+            date_fin: row.DATE_FIN
         })));
     } catch (err) {
-        console.error('Database error:', err); // Log l'erreur dans le terminal
-        res.status(500).json({ error: 'Internal server error' }); // Réponse JSON en cas d'erreur
+        console.error('Database error:', err);
+        res.status(500).json({ error: 'Internal server error' });
     } finally {
         if (connection) {
             try {
@@ -86,3 +83,74 @@ app.get('/offre', async (req, res) => {
         }
     }
 });
+
+//visualiser les stages deja effectué
+app.get('/stagesTermines', async (req, res) => {
+    let connection;
+    try {
+        connection = await oracledb.getConnection(dbConfig);
+        const result = await connection.execute(
+            `SELECT ID_STAGE, date_debut, date_fin 
+             FROM Stage 
+             WHERE status_stage = 'Terminé'`,
+            {},
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }
+        );
+
+        res.json(result.rows.map(row => ({
+            id_stage: row.ID_STAGE,
+            titre: row.TITRE,
+            description: row.DESCRIPTION,
+            date_debut: row.DATE_DEBUT,
+            date_fin: row.DATE_FIN
+        })));
+    } catch (err) {
+        console.error('Database error:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (err) {
+                console.error('Error closing connection:', err);
+            }
+        }
+    }
+});
+
+// visualiser les les offres de stage 
+app.get('/offresDisponibles', async (req, res) => {
+    let connection;
+    try {
+        connection = await oracledb.getConnection(dbConfig);
+        const result = await connection.execute(
+            `SELECT ID_OFFRE, titre, description, Date_publication 
+             FROM Offre_Stage 
+             WHERE status_offre = 'disponible'`,
+            {},
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }
+        );
+
+        res.json(result.rows.map(row => ({
+            id_offre: row.ID_OFFRE,
+            titre: row.TITRE,
+            description: row.DESCRIPTION,
+            date_publication: row.DATE_PUBLICATION
+        })));
+    } catch (err) {
+        console.error('Database error:', err);
+        res.status(500).json({ error: 'Internal server error' });
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (err) {
+                console.error('Error closing connection:', err);
+            }
+        }
+    }
+});
+
+app.listen(port, () => {
+    console.log(`Serveur en cours d'exécution sur http://localhost:${port}`);
+  });

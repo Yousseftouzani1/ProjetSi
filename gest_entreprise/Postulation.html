@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Postulants</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f9;
+    }
+
+    h1 {
+      text-align: center;
+      margin: 20px;
+      color: #0073e6;
+    }
+
+    ul {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 0;
+      list-style: none;
+    }
+
+    ul li {
+      background: white;
+      margin: 10px 0;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      transition: transform 0.2s ease;
+    }
+
+    ul li:hover {
+      transform: scale(1.02);
+    }
+  </style>
+</head>
+<body>
+  <h1>Étudiants Postulants</h1>
+  <ul id="applicantsList"></ul>
+
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const offerId = urlParams.get('offerId');
+
+    const offers = [
+      {
+        id: 1,
+        applicants: ["Étudiant 1", "Étudiant 2", "Étudiant 3"]
+      },
+      {
+        id: 2,
+        applicants: ["Étudiant A", "Étudiant B"]
+      }
+    ];
+
+    const offer = offers.find(o => o.id == offerId);
+    const applicantsList = document.getElementById('applicantsList');
+
+    if (offer) {
+      offer.applicants.forEach(applicant => {
+        const li = document.createElement('li');
+        li.textContent = applicant;
+        applicantsList.appendChild(li);
+      });
+    } else {
+      applicantsList.innerHTML = '<li>Aucun postulant trouvé.</li>';
+    }
+  </script>
+</body>
+</html>

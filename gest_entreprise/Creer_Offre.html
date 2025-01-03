@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Créer une Offre</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background-color: #f4f4f9;
+    }
+
+    h1 {
+      text-align: center;
+      color: #0073e6;
+    }
+
+    form {
+      max-width: 600px;
+      margin: 30px auto;
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    form label {
+      font-weight: bold;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    form input, form textarea, form select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    form button {
+      background: #0073e6;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      font-size: 1em;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    form button:hover {
+      background: #005bb5;
+    }
+  </style>
+</head>
+<body>
+  <h1>Créer une Nouvelle Offre</h1>
+  <form id="offerForm">
+    <label for="title">Titre de l'Offre :</label>
+    <input type="text" id="title" name="title" placeholder="Ex : Développeur Web" required>
+
+    <label for="description">Description :</label>
+    <textarea id="description" name="description" rows="5" placeholder="Décrivez l'offre ici..." required></textarea>
+
+    <label for="duration">Durée (en mois) :</label>
+    <input type="number" id="duration" name="duration" placeholder="Ex : 6" required>
+
+    <label for="location">Localisation :</label>
+    <input type="text" id="location" name="location" placeholder="Ex : Casablanca" required>
+
+    <label for="field">Domaine :</label>
+    <select id="field" name="field" required>
+      <option value="informatique">Informatique</option>
+      <option value="marketing">Marketing</option>
+      <option value="finance">Finance</option>
+      <option value="ressources-humaines">Ressources Humaines</option>
+    </select>
+
+    <button type="submit">Créer l'Offre</button>
+  </form>
+
+  <script>
+    document.getElementById('offerForm').addEventListener('submit', async(event) =>{
+      event.preventDefault(); // Empêche la soumission classique du formulaire=
+      const title = document.getElementById('title').value;
+      const description = document.getElementById('description').value;
+      const duration = document.getElementById('duration').value;
+      const location = document.getElementById('location').value;
+      const field = document.getElementById('field').value;
+      const API_BASE_URL = 'http://localhost:4000/api/offres';
+      const response = await fetch(`${API_BASE_URL}/add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ titre, description, id_gest_entreprise, id_tuteur })
+            });
+
+            if (response.ok) {
+                alert('Offre ajoutée avec succès !');
+                fetchOffers(); // Actualiser la liste des offres
+            } else {
+                alert('Erreur lors de l\'ajout de l\'offre.');
+            }
+      // Simulation d'envoi des données
+      alert(`Offre créée avec succès :\n\nTitre : ${title}\nDescription : ${description}\nDurée : ${duration} mois\nLocalisation : ${location}\nDomaine : ${field}`);
+      
+      // Ici, ajoutez un appel API pour envoyer les données au backend si nécessaire
+
+    });
+  </script>
+</body>
+</html>
