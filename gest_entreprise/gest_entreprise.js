@@ -8,7 +8,7 @@ const path = require('path');
 const offreRoutes = require('./offre');
 const candidature =require('./Candidature');
 const tuteur =require('./tuteur');
-
+const stage =require ('./Stage');
 // Configuration de la base de données Oracle
 const dbConfig = require('../database/dbConfig');
 
@@ -17,6 +17,7 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 
 // Middleware
+app.use(stage);
 app.use(offreRoutes);
 app.use(candidature);
 app.use(tuteur);

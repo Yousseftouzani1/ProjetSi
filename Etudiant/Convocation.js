@@ -46,4 +46,5 @@ router.put('/convocation/:id/refuse', async (req, res) => {
     }
 });
 
+
 module.exports = router;

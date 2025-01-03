@@ -32,7 +32,7 @@ CREATE TABLE Convocation (
     date_envoi DATE,
     date_acceptation DATE, 
     status VARCHAR2(20) DEFAULT 'Non acceptée',
-        FOREIGN KEY (id_stage) REFERENCES Offre_Stage(id_stage),
+    FOREIGN KEY (id_stage) REFERENCES Offre_Stage(id_stage),
     FOREIGN KEY (id_etudiant) REFERENCES Etudiant(id_etudiant)
 );
 CREATE SEQUENCE Convocation_seq START WITH 1;

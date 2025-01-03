@@ -3,6 +3,8 @@ const router = express.Router();
 const oracledb = require('oracledb');
 const dbConfig = require('../database/dbConfig');
 
+//apres avoir passer l entretien avec succes
+
 // Fonction utilitaire pour exécuter des requêtes Oracle
 async function executeQuery(query, binds = {}, options = { autoCommit: true }) {
   let connection;
@@ -33,7 +35,7 @@ router.put('/stage/:id/refuse', async (req, res) => {
     }
 });
 
-// Accepter un stage définitivement
+// Accepter un stage définitivement (status=Validé)
 router.put('/stage/:id/accept', async (req, res) => {
     const stageId = req.params.id;
     const query = `UPDATE Stage SET status = 'Validé' WHERE id_stage = :id`;

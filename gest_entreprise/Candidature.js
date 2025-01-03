@@ -25,7 +25,7 @@ router.post('/accepter/:id', async (req, res) => {
   const idCandidature = req.params.id;
   const query = `
     UPDATE Candidature
-    SET statut = 'acceptée'
+    SET statut = 'Acceptée'
     WHERE id_candidature = :id
   `;
   try {
