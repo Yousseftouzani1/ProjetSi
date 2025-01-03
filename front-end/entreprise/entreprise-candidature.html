@@ -18,15 +18,15 @@
 
     /* Navbar Styles */
     .navbar-custom {
-      background: linear-gradient(90deg, #193A6F, #2C4F90);
+      background: linear-gradient(90deg, #1a4f95, #2d6ac7);
       height: 100px;
       position: fixed;
       width: 100%;
-      z-index: 10000;
+      z-index: 1000;
+      padding: 0 20px;
       display: flex;
       align-items: center;
-      padding: 0 20px;
-      
+      justify-content: space-between;
     }
 
     /* Leaf Shapes with Animation */
@@ -115,10 +115,10 @@
       left: 0;
       width: 200px;
       height: calc(100% - 100px);
-      background: linear-gradient(180deg, #193A6F, #2C4F90);
+      background: linear-gradient(180deg, #1a4f95, #2d6ac7);
       padding: 20px;
       color: white;
-      
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
     }
 
     .side-menu ul {
@@ -165,10 +165,10 @@
       left: 0;
       width: 200px;
       height: 50px;
-      background: linear-gradient(180deg, #193A6F, #2C4F90);
+      background: linear-gradient(180deg, #1a4f95, #2d6ac7);
       clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 50%);
       z-index: 999;
-}
+    }
 
     /* Dashboard Cards */
     .cards-wrapper {
@@ -276,8 +276,8 @@
   <div class="side-menu">
     <ul>
       <li><a href="entreprise-offre-publié.html"><i class="fas fa-briefcase me-2"></i>Offers</a></li>
-      <li><a href="entreprise-candidature.html"><i class="fas fa-file me-2"></i>Mes Candidatures</a></li>
-      <li><a href="entreprise-suivis-des-stages.html"><i class="fas fa-sign-out-alt me-2"></i>Mes Stages</a></li>
+      <li><a href="entreprise-candidature.html"><i class="fas fa-file me-2"></i>Candidatures</a></li>
+      <li><a href="entreprise-suivis-des-stages.html"><i class="fas fa-folder-open me-2"></i>Mes Stages</a></li>
     </ul>
   </div>
 
