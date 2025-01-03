@@ -272,55 +272,56 @@
 
     <div class="side-menu">
         <ul>
-            <li><a href="Ecole-vis.html"><i class="fas fa-school me-2"></i>Schools</a></li>
-            <li><a href="Entreprise-vis.html"><i class="fas fa-chart-bar me-2"></i>Dashboard</a></li>
+            <li><a href="Ecole-vis.html"><i class="fas fa-school me-2"></i>Ecoles</a></li>
+            <li><a href="Entreprise-vis.html"><i class="fas fa-chart-bar me-2"></i>Entreprise</a></li>
         </ul>
     </div>
 
     <div class="main-content">
 
-        <button class="add-button"  onclick="RedirectTo('Ecole-add.html')">
+        <button class="add-button"  onclick="RedirectTo('Entreprise-add.html')">
             <i class="fas fa-plus"></i>
             Ajouter entreprise
         </button>
 
         <div class="table-container">
             <table class="student-table">
-                <thead>
-                    <tr>
-                        <th>Nom de l'école</th>
-                        <th>Nombre d'élève</th>
-                        <th>Password</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>École Polytechnique</td>
-                        <td class="student-count">1,250</td>
-                        <td>
-                            <div class="password-cell">
-                                <span class="hidden-password" data-password="EP123456">••••••••</span>
-                                <button class="toggle-password" onclick="togglePassword(this)">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>École Centrale</td>
-                        <td class="student-count">980</td>
-                        <td>
-                            <div class="password-cell">
-                                <span class="hidden-password" data-password="EC789012">••••••••</span>
-                                <button class="toggle-password" onclick="togglePassword(this)">
-                                    <i class="fas fa-eye"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
+              <thead>
+                <tr>
+                  <th>Nom de l'entreprise</th>
+                  <th>Localisation</th> <!-- Indiquez la localisation de l'entreprise -->
+                  <th>Mot de passe</th> <!-- Renommé pour la cohérence -->
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Ettijari wafabank </td>
+                  <td>Cadablanca, Maroc</td> <!-- Ajout d'une localisation réaliste -->
+                  <td>
+                    <div class="password-cell">
+                      <span class="hidden-password" data-password="EP123456">••••••••</span>
+                      <button class="toggle-password" onclick="togglePassword(this)">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td>Orange</td>
+                  <td>Rabat, Maroc</td> <!-- Ajout d'une localisation réaliste -->
+                  <td>
+                    <div class="password-cell">
+                      <span class="hidden-password" data-password="EC789012">••••••••</span>
+                      <button class="toggle-password" onclick="togglePassword(this)">
+                        <i class="fas fa-eye"></i>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
             </table>
-        </div>
+          </div>
+          
     </div>
 
     <script>

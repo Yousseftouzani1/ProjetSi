@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login - Multi User System</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .login-container {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
+      width: 400px;
+      max-width: 90%;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .login-header {
+      background: linear-gradient(90deg, #1a2a6c, #b21f1f);
+      padding: 30px;
+      text-align: center;
+      color: white;
+    }
+
+    .login-header h2 {
+      margin: 0;
+      font-size: 26px;
+      font-weight: 600;
+    }
+
+    .login-body {
+      padding: 30px;
+    }
+
+    .start-button {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(90deg, #1a2a6c, #b21f1f);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 18px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .start-button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(26, 42, 108, 0.3);
+    }
+
+    .user-type-selector {
+      display: none;
+      margin-bottom: 25px;
+    }
+
+    .user-type-options {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .user-type-btn {
+      background: none;
+      border: 2px solid #1a2a6c;
+      padding: 12px 20px;
+      border-radius: 8px;
+      color: #1a2a6c;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 16px;
+      text-align: left;
+    }
+
+    .user-type-btn:hover {
+      background: #1a2a6c;
+      color: white;
+    }
+
+    .login-form {
+      display: none;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-size: 15px;
+      transition: all 0.3s ease;
+    }
+
+    .form-group input:focus {
+      border-color: #1a2a6c;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(26, 42, 108, 0.1);
+    }
+
+    .form-group i {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #999;
+    }
+
+    .login-btn {
+      width: 100%;
+      padding: 12px;
+      background: linear-gradient(90deg, #1a2a6c, #b21f1f);
+      border: none;
+      border-radius: 8px;
+      color: white;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .login-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(26, 42, 108, 0.3);
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        width: 95%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-container">
+    <div class="login-header">
+      <h2>Welcome Back!</h2>
+    </div>
+    <div class="login-body">
+      <button id="startButton" class="start-button">Get Started</button>
+
+      <div id="userTypeSelector" class="user-type-selector">
+        <div class="user-type-options">
+          <button class="user-type-btn" onclick="selectUserType('school')">École</button>
+          <button class="user-type-btn" onclick="selectUserType('school-manager')">Gestionnaire École</button>
+          <button class="user-type-btn" onclick="selectUserType('company')">Entreprise</button>
+          <button class="user-type-btn" onclick="selectUserType('company-manager')">Gestionnaire Entreprise</button>
+          <button class="user-type-btn" onclick="selectUserType('student')">Étudiant</button>
+        </div>
+      </div>
+
+      <form id="loginForm" class="login-form">
+        <div class="form-group">
+          <input type="email" placeholder="Email" required>
+          <i class="fas fa-envelope"></i>
+        </div>
+
+        <div class="form-group">
+          <input type="password" placeholder="Password" required>
+          <i class="fas fa-lock"></i>
+        </div>
+
+        <button type="submit" class="login-btn">Login</button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    document.getElementById('startButton').addEventListener('click', function() {
+      this.style.display = 'none';
+      document.getElementById('userTypeSelector').style.display = 'block';
+    });
+
+    function selectUserType(type) {
+      document.getElementById('userTypeSelector').style.display = 'none';
+      document.getElementById('loginForm').style.display = 'block';
+      console.log('Selected user type:', type);
+    }
+
+    document.getElementById('loginForm').addEventListener('submit', function(e) {
+      e.preventDefault();
+      // Handle form submission here
+    });
+  </script>
+</body>
+</html>
