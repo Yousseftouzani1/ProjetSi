@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Créer un Gestionnaire de Stage</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Créer un Gestionnaire de Stage</h2>
+        <form id="createGestionnaireForm">
+            <div class="form-group">
+                <label for="username">Nom d'utilisateur:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+
+            <div class="form-group">
+                <label for="password">Mot de passe:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+
+            
+
+            <button type="submit">Créer Gestionnaire</button>
+        </form>
+
+        <div id="responseMessage"></div>
+    </div>
+
+    <script>
+        document.getElementById('createGestionnaireForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            const responseMessage = document.getElementById('responseMessage');
+
+            try {
+                const response = await fetch('http://localhost:3001/createGestionnaireStage', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    responseMessage.innerHTML = `<p style="color: green;">${data.message}</p>`;
+                } else {
+                    responseMessage.innerHTML = `<p style="color: red;">${data.error}</p>`;
+                }
+            } catch (error) {
+                console.error(error);
+                responseMessage.innerHTML = '<p style="color: red;">Erreur de serveur.</p>';
+            }
+        });
+    </script>
+</body>
+</html>

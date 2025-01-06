@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Offres</title>
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Calibri&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Calibri Light', sans-serif;
+      background: linear-gradient(135deg, #FEF1E6, #F9D8B7);
+    }
+
+    /* Navbar Styles */
+    .navbar-custom {
+      background: linear-gradient(90deg, #ff7936, #ff8d54);
+      height: 100px;
+      position: fixed;
+      top: 0;
+      width: 100%;
+      z-index: 1000;
+      padding: 0 20px;
+      
+    }
+
+    /* Leaf Shapes with Animation */
+    .leaf {
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0.2);
+      clip-path: polygon(50% 0%, 75% 25%, 100% 50%, 75% 75%, 50% 100%, 25% 75%, 0% 50%, 25% 25%);
+      transform-origin: center;
+      animation: floatLeaf 6s infinite ease-in-out;
+    }
+
+    @keyframes floatLeaf {
+      0%, 100% { transform: translateY(0) rotate(var(--rotation)); }
+      50% { transform: translateY(-10px) rotate(var(--rotation)); }
+    }
+
+    .leaf-1 { width: 100px; height: 60px; top: 10px; left: 20px; --rotation: 30deg; }
+    .leaf-2 { width: 80px; height: 50px; top: 20px; right: 50px; --rotation: -30deg; }
+    .leaf-3 { width: 140px; height: 90px; bottom: 0; left: 60px; --rotation: 15deg; }
+    .leaf-4 { width: 60px; height: 40px; top: -10px; left: 150px; --rotation: -45deg; }
+    .leaf-5 { width: 120px; height: 70px; bottom: 0; right: 150px; --rotation: 45deg; }
+
+    /* Profile Container */
+    .profile-container {
+      position: relative;
+      margin-left: auto;
+    }
+
+    .profile-icon {
+      width: 40px;
+      height: 40px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .profile-icon:hover {
+      background-color: #fdc19d;
+      transform: scale(1.1);
+    }
+
+    .profile-dropdown {
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 0;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      min-width: 180px;
+      z-index: 1000;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .profile-dropdown a {
+      display: block;
+      padding: 12px 20px;
+      color: #333;
+      text-decoration: none;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .profile-dropdown a:hover {
+      background-color: #f8f8f8;
+      padding-left: 25px;
+    }
+
+    .profile-dropdown .logout {
+      color: #dc3545;
+      border-top: 1px solid #eee;
+    }
+
+    /* Side Menu with Transition Shape */
+    .side-menu {
+      position: fixed;
+      top: 100px;
+      left: 0;
+      width: 200px;
+      height: calc(100% - 100px);
+      background: linear-gradient(180deg, #ff7936, #ff8d54);
+      padding: 20px;
+      color: white;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .transition-shape {
+      position: fixed;
+      top: 100px;
+      left: 0;
+      width: 200px;
+      height: 50px;
+      background: linear-gradient(180deg, #ff7936, #ff8d54);
+      clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 50%);
+      z-index: 999;
+    }
+
+    .side-menu ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    .side-menu li {
+      margin: 15px 0;
+    }
+
+    .side-menu a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .side-menu i {
+      min-width: 20px;
+      margin-right: 8px;
+    }
+
+    .side-menu a:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+
+    /* Main Content */
+    .main-content {
+      margin-left: 220px;
+      padding-top: 120px;
+    }
+
+    .welcome-message {
+      font-size: 2.5rem;
+      font-weight: 300;
+      color: #333;
+      text-align: center;
+      margin-bottom: 40px;
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Dashboard Cards */
+    .cards-wrapper {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      padding: 20px;
+      animation: fadeIn 1s ease-out;
+    }
+
+
+    .dashboard-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      text-align: center;
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .competency-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin: 10px 0;
+      justify-content: center;
+    }
+
+    .pill {
+      padding: 2px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+      font-weight: 500;
+    }
+
+    /* Different color variants for pills */
+    .pill:nth-child(3n+1) {
+      background: #4CAF50;
+      color: white;
+    }
+
+    .pill:nth-child(3n+2) {
+      background: #2196F3;
+      color: white;
+    }
+
+    .pill:nth-child(3n+3) {
+      background: #9C27B0;
+      color: white;
+    }
+
+    .dashboard-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .dashboard-card h3 {
+      font-weight: 500;
+      color: #5B84C4;
+      margin-bottom: 15px;
+    }
+
+    .see-more-btn {
+      background-color: #193A6F;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .see-more-btn:hover {
+      background-color: #ff5722;
+      transform: scale(1.05);
+    }
+  
+
+    @media (max-width: 768px) {
+      .side-menu {
+        transform: translateX(-200px);
+        transition: transform 0.3s ease;
+      }
+
+      .main-content {
+        margin-left: 0;
+        padding: 120px 20px 20px;
+      }
+
+      .cards-wrapper {
+        grid-template-columns: 1fr;
+      }
+
+    }
+    .action-button{
+      color: #FE691E;
+      c
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-custom">
+    <div class="container-fluid d-flex align-items-center">
+      <a class="navbar-brand text-white" href="#">Internship Management</a>
+      <div class="profile-container">
+        <div class="profile-icon" onclick="toggleDropdown()">
+          <span style="font-size: 20px; color: #FE691E;">👤</span>
+        </div>
+        <div class="profile-dropdown" id="profileDropdown">
+          <a href="#" id="userName">User Name</a>
+          <a href="#">Settings</a>
+          <a href="#" class="logout">Log Out</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="side-menu">
+    <ul>
+      <li><button class="action-button" onclick="RedirectTo('/bbb')">profil</button></li>
+      <li><button class="action-button" onclick="RedirectTo('/conv')">Convocations</button></li>
+      <li><button class="action-button" onclick="RedirectTo('/bbb')">Candidatures</button></li>
+      <li><button class="action-button" onclick="RedirectTo('/bbb')">Suivie de stage</button></li>
+
+      <li><a href="student-profile.html"><i class="fas fa-user me-2"></i></a></li>
+      <li><a href="student-candidature.html"><i class="fas fa-file me-2"></i></a></li>
+      <li><a href="student-convocation.html"><i class="fas fa-graduation-cap me-2"></i></a></li>
+      <li><a href="student-suivi-stage.html"><i class="fas fa-clipboard me-2"></i> </a></li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <div class="welcome-message">Les Offres Disponibles</div>
+    <div class="cards-wrapper">
+      <!-- Les cartes des offres seront générées ici dynamiquement -->
+    </div>
+    <div class="offer-details">
+      <!-- Les détails de l'offre sélectionnée apparaîtront ici -->
+    </div>
+  </div>
+
+  <script>
+    function RedirectTo(url) {
+     // Stocker le token avant la redirection
+    const baseURL = 'http://localhost:3001';
+    window.location.href = baseURL + url; // Redirige vers l'URL spécifiée
+}
+         function debugCookies() {
+    console.log('Tous les cookies disponibles :', document.cookie);
+    const token = document.cookie
+        .split('; ')
+        .find((row) => row.startsWith('access_token='))
+        ?.split('=')[1];
+    console.log('Token extrait des cookies :', token);
+    return token;
+}
+debugCookies();
+    function toggleDropdown() {
+      const dropdown = document.getElementById('profileDropdown');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    window.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('profileDropdown');
+      if (!e.target.closest('.profile-container')) {
+        dropdown.style.display = 'none';
+      }
+    });
+
+    async function fetchOffers() {
+      try {
+        const response = await fetch('http://localhost:3001/api/offers');
+        if (!response.ok) {
+          throw new Error('Failed to fetch offers');
+        }
+        const offers = await response.json();
+        const cardsWrapper = document.querySelector('.cards-wrapper');
+        cardsWrapper.innerHTML = ''; // Clear existing cards
+
+        offers.forEach((offer) => {
+          const card = document.createElement('div');
+          card.classList.add('dashboard-card');
+          card.innerHTML = `
+            <h3>${offer.titre}</h3>
+            <p>${offer.description.substring(0, 100)}...</p>
+            <div class="competency-pills">
+              ${offer.competences.map((competence) => `<span class="pill">${competence}</span>`).join('')}
+            </div>
+            <button class="see-more-btn" onclick="viewOfferDetails(${offer.id})">Voir Plus</button>
+          `;
+          cardsWrapper.appendChild(card);
+        });
+      } catch (error) {
+        console.error('Error fetching offers:', error);
+      }
+    }
+
+    async function viewOfferDetails(offerId) {
+  if (!offerId) {
+    console.error('Invalid offer ID');
+    return;
+  }
+
+  try {
+    const response = await fetch(`http://localhost:3001/api/offersdetails?id=${offerId}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch offer details');
+    }
+
+    const offerDetails = await response.json();
+
+    // Vérifiez si les détails de l'offre sont valides
+    if (!offerDetails || !offerDetails.modeStage || !offerDetails.typeStage) {
+      throw new Error('Invalid response structure');
+    }
+
+    // Sélectionnez le conteneur des détails
+    const detailsContainer = document.querySelector('.offer-details');
+
+    // Affichez les détails dans une carte blanche bien décorée
+    detailsContainer.innerHTML = `
+      <div class="card text-center mx-auto shadow-lg p-4" style="width: 50%; background-color: #f9f9f9; border-radius: 10px;">
+        <h2 class="mb-3" style="color: #FE691E;">${offerDetails.modeStage}</h2>
+        <p><strong>Type de Stage:</strong> ${offerDetails.typeStage}</p>
+        <p><strong>Durée:</strong> ${offerDetails.duree} </p>
+        <p><strong>Compétences requises:</strong></p>
+        <div class="d-flex flex-wrap justify-content-center mb-4">
+          ${offerDetails.competences.map((competence) => `<span class="badge bg-primary m-1">${competence}</span>`).join('')}
+        </div>
+        <button class="btn btn-success" onclick="postuler(${offerDetails.id})">Postuler</button>
+      </div>
+    `;
+
+    // Défilez jusqu'à la carte pour une meilleure UX
+    detailsContainer.scrollIntoView({ behavior: 'smooth' });
+  } catch (error) {
+    console.error('Error fetching offer details:', error);
+  }
+}
+
+// Fonction pour postuler (placeholder, à adapter)
+/*async function postuler(req, offerId) {
+    const token = req.cookies.access_token; // Accéder au token des cookies
+    if (!token) {
+        console.error('Token non trouvé.');
+        return;
+    }
+    try {
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_KEY);
+        const idEtudiant = decoded.studentId;
+
+        const response = await fetch('http://localhost:3001/deposer', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include', // Inclure les cookies dans la requête
+            body: JSON.stringify({ id_etudiant: idEtudiant, id_stage: offerId })
+        });
+
+        if (response.ok) {
+            alert(`Vous avez postulé pour l'offre ID: ${offerId}`);
+        } else {
+            console.error('Erreur lors de la postulation:', response.statusText);
+        }
+    } catch (err) {
+        console.error('Erreur lors de la vérification du token:', err);
+    }
+}*/
+
+async function postuler(offerId) {
+    try {
+        // Récupération du token à partir des cookies
+        const token = document.cookie
+            .split('; ')
+            .find((row) => row.startsWith('access_token='))
+            ?.split('=')[1];
+      console.log(token);
+        if (!token) {
+            console.error('Token non trouvé.');
+            alert('Vous devez être connecté pour postuler à une offre.');
+            return;
+        }
+
+        // Envoi de la requête POST au backend
+        const response = await fetch('http://localhost:3001/deposer', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'include', // Inclure les cookies dans la requête
+            body: JSON.stringify({ id_stage: offerId }),
+        });
+ 
+        if (response.ok) {
+            const data = await response.json();
+            alert(data.message); // Message de succès renvoyé par le backend
+        } else {
+            const error = await response.json();
+            console.error('Erreur lors de la postulation :', error.error);
+            alert(`Erreur : ${error.error}`);
+        }
+    } catch (err) {
+        console.error('Erreur lors de la postulation :', err);
+        alert('Une erreur est survenue. Veuillez réessayer plus tard.');
+    }
+}
+    document.addEventListener('DOMContentLoaded', fetchOffers);
+  </script>
+</body>
+</html>
+  

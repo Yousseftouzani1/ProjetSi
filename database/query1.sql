@@ -46,7 +46,7 @@ BEGIN
     SELECT Gestionnaire_Ecole_seq.NEXTVAL INTO :NEW.id_gest_ecole FROM dual;
 END;
 /
-
+SELECT * FROM Gestionnaire_Ecole;
 -- Table: Professeur
 CREATE TABLE Professeur (
     Nom_prof VARCHAR2(20),
@@ -74,7 +74,7 @@ BEGIN
 END;
 
 
-
+       
 -- Table: Etudiant
 CREATE TABLE Etudiant (
     id_etudiant INT PRIMARY KEY,
@@ -194,7 +194,7 @@ BEGIN
     SELECT Gestionnaire_Entreprise_seq.NEXTVAL INTO :NEW.id_gest_entreprise FROM dual;
 END;
 /
-
+ 
 -- Table: Tuteur
 CREATE TABLE Tuteur (
     id_tuteur INT PRIMARY KEY,
@@ -211,14 +211,14 @@ BEGIN
     SELECT Tuteur_seq.NEXTVAL INTO :NEW.id_tuteur FROM dual;
 END;
 /
-
+ 
 -- Table: Offre_Stage
 CREATE TABLE Offre_Stage (
     id_stage INT PRIMARY KEY,
     titre VARCHAR2(80),
     description VARCHAR2(1900), 
     id_gest_entreprise INT,
-    id_demande INT,
+    id_demande INT, 
     id_tuteur INT,
     FOREIGN KEY (id_gest_entreprise) REFERENCES Gestionnaire_Entreprise(id_gest_entreprise),
     FOREIGN KEY (id_demande) REFERENCES Demande(id_demande),
@@ -251,3 +251,24 @@ BEGIN
 END;
 /
 COMMIT;
+  --21 --22
+ALTER TABLE Gestionnaire_Entreprise MODIFY (mdp_gest VARCHAR2(100));
+SELECT ID_GEST_ENTREPRISE FROM Gestionnaire_Entreprise;--, mdp_gest
+SELECT * FROM GESTIONNAIRE_ENTREPRISE;
+SELECT * FROM OFFRE_STAGE; 
+
+SELECT * FROM Entreprise; 
+SELECT * FROM CANDIDATURE;
+SELECT * FROM ETUDIANT;
+SELECT * FROM CONVOCATION;
+
+SELECT C.ID_CANDIDATURE,date_soumission , username ,email,formation,languages,competences,experiences,date_nes,nom,titre,id_entreprise FROM ETUDIANT E ,CANDIDATURE C, --nom c est de la table ecole lie avec etudiant par id ecole /titre c est de Offre_stage 
+INNER JOIN CANDIDATURE C ON C.ID_ETUDIANT = E.ID_ETUDIANT --id etudiant lie candidature et etudiant 
+INNER JOIN OFFRE_STAGE O ON O.ID_STAGE = C.ID_STAGE --offre_stage lie par id_stage a candidature 
+INNER JOIN ENTREPRISE e ON O.ID_ENTREPRISE = e.ID_ENTREPRISE --entreprise et offre lie via id_entreprise
+INNER JOIN Ecole ec ON ec.id_ecole=E.id_ecole-- ecole et etudiant lie via id_ecole
+WHERE statut='EN_ATTENTE'AND id_entreprise=:id_entreprise;
+-- Offre_stage / etudiant / candidature/    et on tire tt les info etudiant via id_etudiant et le non de l offre via id_stage
+--id_entreprise lie la table offre_stage et entreprise 
+--id 
+ --offre_stage lie par id_stage a candidature 

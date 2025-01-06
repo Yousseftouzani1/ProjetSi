@@ -3,31 +3,33 @@ const oracledb = require('oracledb');
 const path = require('path');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const helmet = require('helmet'); // Optionnel mais utile
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
-// Configuration Oracle DB
 const dbConfig = require('../database/dbConfig');
 const cors = require('cors');
+const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 3000;
-const testroute=require('../gest_ecole/gest.ecole');
-app.use('/getdata',testroute);
 // Middleware
+app.use(bodyParser.json());
 app.use(express.json());
 app.use(cookieParser());
 // Serve static files from the 'authentification' folder
 app.use(express.static(path.join(__dirname, 'authentification')));
 // Serve the root page (index.html)
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'loginpage.html'));
+    res.sendFile(path.join(__dirname, '../Etudiant/visualiser_Offre.html'));
 });
+// Routes pour les étudiants
+
 app.get('/test.html', (req, res) => {
     res.sendFile(path.join(__dirname, 'test.html'));
 });
 app.get('/ajouterEtudiant', (req, res) => {
     res.sendFile(path.join(__dirname, '../Ecole/create_etud.html'));
 });
-const allowedOrigins = ['http://127.0.0.1:5500', 'http://localhost:3000']; // Add all potential origins
+const allowedOrigins = ['http://localhost:3001', 'http://localhost:3000']; // Add all potential origins
 app.use(cors({
     origin: (origin, callback) => {
         if (allowedOrigins.includes(origin) || !origin) {
@@ -39,115 +41,50 @@ app.use(cors({
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'] // Specify the HTTP methods you support
 }));
-
+// Désactive certaines protections pour éviter les conflits (optionnel)
+// Middleware pour définir Content-Security-Policy permissive
+app.use((req, res, next) => {
+    res.setHeader(
+      'Content-Security-Policy',
+      "default-src * data: blob: 'unsafe-inline' 'unsafe-eval'; img-src * data:;"
+    );
+    next();
+  });
 const { authenticateToken } = require('./authMid');
-
+const { checkRole } =require('./checkMID');
 const authRouter = require('./routerAuth');
 app.use(authRouter)
-/*
-// Route: Enregistrement d'un utilisateur
-app.post('/register', async (req, res) => {
-    const { username, password } = req.body;
 
-    if (!username || !password) {
-        return res.status(400).json({ error: 'Username and password are required.' });
-    }
-
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash(password, saltRounds);
-
-    let connection;
-    try {
-        connection = await oracledb.getConnection(dbConfig);
-        await connection.execute(
-            `INSERT INTO Etudiant (id_etudiant, username, password) VALUES (:id, :username, :password)`,
-            { id: Math.floor(Math.random() * 1000), username, password: hashedPassword },
-            { autoCommit: true }
-        );
-
-        res.status(201).json({ message: 'User registered successfully!' });
-    } catch (err) {
-        console.error('Error during user registration:', err);
-        res.status(500).json({ error: 'Internal server error.' });
-    } finally {
-        if (connection) await connection.close();
-    }
+app.get('/Etudiant/visualiser_Offre.html', authenticateToken, checkRole('etudiant'), (req, res) => {
+    // Accès à l'ID de l'étudiant via req.user.studentId
+    res.sendFile(path.join(__dirname, '../Etudiant/visualiser_Offre.html'));
+    
 });
-// Route: Connexion de l'utilisateur
-app.post('/login', async (req, res) => {
-    const { username, password } = req.body;
-
-    if (!username || !password) {
-        return res.status(400).json({ error: 'Username and password are required.' });
-    }
-
-    let connection;
-    try {
-        connection = await oracledb.getConnection(dbConfig);
-        const result = await connection.execute(
-            `SELECT password FROM Etudiant WHERE username = :username`,
-            { username },
-            { outFormat: oracledb.OUT_FORMAT_OBJECT }
-        );
-
-        if (result.rows.length === 0) {
-            return res.status(401).json({ error: 'Invalid username or password.' });
-        }
-
-        const hashedPassword = result.rows[0].PASSWORD;
-
-        const isPasswordValid = await bcrypt.compare(password, hashedPassword);
-        if (!isPasswordValid) {
-            return res.status(401).json({ error: 'Invalid username or password.' });
-        }
-
-        // Générer un token JWT
-        const user = { username };
-        const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_KEY, { expiresIn: '1h' });
-
-        // Envoyer le token dans un cookie HTTP-only
-        res.cookie('access_token', accessToken, {
-            httpOnly: true,
-            secure: false,//process.env.NODE_ENV === 'production',
-           sameSite: 'lax',
-        });
-
-        res.json({ message: 'Login successful!' });
-    } catch (err) {
-        console.error('Error during login:', err);
-        res.status(500).json({ error: 'Internal server error.' });
-    } finally {
-        if (connection) await connection.close();
-    }
+// Routes pour les responsables de stage
+app.get('/gestionaire_stage/visualiser_ecole.html', authenticateToken, (req, res) => {
+    // Accès à l'ID du responsable via req.user.gestid
+    res.sendFile(path.join(__dirname, '../gestionaire_stage/visualiser_ecole.html'));
 });
-// Middleware: Vérification du token
-function authenticateToken(req, res, next) {
-    const token = req.cookies.access_token;
+// Routes pour les entreprises
+app.get('/Entreprise/dashboard_entreprise.html', authenticateToken, checkRole('entreprise'), (req, res) => {
+    res.sendFile(path.join(__dirname, '../Entreprise/dashboard_entreprise.html'));
 
-    if (!token) {
-        return res.status(403).json({ error: 'Access denied. No token provided.' });
-    }
+});
+// Routes pour les gestionaires entreprises
+app.get('/gest_entreprise/Consulter_Offres.html', authenticateToken, checkRole('gestionnaire_entreprise'), (req, res) => {
+    res.sendFile(path.join(__dirname, '../gest_entreprise/Consulter_Offres.html'));
 
-    jwt.verify(token, process.env.ACCESS_TOKEN_KEY, (err, user) => {
-        if (err) {
-            return res.status(403).json({ error: 'Invalid or expired token.' });
-        }
+});
+// Routes pour les gestionaires d'ecoles
+app.get('/gest_ecole/gest_ecole.html', authenticateToken, checkRole('gestionnaire_ecole'), (req, res) => {
+    res.sendFile(path.join(__dirname, '../gest_ecole/gest_ecole.html'));
 
-        req.user = user;
-        next();
-    });
-}
+});
+//routes pour les comptes ecoles 
+app.get('/Ecole/Ecole.html', authenticateToken, checkRole('ecole'), (req, res) => {
+    res.sendFile(path.join(__dirname, '../Ecole/Ecole.html'));
 
-/*app.get('/get',async(req,res)=>{
-    connection = await oracledb.getConnection(dbConfig);
-        const result = await connection.execute(
-            `SELECT password FROM Etudiant `,
-            
-        );
-        res.json({ message: result  });
-        
-})*/
-// Lancer le serveur */
+});
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
@@ -157,4 +94,35 @@ app.get('/protected', authenticateToken, (req, res) => {
         message: `Welcome to the protected page, ${req.user.username}!`,
         username: req.user.username
     });
+});
+// Routes pour les gestionnaires d'entreprise
+app.get('/enterprise-manager-dashboard', authenticateToken, checkRole('gestionnaire_entreprise'), (req, res) => {
+    // Accès à l'ID du gestionnaire via req.user.gestid
+    res.json({ message: 'Welcome to enterprise manager dashboard' });
+});
+
+// Routes pour les écoles
+app.get('/school-dashboard', authenticateToken, checkRole('ecole'), (req, res) => {
+    // Accès à l'ID de l'école via req.user.ecoleid
+    res.json({ message: 'Welcome to school dashboard' });
+});
+
+// Routes pour les gestionnaires d'école
+app.get('/school-manager-dashboard', authenticateToken, checkRole('gestionnaire_ecole'), (req, res) => {
+    // Accès à l'ID du gestionnaire via req.user.gestecoleid
+    res.json({ message: 'Welcome to school manager dashboard' });
+});
+
+// Routes pour les entreprises
+app.get('/enterprise-dashboard', authenticateToken, checkRole('entreprise'), (req, res) => {
+    // Accès à l'ID de l'entreprise via req.user.entrepriseid
+    res.json({ message: 'Welcome to enterprise dashboard' });
+});
+
+
+
+// Routes pour les admins
+app.get('/admin-dashboard', authenticateToken, checkRole('admin'), (req, res) => {
+    // Accès à l'ID de l'admin via req.user.adminid
+    res.json({ message: 'Welcome to admin dashboard' });
 });

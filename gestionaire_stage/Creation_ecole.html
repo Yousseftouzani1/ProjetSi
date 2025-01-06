@@ -13,13 +13,13 @@
             margin: 0;
             padding: 0;
             font-family: 'Calibri Light', sans-serif;
-            background: linear-gradient(135deg, #E6FFE6, #B7F9B7);
+            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
             min-height: 100vh;
         }
 
         /* Navbar Styles */
         .navbar-custom {
-            background: linear-gradient(90deg, #1F4F1F, #2D722D);
+            background: linear-gradient(90deg, #404040, #606060);
             height: 100px;
             position: fixed;
             width: 100%;
@@ -97,7 +97,7 @@
         }
 
         .profile-dropdown .logout {
-            color: #dc3545;
+            color: #808080;
             border-top: 1px solid #eee;
         }
 
@@ -108,7 +108,7 @@
             left: 0;
             width: 200px;
             height: calc(100% - 100px);
-            background: linear-gradient(180deg, #1F4F1F, #2D722D);
+            background: linear-gradient(180deg, #404040, #606060);
             padding: 20px;
             color: white;
         }
@@ -153,7 +153,7 @@
         }
 
         .upload-zone {
-            border: 2px dashed #2D722D;
+            border: 2px dashed #606060;
             border-radius: 10px;
             padding: 30px;
             text-align: center;
@@ -162,16 +162,16 @@
         }
 
         .upload-zone:hover {
-            background: #E6FFE6;
+            background: #f0f0f0;
         }
 
         .btn-primary {
-            background: linear-gradient(90deg, #1F4F1F, #2D722D);
+            background: linear-gradient(90deg, #404040, #606060);
             border: none;
         }
 
         .btn-primary:hover {
-            background: linear-gradient(90deg, #2D722D, #1F4F1F);
+            background: linear-gradient(90deg, #606060, #404040);
         }
         
         .transition-shape {
@@ -180,13 +180,9 @@
             left: 0;
             width: 200px;
             height: 50px;
-            background: linear-gradient(180deg, #1F4F1F, #2D722D);
+            background: linear-gradient(180deg, #404040, #606060);
             clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 50%);
             z-index: 999;
-        }
-
-        .profile-icon span {
-            color: #1F4F1F !important;
         }
     </style>
 </head>
@@ -198,7 +194,7 @@
             <a class="navbar-brand text-white" href="#">Internship Management</a>
             <div class="profile-container">
                 <div class="profile-icon" onclick="toggleDropdown()">
-                    <span style="font-size: 20px;">👤</span>
+                    <span style="font-size: 20px; color: #404040;">👤</span>
                 </div>
                 <div class="profile-dropdown" id="profileDropdown">
                     <a href="#" id="userName">John Doe</a>
@@ -214,27 +210,45 @@
         <div class="leaf leaf-4"></div>
         <div class="leaf leaf-5"></div>
     </nav>
- 
+
     <div class="transition-shape"></div>
 
     <!-- Side Menu -->
     <div class="side-menu">
         <ul>
-            <ul>
-                <li><a href="gest-add-student.html"><i class="fas fa-user-graduate me-2"></i>Add Students</a></li>
-                <li><a href="gest-add-prof.html"><i class="fas fa-chart-bar me-2"></i>Add Professeur</a></li>
-            </ul>
+            <li>
+                <a href="visualiser_ecole.html"><i class="fas fa-school me-2"></i></a>
+                <button class="add-offer-btn" onclick="RedirectTo('/a')" >Ecoles</button>
+                </li>
+            <li>
+                <button class="add-offer-btn" onclick="RedirectTo('/b')" >Entreprises</button>
+
+                <a href="visualiserEntreprise.html"><i class="fas fa-chart-bar me-2"></i></a>
+            </li>
         </ul>
     </div>
+
     <div class="dashboard-container">
         <div class="row">
             <div class="col-md-6">
                 <div class="form-card">
-                    <h3 class="mb-4">Informations Eleve</h3>
-                    <form id="studentForm">
+                    <h3 class="mb-4">Ecole Information</h3>
+                    <form>
                         <div class="mb-3">
-                            <label class="form-label">Username</label>
-                            <input type="text" class="form-control" id="username" placeholder="Enter username" required>
+                            <label class="form-label">nom de l ecole </label>
+                            <input type="text" class="form-control" id="username" placeholder="Enter username">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">nom de connexion </label>
+                            <input type="text" class="form-control" id="nom_connexion" placeholder="Enter username">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">adresse</label>
+                            <input type="text" class="form-control" id="adresse" placeholder="Enter username">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nombre d'eleve</label>
+                            <input type="text" class="form-control" id="nombre_eleve" placeholder="Enter username">
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Generated Password</label>
@@ -245,43 +259,11 @@
                                 </button>
                             </div>
                         </div>
-                        <div class="mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" class="form-control" id="email" placeholder="Enter email" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Téléphone</label>
-                            <input type="text" class="form-control" id="telephone" placeholder="Enter telephone" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Date de naissance</label>
-                            <input type="date" class="form-control" id="date_naissance" required>
-                        </div>
-    
-                        <div class="mb-3">
-                            <label class="form-label">Age</label>
-                            <input type="number" class="form-control" id="age" placeholder="Enter your age" min="16" max="99" required>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Année</label>
-                            <select class="form-control" id="annee" required>
-                                <option value="">Select Year</option>
-                                <option value="1">1ère année</option>
-                                <option value="2">2ème année</option>
-                                <option value="3">3ème année</option>
-                                <option value="4">4ème année</option>
-                                <option value="5">5ème année</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Filière</label>
-                            <input type="text" class="form-control" id="filiere" placeholder="Enter your field of study" required>
-                        </div>
                         <button type="submit" class="btn btn-primary w-100">Create Account</button>
                     </form>
                 </div>
             </div>
-    
+
             <div class="col-md-6">
                 <div class="form-card">
                     <h3 class="mb-4">File Upload</h3>
@@ -290,33 +272,132 @@
                         <h5>Drop Excel File Here</h5>
                         <p class="text-muted">or</p>
                         <input type="file" class="d-none" id="fileUpload" accept=".xlsx" onchange="handleFile(this.files)">
-                        <label for="fileUpload" class="btn btn-primary">Choose File</label>
+                        <label for="fileUpload" class="btn btn-primary">
+                            Choose File
+                        </label>
                         <div id="fileName" class="mt-3 text-muted"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 
-    <script>
-        function generatePassword() {
-            const chars = 'ABCDEFGHIJKLMtuvwxyz0123456789!@#$%^&*';
+    <script>    
+    function RedirectTo(url) {
+        const baseURL = 'http://localhost:3001';
+        window.location.href = baseURL + url; // Redirige vers l'URL spécifiée
+    }
+    document.addEventListener('DOMContentLoaded', () => {
+        const form = document.querySelector('form');
+        const numberInput = document.getElementById('nombre_eleve');
+    
+        // Validate number input
+        numberInput.addEventListener('input', (e) => {
+            e.target.value = e.target.value.replace(/[^0-9]/g, '');
+        });
+    
+        // Keep existing password generation function
+        window.generatePassword = function() {
+            const chars = 'ABC4573456789!';
             const password = Array.from({length: 12}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
             document.getElementById('password').value = password;
-        }
+        };
     
-        function handleFile(files) {
+        // Generate initial password
+        generatePassword();
+    
+        // Handle form submission
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Get form values
+            const schoolData = {
+                nom: document.getElementById('username').value.trim(),
+                mdp_ecole: document.getElementById('password').value,
+                nom_connexion: document.getElementById('nom_connexion').value.trim(),
+                adresse: document.getElementById('adresse').value.trim(),
+                nombre_eleve: document.getElementById('nombre_eleve').value.trim()
+            };
+    
+            // Basic validation
+            for (const [key, value] of Object.entries(schoolData)) {
+                if (!value) {
+                    alert(`Le champ ${key} est requis`);
+                    return;
+                }
+            }
+    
+            try {
+                const response = await fetch('http://localhost:3001/ecole', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(schoolData)
+                });
+    
+                const data = await response.json();
+    
+                if (response.ok) {
+                    alert('École enregistrée avec succès!');
+                    form.reset();
+                    generatePassword();
+                } else {
+                    throw new Error(data.error || 'Erreur lors de l\'enregistrement');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert(error.message);
+            }
+        });
+    
+        // File upload handling
+        const dropZone = document.getElementById('dropZone');
+        const fileInput = document.getElementById('fileUpload');
+    
+        window.handleFile = function(files) {
             if (files.length) {
-                document.getElementById('fileName').textContent = `Selected: ${files[0].name}`;
+                const file = files[0];
+                if (file.name.endsWith('.xlsx')) {
+                    document.getElementById('fileName').textContent = `Sélectionné: ${file.name}`;
+                    uploadExcelFile(file);
+                } else {
+                    alert('Veuillez sélectionner un fichier Excel (.xlsx)');
+                }
+            }
+        };
+    
+        async function uploadExcelFile(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+    
+            try {
+                const response = await fetch('/ecole/upload', {
+                    method: 'POST',
+                    body: formData
+                });
+    
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('Fichier importé avec succès!');
+                    document.getElementById('fileName').textContent = '';
+                    fileInput.value = '';
+                } else {
+                    throw new Error(data.error || 'Erreur lors de l\'import du fichier');
+                }
+            } catch (error) {
+                console.error('Erreur:', error);
+                alert(error.message);
+                document.getElementById('fileName').textContent = '';
+                fileInput.value = '';
             }
         }
     
-        const dropZone = document.getElementById('dropZone');
-        
+        // Drag and drop handling
         dropZone.addEventListener('dragover', (e) => {
             e.preventDefault();
-            dropZone.style.background = '#E6FFE6';
+            dropZone.style.background = '#f0f0f0';
         });
     
         dropZone.addEventListener('dragleave', (e) => {
@@ -328,73 +409,10 @@
             e.preventDefault();
             dropZone.style.background = '#f8f9fa';
             const files = e.dataTransfer.files;
-            if (files[0].name.endsWith('.xlsx')) {
-                document.getElementById('fileUpload').files = files;
+            if (files.length) {
                 handleFile(files);
             }
         });
-    
-        // Handle form submission
-        async function submitForm(event) {
-    event.preventDefault();
-
-    // Récupérer les champs du formulaire
-    const username = document.getElementById('username').value.trim();
-    const email = document.getElementById('email').value.trim();
-    const telephone = document.getElementById('telephone').value.trim();
-    const password = document.getElementById('password').value.trim();
-    const date_nes = document.getElementById('date_naissance').value.trim();
-
-    // Vérifier que tous les champs sont remplis
-    if (!username || !email || !telephone || !password || !date_naissance) {
-        alert("Tous les champs sont obligatoires.");
-        return;
-    }
-
-    try {
-        // Récupérer le token de connexion depuis les cookies
-        /*
-        const token = document.cookie
-            .split("; ")
-            .find((row) => row.startsWith("access_token="))
-            ?.split("=")[1];
-
-        if (!token) {
-            alert("Vous devez être connecté pour effectuer cette action.");
-            return;
-        }
-console.log(token);
-        // Décoder le token pour obtenir l'ID de l'école
-        const decodedToken = jwt_decode(token);
-        const ecoleId = decodedToken.ecoleid;
-*/
-        // Envoyer les données de l'étudiant via une requête POST
-        const response = await fetch('http://localhost:3001/students', {
-            method: 'POST',
-            credentials: "include",
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ username, email, telephone, password, date_nes }),
-        });
-
-        const result = await response.json();
-
-        if (response.ok) {
-            alert(result.message); // Succès
-        } else {
-            alert(result.message || "Erreur lors de la création de l'étudiant.");
-        }
-    } catch (error) {
-        console.error(error);
-        alert("Erreur lors de la création de l'étudiant.");
-    }
-}
-
-// Ajouter un événement à la soumission du formulaire
-document.getElementById('studentForm').addEventListener('submit', submitForm);
-
-    </script>
-    
+    });</script>
 </body>
 </html>

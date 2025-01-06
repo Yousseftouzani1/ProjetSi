@@ -9,9 +9,7 @@ const port = 4002;
 const candidater = require('./Candidater');
 const conv=require('./Convocation');
 const stage = require('./stage');
-app.use(candidater);
-app.use(conv);
-app.use(stage );
+
 app.use(express.json());
 app.use(cookieParser());
 const allowedOrigins = ['http://127.0.0.1:5500', 'http://localhost:5500']; // Add all potential origins
@@ -26,6 +24,9 @@ app.use(cors({
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify the HTTP methods you support
 }));
+app.use(candidater);
+app.use(conv);
+app.use(stage );
 const authentificate_token =(req,res,next)=>{
     /*const token = req.cookies.ACCESS_TOKEN_KEY;*/  
     const token = req.cookies.access_token; // Corrected line

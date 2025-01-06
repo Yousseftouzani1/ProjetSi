@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const dbConfig = require('./dbConfig');
+const dbConfig = require('../database/dbConfig');
 const oracledb = require('oracledb');
+const bcrypt = require('bcrypt');
 
 // Route pour visualiser les étudiants sans stage
-router.get('/sansStage', async (req, res) => {
+  router.get('/sansStage', async (req, res) => {
     const { id_ecole } = req.body;
 
            if (!id_ecole) {
@@ -66,7 +67,7 @@ router.post('/create-gestionnaire', async (req, res) => {
         connection = await oracledb.getConnection(dbConfig);
         await connection.execute(
             `INSERT INTO Gestionnaire_Ecole (id_gest_ecole, username, mdp_gest_ecole, id_ecole) 
-             VALUES (GestionnaireEcole_seq.NEXTVAL, :username, :password, :id_ecole)`,
+             VALUES (Gestionnaire_Ecole_seq.NEXTVAL, :username, :password, :id_ecole)`,
             { username, password: hashedPassword, id_ecole },
             { autoCommit: true }
         );

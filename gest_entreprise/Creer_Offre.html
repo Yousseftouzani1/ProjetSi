@@ -1,114 +1,516 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Créer une Offre</title>
+  <title>Formulaire de Stage</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <style>
     body {
-      font-family: 'Arial', sans-serif;
-      margin: 0;
-      padding: 20px;
-      background-color: #f4f4f9;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #E6F0FF, #B7D8F9);
+      min-height: 100vh;
+      padding: 40px 20px;
+      position: relative;
+      overflow-x: hidden;
     }
 
-    h1 {
-      text-align: center;
-      color: #0073e6;
+    /* Shape styles */
+    .shape {
+      position: fixed;
+      border-radius: 35%;
+      animation: float 15s infinite ease-in-out;
+      z-index: -1;
+      opacity: 0.15;
     }
 
-    form {
-      max-width: 600px;
-      margin: 30px auto;
+    /* Original blue shapes */
+    .shape-1 {
+      width: 120px;
+      height: 70px;
+      bottom: 0;
+      right: 150px;
+      background: #ff8d54d2;
+      transform: rotate(45deg);
+    }
+
+    .shape-2 {
+      width: 150px;
+      height: 90px;
+      top: 10%;
+      left: 10%;
+      background: #ff8d54d2;
+      transform: rotate(20deg);
+      animation-delay: -2s;
+    }
+
+    .shape-3 {
+      width: 100px;
+      height: 60px;
+      top: 50%;
+      right: 5%;
+      background: rgba(183, 216, 249, 0.5);
+      transform: rotate(-30deg);
+      animation-delay: -4s;
+    }
+
+    .shape-4 {
+      width: 180px;
+      height: 100px;
+      bottom: 20%;
+      left: 5%;
+      background: #ff8d54d2;
+      transform: rotate(60deg);
+      animation-delay: -6s;
+    }
+
+    .shape-5 {
+      width: 140px;
+      height: 80px;
+      top: 30%;
+      right: 15%;
+      background: #ff8d54d2;
+      transform: rotate(-15deg);
+      animation-delay: -8s;
+    }
+
+    /* New purple/pink shapes */
+    .shape-6 {
+      width: 160px;
+      height: 95px;
+      top: 15%;
+      right: 25%;
+      background: #ff8d54d2;
+      transform: rotate(25deg);
+      animation-delay: -3s;
+    }
+
+    .shape-7 {
+      width: 130px;
+      height: 75px;
+      bottom: 15%;
+      left: 20%;
+      background: #ff8d54d2;
+      transform: rotate(-40deg);
+      animation-delay: -7s;
+    }
+
+    .shape-8 {
+      width: 200px;
+      height: 120px;
+      top: 40%;
+      left: 15%;
+      background: #ff8d54d2;
+      transform: rotate(10deg);
+      animation-delay: -5s;
+    }
+
+    .shape-9 {
+      width: 110px;
+      height: 65px;
+      bottom: 35%;
+      right: 10%;
+      background: #ff8d54d2;
+      transform: rotate(-20deg);
+      animation-delay: -9s;
+    }
+
+    .shape-10 {
+      width: 170px;
+      height: 100px;
+      top: 60%;
+      left: 30%;
+      background: #ff8d54d2;
+      transform: rotate(35deg);
+      animation-delay: -1s;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) rotate(var(--rotation, 0deg));
+      }
+      25% {
+        transform: translateY(-20px) rotate(calc(var(--rotation, 0deg) + 5deg));
+      }
+      50% {
+        transform: translateY(0) rotate(var(--rotation, 0deg));
+      }
+      75% {
+        transform: translateY(20px) rotate(calc(var(--rotation, 0deg) - 5deg));
+      }
+    }
+
+    .form-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px;
       background: white;
-      padding: 20px;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      animation: slideIn 0.5s ease-out;
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-title {
+      color: #193A6F;
+      font-size: 2.2rem;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 3px solid #FF7936;
+    }
+
+    .form-label {
+      color: #193A6F;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .form-control {
+      border: 2px solid #e1e1e1;
       border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      padding: 12px;
+      transition: all 0.3s ease;
     }
 
-    form label {
-      font-weight: bold;
-      display: block;
-      margin-bottom: 5px;
+    .form-control:focus {
+      border-color: #193A6F;
+      box-shadow: 0 0 0 0.2rem rgba(25, 58, 111, 0.25);
     }
 
-    form input, form textarea, form select {
-      width: 100%;
-      padding: 10px;
+    .competences-container {
+      margin-top: 15px;
+      max-height: 300px;
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+
+    .competence {
+      display: flex;
+      align-items: center;
       margin-bottom: 15px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+      animation: fadeIn 0.3s ease-out;
     }
 
-    form button {
-      background: #0073e6;
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .competence input {
+      flex: 1;
+      margin-right: 15px;
+    }
+
+    .remove-btn {
+      background: #dc3545;
       color: white;
-      padding: 10px 15px;
       border: none;
-      border-radius: 5px;
-      font-size: 1em;
+      padding: 8px 15px;
+      border-radius: 8px;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
     }
 
-    form button:hover {
-      background: #005bb5;
+    .remove-btn:hover {
+      background: #c82333;
+      transform: translateY(-2px);
+    }
+
+    .add-competence-btn {
+      margin-top: 15px;
+      background: linear-gradient(135deg, #28a745, #218838);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+    }
+
+    .add-competence-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    }
+
+    .add-competence-btn:active {
+      transform: translateY(0);
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, #193A6F, #2C4F90);
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(25, 58, 111, 0.3);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .file-input-wrapper .form-control {
+      padding-left: 40px;
+    }
+
+    .file-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6c757d;
+    }
+
+    .error-message {
+      color: #dc3545;
+      font-size: 0.875rem;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .invalid-input {
+      border-color: #dc3545;
+    }
+
+    .invalid-input + .error-message {
+      display: block;
     }
   </style>
 </head>
 <body>
-  <h1>Créer une Nouvelle Offre</h1>
-  <form id="offerForm">
-    <label for="title">Titre de l'Offre :</label>
-    <input type="text" id="title" name="title" placeholder="Ex : Développeur Web" required>
+  <!-- Background Shapes -->
+  <div class="shape shape-1" style="--rotation: 45deg"></div>
+  <div class="shape shape-2" style="--rotation: 20deg"></div>
+  <div class="shape shape-3" style="--rotation: -30deg"></div>
+  <div class="shape shape-4" style="--rotation: 60deg"></div>
+  <div class="shape shape-5" style="--rotation: -15deg"></div>
+  <div class="shape shape-6" style="--rotation: 25deg"></div>
+  <div class="shape shape-7" style="--rotation: -40deg"></div>
+  <div class="shape shape-8" style="--rotation: 10deg"></div>
+  <div class="shape shape-9" style="--rotation: -20deg"></div>
+  <div class="shape shape-10" style="--rotation: 35deg"></div>
 
-    <label for="description">Description :</label>
-    <textarea id="description" name="description" rows="5" placeholder="Décrivez l'offre ici..." required></textarea>
+  <div class="form-container">
+    <h2 class="form-title">Formulaire d'offre </h2>
+    <form id="stageForm" >
+      <div class="mb-4">
+        <label for="titre" class="form-label">Titre de Stage</label>
+        <input type="text" id="titre" class="form-control" placeholder="Ex: Stage en Développement Web" required>
+        <div class="error-message">Veuillez entrer un titre valide</div>
+      </div>
 
-    <label for="duration">Durée (en mois) :</label>
-    <input type="number" id="duration" name="duration" placeholder="Ex : 6" required>
+      <div class="mb-4">
+        <label for="duree" class="form-label">Durée de Stage</label>
+        <select id="duree" class="form-select" required>
+          <option value="">Sélectionner la durée</option>
+          <option value="1 mois">1 mois</option>
+          <option value="2 mois">2 mois</option>
+          <option value="3 mois">3 mois</option>
+          <option value="4 mois">4 mois</option>
+          <option value="5 mois">5 mois</option>
+        </select>
+        <div class="error-message">Veuillez sélectionner une durée valide</div>
+      </div>
+      
+      <div class="mb-4">
+        <label for="type_stage" class="form-label">Type de Stage</label>
+        <select id="type_stage" class="form-select" required>
+          <option value="">Sélectionner le type de stage</option>
+          <option value="pfa">PFA</option>
+          <option value="initiation">Initiation</option>
+          <option value="pfe">PFE</option>
+        </select>
+        <div class="error-message">Veuillez sélectionner un type de stage valide</div>
+      </div>
+      
+      <div class="mb-4">
+        <label for="mode_stage" class="form-label">Mode de Stage</label>
+        <select id="mode_stage" class="form-select" required>
+          <option value="">Sélectionner le mode</option>
+          <option value="distanciel">Distanciel</option>
+          <option value="hybride">Hybride</option>
+          <option value="presentiel">Présentiel</option>
+        </select>
+        <div class="error-message">Veuillez sélectionner un mode valide</div>
+      </div>
+      
 
-    <label for="location">Localisation :</label>
-    <input type="text" id="location" name="location" placeholder="Ex : Casablanca" required>
+      <div class="mb-4">
+        <label for="description" class="form-label">Description du Stage</label>
+        <textarea id="description" class="form-control" rows="5" 
+          placeholder="Décrivez les responsabilités, objectifs et attentes du stage..." required></textarea>
+        <div class="error-message">Veuillez entrer une description détaillée</div>
+      </div>
 
-    <label for="field">Domaine :</label>
-    <select id="field" name="field" required>
-      <option value="informatique">Informatique</option>
-      <option value="marketing">Marketing</option>
-      <option value="finance">Finance</option>
-      <option value="ressources-humaines">Ressources Humaines</option>
-    </select>
+      <div class="mb-4">
+        <label class="form-label">Compétences Demandées (Max: 10)</label>
+        <div class="competences-container" id="competencesContainer">
+          <!-- Competences will be added here -->
+        </div>
+        <button type="button" class="add-competence-btn" id="addCompetenceBtn">
+          <i class="fas fa-plus"></i>
+          Ajouter une Compétence
+        </button>
+      </div>
 
-    <button type="submit">Créer l'Offre</button>
-  </form>
+      <button type="submit" class="submit-btn w-100">
+        <i class="fas fa-paper-plane me-2"></i>
+        Soumettre la Candidature
+      </button>
+   </form>
+  </div >
+
+  <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 
   <script>
-    document.getElementById('offerForm').addEventListener('submit', async(event) =>{
-      event.preventDefault(); // Empêche la soumission classique du formulaire=
-      const title = document.getElementById('title').value;
-      const description = document.getElementById('description').value;
-      const duration = document.getElementById('duration').value;
-      const location = document.getElementById('location').value;
-      const field = document.getElementById('field').value;
-      const API_BASE_URL = 'http://localhost:4000/api/offres';
-      const response = await fetch(`${API_BASE_URL}/add`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ titre, description, id_gest_entreprise, id_tuteur })
-            });
-
-            if (response.ok) {
-                alert('Offre ajoutée avec succès !');
-                fetchOffers(); // Actualiser la liste des offres
-            } else {
-                alert('Erreur lors de l\'ajout de l\'offre.');
-            }
-      // Simulation d'envoi des données
-      alert(`Offre créée avec succès :\n\nTitre : ${title}\nDescription : ${description}\nDurée : ${duration} mois\nLocalisation : ${location}\nDomaine : ${field}`);
-      
-      // Ici, ajoutez un appel API pour envoyer les données au backend si nécessaire
-
+    const competencesContainer = document.getElementById("competencesContainer");
+    const addCompetenceBtn = document.getElementById("addCompetenceBtn");
+    const form = document.getElementById("stageForm");
+  
+    // Fonction pour ajouter un champ de compétence
+    function addCompetenceField() {
+      const competenceCount = competencesContainer.children.length;
+  
+      if (competenceCount >= 10) {
+        alert("Vous ne pouvez ajouter que 10 compétences au maximum.");
+        return;
+      }
+  
+      const competenceDiv = document.createElement("div");
+      competenceDiv.className = "competence";
+  
+      const competenceInput = document.createElement("input");
+      competenceInput.type = "text";
+      competenceInput.className = "form-control competence-input";
+      competenceInput.placeholder = "Ex: JavaScript, Communication, Gestion de Projet...";
+      competenceInput.required = true;
+  
+      const removeBtn = document.createElement("button");
+      removeBtn.type = "button";
+      removeBtn.className = "remove-btn";
+      removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Supprimer';
+  
+      removeBtn.addEventListener("click", () => {
+        competenceDiv.remove();
+      });
+  
+      competenceDiv.appendChild(competenceInput);
+      competenceDiv.appendChild(removeBtn);
+      competencesContainer.appendChild(competenceDiv);
+    }
+  
+    addCompetenceBtn.addEventListener("click", addCompetenceField);
+  
+    // Gestion de la soumission du formulaire
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      try {
+        // Récupération du token à partir des cookies
+        const token = document.cookie
+          .split("; ")
+          .find((row) => row.startsWith("access_token="))
+          ?.split("=")[1];
+  
+        if (!token) {
+          alert("Vous devez être connecté pour effectuer cette action.");
+          return;
+        }
+  
+        // Décodage du token pour récupérer les informations
+        const decodedToken = jwt_decode(token);
+        const entrepriseId = decodedToken.entrepriseIdg;
+        const gestId = decodedToken.gestid;
+  
+        // Récupération des données du formulaire
+        const titre = document.getElementById("titre").value;
+        const duree = document.getElementById("duree").value;
+        const type_stage = document.getElementById("type_stage").value;
+        const mode_stage = document.getElementById("mode_stage").value;
+        const description = document.getElementById("description").value;
+  
+        // Récupération des compétences
+        const competences = [];
+        document.querySelectorAll(".competence-input").forEach((input) => {
+          competences.push(input.value.trim());
+        });
+  
+        // Compléter avec `null` si moins de 10 compétences
+        while (competences.length < 10) {
+          competences.push(null);
+        }
+  
+        // Préparer le corps de la requête
+        const requestBody = {
+          id_gest_entreprise: gestId,
+          id_entreprise: entrepriseId,
+          titre,
+          description,
+          status_offre: "active",
+          duree,
+          type_stage,
+          mode_stage,
+          competences,
+        };
+  
+        // Envoi des données via une requête POST
+        const response = await fetch("http://localhost:3001/add", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        });
+  
+        if (!response.ok) {
+          throw new Error("Erreur lors de la soumission");
+        }
+  
+        alert("Offre ajoutée avec succès!");
+        form.reset();
+        competencesContainer.innerHTML = ""; // Réinitialiser les champs de compétences
+      } catch (error) {
+        console.error("Error:", error);
+        alert("Erreur lors de l'ajout de l'offre. Veuillez réessayer.");
+      }
     });
   </script>
+  
+  
+    
 </body>
 </html>

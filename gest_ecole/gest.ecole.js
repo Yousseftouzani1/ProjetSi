@@ -2,11 +2,11 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcrypt');
 const oracledb = require('oracledb');
-const dbConfig = require('./dbConfig'); // Make sure to include your DB config file
+const dbConfig = require('../database/dbConfig'); // Make sure to include your DB config file
 const multer = require('multer');
 const xlsx = require('xlsx');
 const upload = multer({ dest: 'uploads/' }); // For handling file uploads
-
+const jwt = require('jsonwebtoken'); // Assurez-vous d'avoir jwt installé
 //  creer un prof 
 router.post('/create-prof', async (req, res) => {
     const { nom_prof, id_ecole } = req.body;
@@ -79,7 +79,7 @@ router.post('/create-filiere', async (req, res) => {
     } finally {
         if (connection) await connection.close();
     }
-});
+}); 
 //  creer des etudiants chaqu un a sa filiere 
 router.post('/register', async (req, res) => {
     const { username, password } = req.body;
@@ -107,4 +107,85 @@ router.post('/register', async (req, res) => {
         if (connection) await connection.close();
     }
 });
+//creation des eleves par formulaire 
+
+router.post('/students', async (req, res) => {
+    const token = req.cookies.access_token;
+    if (!token) {
+        return res.status(401).json({ error: 'Accès non autorisé. Veuillez vous connecter.' });
+    }
+    const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_KEY);
+        const id_ecole = decodedToken.ecoleid;
+    const { username, email, telephone, password, date_nes } = req.body;
+ 
+    if (!username || !email || !telephone || !password || !date_nes) {
+        return res.status(400).json({ error: 'Tous les champs sont requis.' });
+    }
+
+    const saltRounds = 10;
+    const hashedPassword = await bcrypt.hash(password, saltRounds);
+    let connection;
+    try {
+        connection = await oracledb.getConnection(dbConfig);
+        await connection.execute(
+            `INSERT INTO Etudiant (id_etudiant, username, email, telephone, password, date_nes,id_ecole) 
+             VALUES (Etudiant_seq.NEXTVAL, :username, :email, :telephone, :password, TO_DATE(:date_nes, 'YYYY-MM-DD'),:id_ecole)`,
+            { username, email, telephone, password: hashedPassword, date_nes,id_ecole },
+            { autoCommit: true }
+        );
+
+        res.status(201).json({ message: 'Étudiant enregistré avec succès !' });
+    } catch (err) {
+        console.error('Erreur lors de l\'enregistrement de l\'étudiant :', err);
+        res.status(500).json({ error: 'Erreur interne du serveur.' });
+    } finally {
+        if (connection) await connection.close();
+    }
+});
+
+
+//fichier exel
+router.post('/upload', upload.single('file'), async (req, res) => {
+    const file = req.file;
+    if (!file) {
+        return res.status(400).json({ error: 'Un fichier Excel est requis.' });
+    }
+
+    let connection;
+
+    try {
+        const workbook = xlsx.readFile(file.path);
+        const sheetName = workbook.SheetNames[0];
+        const data = xlsx.utils.sheet_to_json(workbook.Sheets[sheetName]);
+
+        connection = await oracledb.getConnection(dbConfig);
+
+        for (const row of data) {
+            const { username, email, telephone, password, date_naissance } = row;
+
+            if (!username || !email || !telephone || !password || !date_naissance) {
+                return res.status(400).json({ error: 'Tous les champs sont requis dans le fichier Excel.' });
+            }
+
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            await connection.execute(
+                `INSERT INTO Etudiant (id_etudiant, username, email, telephone, password, date_naissance)
+                 VALUES (Etudiant_seq.NEXTVAL, :username, :email, :telephone, :password, TO_DATE(:date_naissance, 'YYYY-MM-DD'))`,
+                { username, email, telephone, password: hashedPassword, date_naissance }
+            );
+        }
+
+        await connection.commit();
+        res.status(200).json({ message: 'Fichier importé et étudiants ajoutés avec succès !' });
+    } catch (err) {
+        console.error('Erreur lors de l\'importation du fichier Excel :', err);
+        res.status(500).json({ error: 'Erreur interne du serveur.' });
+    } finally {
+        if (connection) await connection.close();
+    }
+});
+
+
+
 module.exports=router

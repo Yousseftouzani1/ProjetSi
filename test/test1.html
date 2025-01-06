@@ -275,8 +275,6 @@
   <!-- Side Menu -->
   <div class="side-menu">
     <ul>
-      <button class="add-offer-btn" onclick="RedirectTo('/bbbbb')" >Offres</button>
-
       <li><a href="entreprise-offre-publié.html"><i class="fas fa-briefcase me-2"></i>Offers</a></li>
       <li><a href="entreprise-candidature.html"><i class="fas fa-file me-2"></i>Candidatures</a></li>
       <li><a href="entreprise-suivis-des-stages.html"><i class="fas fa-folder-open me-2"></i>Mes Stages</a></li>
@@ -296,6 +294,43 @@
             <button class="refuser-btn">Refuser</button>
           </div>
         </div>
+        
+        <div class="dashboard-card">
+          <h3>Profile</h3>
+          <p>Manage your professional profile and keep your information up to date.</p>
+          <div class="card-buttons">
+            <button class="accept-btn">Voir Plus</button>
+            <button class="refuser-btn">Refuser</button>
+          </div>
+        </div>
+        
+        <div class="dashboard-card">
+          <h3>Applications</h3>
+          <p>Track and manage all your ongoing internship applications.</p>
+          <div class="card-buttons">
+            <button class="accept-btn">Voir Plus</button>
+            <button class="refuser-btn">Refuser</button>
+          </div>
+        </div>
+        
+        <div class="dashboard-card">
+          <h3>Reports</h3>
+          <p>View and download your internship progress reports.</p>
+          <div class="card-buttons">
+            <button class="accept-btn">Voir Plus</button>
+            <button class="refuser-btn">Refuser</button>
+          </div>
+        </div>
+        
+        <div class="dashboard-card">
+          <h3>Feedback</h3>
+          <p>Share your experience and provide valuable feedback.</p>
+          <div class="card-buttons">
+            <button class="accept-btn">Voir Plus</button>
+            <button class="refuser-btn">Refuser</button>
+          </div>
+        </div>
+        
         <div class="dashboard-card">
           <h3>Resources</h3>
           <p>Access helpful guides and learning materials for your internship.</p>
@@ -313,10 +348,7 @@
       const dropdown = document.getElementById('profileDropdown');
       dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
     }
-    function RedirectTo(url) {
-    const baseURL = 'http://localhost:3001';
-    window.location.href = baseURL + url; // Redirige vers l'URL spécifiée
-}
+
     // Close dropdown when clicking outside
     window.addEventListener('click', (e) => {
       const dropdown = document.getElementById('profileDropdown');
@@ -324,203 +356,6 @@
         dropdown.style.display = 'none';
       }
     });
-    document.addEventListener('DOMContentLoaded', () => {
-    // Fonction pour charger et afficher les candidatures
-    function loadCandidatures() {
-        fetch('http://localhost:3001/candidatures', {
-            method: 'GET',
-            credentials: 'include', // Inclure les cookies pour le token JWT
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (Array.isArray(data)) {
-                    displayCandidatures(data);
-                } else {
-                    console.error('Erreur :', data.error || data.message);
-                }
-            })
-            .catch(error => console.error('Erreur réseau :', error));
-    }
-
-    // Fonction pour afficher les candidatures sous forme de cartes
-    function displayCandidatures(candidatures) {
-        const cardsWrapper = document.querySelector('.cards-wrapper');
-        cardsWrapper.innerHTML = ''; // Vider l'ancien contenu
-
-        candidatures.forEach(candidature => {
-            // Créer une carte pour chaque candidature
-            const card = document.createElement('div');
-            card.classList.add('dashboard-card');
-
-            // Contenu de la carte
-            card.innerHTML = `
-                <h3>${candidature.USERNAME}</h3>
-                <p><strong>Date de soumission :</strong> ${new Date(candidature.DATE_SOUMISSION).toLocaleDateString()}</p>
-                <p><strong>École :</strong> ${candidature.NOM_ECOLE}</p>
-                <p><strong>Titre de stage :</strong> ${candidature.TITRE_OFFRE}</p>
-                <p><strong>Email :</strong> ${candidature.EMAIL}</p>
-                <div class="card-buttons">
-                    <button class="voir-plus-btn">Voir Plus</button>
-                </div>
-                <div class="details" style="display: none;">
-                    <p><strong>Formation :</strong> ${candidature.FORMATION}</p>
-                    <p><strong>Langues :</strong> ${candidature.LANGUAGES}</p>
-                    <p><strong>Compétences :</strong> ${candidature.COMPETENCES}</p>
-                    <p><strong>Expériences :</strong> ${candidature.EXPERIENCES}</p>
-                    <button class="accept-btn">Accepter</button>
-                    <button class="refuser-btn">Refuser</button>
-                </div>
-            `;
-
-            // Ajouter les événements pour les boutons
-            const voirPlusBtn = card.querySelector('.voir-plus-btn');
-            const detailsDiv = card.querySelector('.details');
-
-            voirPlusBtn.addEventListener('click', () => {
-                detailsDiv.style.display = detailsDiv.style.display === 'none' ? 'block' : 'none';
-            });
-
-            const acceptBtn = card.querySelector('.accept-btn');
-            const refuseBtn = card.querySelector('.refuser-btn');
-
-            // Bouton "Accepter"
-            acceptBtn.addEventListener('click', () => handleCandidature('accept', candidature.ID_CANDIDATURE));
-
-            // Bouton "Refuser"
-            refuseBtn.addEventListener('click', () => handleCandidature('decline', candidature.ID_CANDIDATURE));
-
-            // Ajouter la carte au conteneur
-            cardsWrapper.appendChild(card);
-        });
-    }
-
-    /*
-    // Fonction pour gérer l'acceptation ou le refus d'une candidature
-    function handleCandidature(action, idCandidature) {
-        const endpoint = action === 'accept' ? '/candidatures/accept' : '/candidatures/decline';
-
-        fetch(`http://localhost:3001${endpoint}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ idCandidature }),
-            credentials: 'include', // Inclure les cookies pour le token JWT
-        })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert(`Candidature ${action === 'accept' ? 'acceptée' : 'refusée'} avec succès.`);
-                    loadCandidatures(); // Recharger les candidatures
-                } else {
-                    console.error('Erreur :', data.error || data.message);
-                    alert(`Erreur lors de l'action : ${data.error || data.message}`);
-                }
-            })
-            .catch(error => {
-                console.error('Erreur réseau :', error);
-                alert('Erreur réseau, veuillez réessayer.');
-            });
-    }
-*/
-
-function handleCandidature(action, idCandidature) {
-    let dateEntretien = null;
-
-    // Si l'action est 'accept', demander la date d'entretien
-    if (action === 'accept') {
-        dateEntretien = prompt("Veuillez spécifier la date de l'entretien (format YYYY-MM-DD):");
-        if (!dateEntretien) {
-            alert("La date de l'entretien est requise.");
-            return;
-        }
-    }
-
-    // Déterminer l'endpoint en fonction de l'action (accept ou decline)
-    const endpoint = action === 'accept' ? '/candidatures/accept' : '/candidatures/decline';
-
-    // Préparer les données à envoyer dans le corps de la requête
-    const bodyData = action === 'accept'
-        ? { idCandidature, dateEntretien }
-        : { idCandidature };
-
-    // Requête API pour accepter ou refuser la candidature
-    fetch(`http://localhost:3001${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bodyData),
-        credentials: 'include', // Inclure les cookies pour le token JWT
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(`Candidature ${action === 'accept' ? 'acceptée' : 'refusée'} avec succès.`);
-            loadCandidatures(); // Recharger les candidatures
-        } else {
-            console.error('Erreur :', data.error || data.message);
-            alert("successful ")
-            //alert(`Erreur lors de l'action : ${data.error || data.message}`);
-        }
-    })
-    .catch(error => {
-        console.error('Erreur réseau :', error);
-        alert('Erreur réseau, veuillez réessayer.');
-    });
-}
-
-/*
-function handleCandidature(action, idCandidature) {
-    let dateEntretien = null;
-
-    // Si l'action est 'accept', demander la date d'entretien
-    if (action === 'accept') {
-        dateEntretien = prompt("Veuillez spécifier la date de l'entretien (format YYYY-MM-DD):");
-        if (!dateEntretien) {
-            alert("La date de l'entretien est requise.");
-            return;
-        }
-
-        // Valider si la date est dans un format correct (YYYY-MM-DD)
-        const datePattern = /^\d{4}-\d{2}-\d{2}$/;
-        if (!datePattern.test(dateEntretien)) {
-            alert("Format de la date incorrect. Veuillez utiliser le format YYYY-MM-DD.");
-            return;
-        }
-    }
-
-    // Déterminer l'endpoint en fonction de l'action (accept ou decline)
-    const endpoint = action === 'accept' ? '/candidatures/accept' : '/candidatures/decline';
-
-    // Préparer les données à envoyer dans le corps de la requête
-    const bodyData = action === 'accept'
-        ? { idCandidature, dateEntretien }
-        : { idCandidature };
-
-    // Requête API pour accepter ou refuser la candidature
-    fetch(`http://localhost:3001${endpoint}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(bodyData),
-        credentials: 'include', // Inclure les cookies pour le token JWT
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            alert(`Candidature ${action === 'accept' ? 'acceptée' : 'refusée'} avec succès.`);
-            loadCandidatures(); // Recharger les candidatures
-        } else {
-            console.error('Erreur :', data.error || data.message);
-            alert(`Erreur lors de l'action : ${data.error || data.message}`);
-        }
-    })
-    .catch(error => {
-        console.error('Erreur réseau :', error);
-        alert('Erreur réseau, veuillez réessayer.');
-    });
-}
-*/
-    // Charger les candidatures au démarrage
-    loadCandidatures();
-});
-
   </script>
 </body>
 </html>

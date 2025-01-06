@@ -2,38 +2,69 @@ const express = require('express');
 const router = express.Router();
 const oracledb = require('oracledb');
 const dbConfig = require('../database/dbConfig');
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 
+const bodyParser = require("body-parser");
+require('dotenv').config({path:'../authentification/.env'});
 
-// Route: Ajouter un gestionnaire
-router.post("/ajouter-gestionnaire", async (req, res) => {
-  const { nom, mdp_gest } = req.body;
+router.post('/ajouter-gestionnaire', async (req, res) => {
+    console.log('Received cookies:', req.cookies);
 
-  // Validate input
-  if (!nom || !mdp_gest) {
-      return res.status(400).json({ error: 'Nom and password are required.' });
-  }
+    const token = req.cookies.access_token;
+    if (!token) {
+        console.log('Token missing.');
+        return res.status(401).json({ error: 'Access token is missing. Please log in.' });
+    }
 
-  try {
-      // Hash the password
-      const hashedPassword = await bcrypt.hash(mdp_gest, 10); // 10 is the salt rounds
+    try {
+        const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_KEY);
+        console.log('Decoded token:', decoded);
 
-      const connection = await oracledb.getConnection(dbConfig);
+        const id_entreprise = decoded.entrepriseid;
+        const { nom, mdp_gest } = req.body;
 
-      const sql = `
-          INSERT INTO Gestionnaire_Entreprise (Nom, mdp_gest)
-          VALUES (:nom, :mdp_gest)
-      `;
+        // Validate input
+        if (!nom || !mdp_gest) {
+            return res.status(400).json({ error: 'Nom and password are required.' });
+        }
 
-      // Execute the insertion with the hashed password
-      await connection.execute(sql, [nom, hashedPassword], { autoCommit: true });
-      await connection.close();
+        const hashedPassword = await bcrypt.hash(mdp_gest, 10);
 
-      res.send("Gestionnaire ajouté avec succès !");
-  } catch (err) {
-      console.error("Erreur:", err);
-      res.status(500).send("Erreur lors de l'ajout du gestionnaire.");
-  }
+        let connection;
+        try {
+            connection = await oracledb.getConnection(dbConfig);
+
+            const sql = `
+                INSERT INTO Gestionnaire_Entreprise (id_gest_entreprise, Nom, mdp_gest, id_entreprise)
+                VALUES (Gestionnaire_Entreprise_seq.NEXTVAL, :nom, :mdp_gest, :id_entreprise)
+            `;
+
+            await connection.execute(
+                sql,
+                { nom, mdp_gest: hashedPassword, id_entreprise: id_entreprise },
+                { autoCommit: true }
+            );
+
+            res.status(201).json({ message: 'Gestionnaire ajouté avec succès !' });
+        } catch (err) {
+            console.error('Error adding manager:', err);
+            res.status(500).json({ error: 'Internal server error.' });
+        } finally {
+            if (connection) {
+                try {
+                    await connection.close();
+                } catch (err) {
+                    console.error('Error closing connection:', err);
+                }
+            }
+        }
+    } catch (err) {
+        console.error('Token verification error:', err);
+        res.status(401).json({ error: 'Invalid or expired token. Please log in again.' });
+    }
 });
+
 
 //ajouter tuteur 
 router.post('/add-tuteur', async (req, res) => {
@@ -58,7 +89,7 @@ router.post('/add-tuteur', async (req, res) => {
 });
 
 //voir le nombre de stagiaire 
-app.get('/entreprise/:idEntreprise/stagiaires', async (req, res) => {
+router.get('/entreprise/:idEntreprise/stagiaires', async (req, res) => {
   const { idEntreprise } = req.params; // ID de l'entreprise passé en paramètre URL
 
   let connection;
@@ -97,6 +128,7 @@ app.get('/entreprise/:idEntreprise/stagiaires', async (req, res) => {
       }
   }
 });
+// voir les statistiques des eleves 
 
 module.exports = router;
 

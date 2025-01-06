@@ -3,37 +3,156 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protected Page</title>
-</head>
-<body>
-    <h1>Protected Page</h1>
-    <p id="message">Loading...</p>
-
-    <script>
-        // Access protected route using Fetch API
-        async function fetchProtected() {
-            try {
-                const response = await fetch('http://localhost:3000/protected', {
-                    method: 'GET',
-                    credentials: 'include' // Include cookies in the request
-                });
-
-                // Check if response is okay (status 200)
-                if (response.ok) {
-                    const data = await response.json();
-                    document.getElementById('message').innerText = data.message;
-                } else {
-                    const errorData = await response.json();
-                    throw new Error(errorData.error);
-                }
-            } catch (error) {
-                console.error('Access denied:', error.message);
-                alert('Access denied: ' + error.message);
-                window.location.href = 'pagelogin.html'; // Redirect to login page
-            }
+    <title>Page de Connexion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
         }
 
-        fetchProtected();
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: linear-gradient(to bottom, #1e90ff, #87cefa);
+        }
+
+        .login-container {
+            background-color: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            width: 350px;
+        }
+
+        .login-container h2 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            color: #333;
+        }
+
+        .login-container form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #1e90ff;
+        }
+
+        .btn-submit {
+            background-color: #1e90ff;
+            color: #fff;
+            padding: 0.8rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+        .btn-submit:hover {
+            background-color: #0056b3;
+        }
+
+        .error-message {
+            color: red;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>Connexion</h2>
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Nom d'utilisateur</label>
+                <input type="text" id="username" name="username" placeholder="Entrez votre nom d'utilisateur" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Mot de passe</label>
+                <input type="password" id="password" name="password" placeholder="Entrez votre mot de passe" required>
+            </div>
+            <div class="form-group">
+                <label for="role">Type de compte</label>
+                <select id="role" name="role">
+                    <option value="login">Gestionnaire d'entreprise</option>
+                    <option value="loginE">Étudiant</option>
+                    <option value="loginEcole">École</option>
+                    <option value="loginGestionnaireEcole">Gestionnaire d'école</option>
+                    <option value="loginEntreprise">Entreprise</option>
+                    <option value="loginGestionnaireStage">Responsable de stage</option>
+                    <option value="loginAdmin">Admin système</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-submit">Se connecter</button>
+            <div id="errorMessage" class="error-message"></div>
+        </form>
+    </div>
+
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function (e) {
+            e.preventDefault(); // Empêche le rechargement de la page
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const role = document.getElementById('role').value;
+              
+            try {
+                const response = await fetch(`http://localhost:3000/${role}`, {
+                    method: 'POST',
+                    credentials:"include",
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert(data.message);
+                    alert(data.message); // Display success message
+                if(data.redirectUrl) {
+                        window.location.href = data.redirectUrl;
+                    }
+                } else {
+                    document.getElementById('errorMessage').textContent = data.error || 'Une erreur est survenue.';
+                }
+            } catch (error) {
+                document.getElementById('errorMessage').textContent = 'Erreur de connexion au serveur.';
+                console.error(error);
+            }
+        });
     </script>
 </body>
 </html>

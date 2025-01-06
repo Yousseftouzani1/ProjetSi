@@ -90,4 +90,68 @@ router.post('/candidature/refuser', async (req, res) => {
     }
 });
 
+
+router.get('/stages/:idEntreprise', async (req, res) => {
+    const { idEntreprise } = req.params;
+  
+    try {
+      const connection = await oracledb.getConnection(dbConfig);
+  
+      const result = await connection.execute(
+        `
+        SELECT 
+          E.username, 
+          O.titre, 
+          C.date_acceptation, 
+          E.email, 
+          S.id_stage
+        FROM 
+          Stage S
+          JOIN Etudiant E ON E.ID_ETUDIANT = S.ID_ETUDIANT
+          JOIN OFFRE_STAGE O ON O.ID_STAGE = S.ID_OFFRE
+          JOIN CONVOCATION C ON C.ID_STAGE = O.ID_STAGE
+        WHERE 
+          S.ID_ENTREPRISE = :idEntreprise
+          AND C.STATUS = 'Accepté'
+        `,
+        [idEntreprise],
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+  
+      await connection.close();
+  
+      res.json(result.rows);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des stages:', error);
+      res.status(500).send('Erreur lors de la récupération des stages.');
+    }
+  });
+  
+  // Route pour mettre à jour le statut du stage
+  router.post('/stages/:idStage/etat', async (req, res) => {
+    const { idStage } = req.params;
+    const { statut } = req.body;
+  
+    try {
+      const connection = await oracledb.getConnection(dbConfig);
+  
+      await connection.execute(
+        `
+        UPDATE Stage 
+        SET etat_validation = :statut 
+        WHERE id_stage = :idStage
+        `,
+        [statut, idStage],
+        { autoCommit: true }
+      );
+  
+      await connection.close();
+  
+      res.json({ message: `Statut mis à jour avec succès en ${statut}.` });
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du statut:', error);
+      res.status(500).send('Erreur lors de la mise à jour du statut.');
+    }
+  });
+  
 module.exports = router;

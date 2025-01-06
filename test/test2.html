@@ -13,13 +13,13 @@
             margin: 0;
             padding: 0;
             font-family: 'Calibri Light', sans-serif;
-            background: linear-gradient(135deg, #E6F0FF, #B7D8F9);
+            background: linear-gradient(135deg, #E6FFE6, #B7F9B7);
             min-height: 100vh;
         }
 
         /* Navbar Styles */
         .navbar-custom {
-            background: linear-gradient(90deg, #193A6F, #2C4F90);
+            background: linear-gradient(90deg, #1F4F1F, #2D722D);
             height: 100px;
             position: fixed;
             width: 100%;
@@ -108,7 +108,7 @@
             left: 0;
             width: 200px;
             height: calc(100% - 100px);
-            background: linear-gradient(180deg, #193A6F, #2C4F90);
+            background: linear-gradient(180deg, #1F4F1F, #2D722D);
             padding: 20px;
             color: white;
         }
@@ -150,11 +150,10 @@
             padding: 20px;
             margin-bottom: 20px;
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            justify-content: center;
         }
 
         .upload-zone {
-            border: 2px dashed #2C4F90;
+            border: 2px dashed #2D722D;
             border-radius: 10px;
             padding: 30px;
             text-align: center;
@@ -163,37 +162,43 @@
         }
 
         .upload-zone:hover {
-            background: #E6F0FF;
+            background: #E6FFE6;
         }
 
         .btn-primary {
-            background: linear-gradient(90deg, #193A6F, #2C4F90);
+            background: linear-gradient(90deg, #1F4F1F, #2D722D);
             border: none;
         }
 
         .btn-primary:hover {
-            background: linear-gradient(90deg, #2C4F90, #193A6F);
+            background: linear-gradient(90deg, #2D722D, #1F4F1F);
         }
+        
         .transition-shape {
             position: fixed;
             top: 100px;
             left: 0;
             width: 200px;
             height: 50px;
-            background: linear-gradient(180deg, #193A6F, #2C4F90);
+            background: linear-gradient(180deg, #1F4F1F, #2D722D);
             clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 50%);
             z-index: 999;
+        }
+
+        .profile-icon span {
+            color: #1F4F1F !important;
         }
     </style>
 </head>
 <body>
+    <!-- Rest of the HTML remains the same -->
     <!-- Navbar -->
     <nav class="navbar navbar-custom">
         <div class="container-fluid">
             <a class="navbar-brand text-white" href="#">Internship Management</a>
             <div class="profile-container">
                 <div class="profile-icon" onclick="toggleDropdown()">
-                    <span style="font-size: 20px; color: #193A6F;">👤</span>
+                    <span style="font-size: 20px;">👤</span>
                 </div>
                 <div class="profile-dropdown" id="profileDropdown">
                     <a href="#" id="userName">John Doe</a>
@@ -204,10 +209,10 @@
         </div>
 
         <div class="leaf leaf-1"></div>
-    <div class="leaf leaf-2"></div>
-    <div class="leaf leaf-3"></div>
-    <div class="leaf leaf-4"></div>
-    <div class="leaf leaf-5"></div>
+        <div class="leaf leaf-2"></div>
+        <div class="leaf leaf-3"></div>
+        <div class="leaf leaf-4"></div>
+        <div class="leaf leaf-5"></div>
     </nav>
 
     <div class="transition-shape"></div>
@@ -215,7 +220,10 @@
     <!-- Side Menu -->
     <div class="side-menu">
         <ul>
-            <li><a href="Dashboard-entreprise.html"><i class="fas fa-user me-2"></i>Profile</a></li>
+            <ul>
+                <li><a href="gest-add-student.html"><i class="fas fa-user-graduate me-2"></i>Add Students</a></li>
+                <li><a href="gest-add-prof.html"><i class="fas fa-chart-bar me-2"></i>Add Professeur</a></li>
+            </ul>
         </ul>
     </div>
 
@@ -224,12 +232,11 @@
             <div class="col-md-6">
                 <div class="form-card">
                     <h3 class="mb-4">User Information</h3>
-                    <form onsubmit="submitForm(event)">
+                    <form>
                         <div class="mb-3">
                             <label class="form-label">Username</label>
                             <input type="text" class="form-control" id="username" placeholder="Enter username">
                         </div>
-                        
                         <div class="mb-3">
                             <label class="form-label">Generated Password</label>
                             <div class="input-group">
@@ -239,163 +246,95 @@
                                 </button>
                             </div>
                         </div>
+                        <div class="mb-3">
+                            <label class="form-label">Age</label>
+                            <input type="number" class="form-control" id="age" placeholder="Enter your age" min="16" max="99">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Année</label>
+                            <select class="form-control" id="annee">
+                                <option value="">Select Year</option>
+                                <option value="1">1ère année</option>
+                                <option value="2">2ème année</option>
+                                <option value="3">3ème année</option>
+                               
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Filière</label>
+                            <input type="text" class="form-control" id="filiere" placeholder="Enter your field of study">
+                        </div>
                         <button type="submit" class="btn btn-primary w-100">Create Account</button>
                     </form>
                 </div>
             </div>
+
+            <div class="col-md-6">
+                <div class="form-card">
+                    <h3 class="mb-4">File Upload</h3>
+                    <div class="upload-zone" id="dropZone">
+                        <i class="fas fa-cloud-upload-alt fa-3x text-primary mb-3"></i>
+                        <h5>Drop Excel File Here</h5>
+                        <p class="text-muted">or</p>
+                        <input type="file" class="d-none" id="fileUpload" accept=".xlsx" onchange="handleFile(this.files)">
+                        <label for="fileUpload" class="btn btn-primary">
+                            Choose File
+                        </label>
+                        <div id="fileName" class="mt-3 text-muted"></div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-<!--
+
     <script>
-         // Toggle dropdown function
-         function toggleDropdown() {
+        function generatePassword() {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+            const password = Array.from({length: 12}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+            document.getElementById('password').value = password;
+        }
+
+        function handleFile(files) {
+            if (files.length) {
+                document.getElementById('fileName').textContent = `Selected: ${files[0].name}`;
+            }
+        }
+
+        const dropZone = document.getElementById('dropZone');
+        
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.style.background = '#E6FFE6';
+        });
+
+        dropZone.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            dropZone.style.background = '#f8f9fa';
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.style.background = '#f8f9fa';
+            const files = e.dataTransfer.files;
+            if (files[0].name.endsWith('.xlsx')) {
+                document.getElementById('fileUpload').files = files;
+                handleFile(files);
+            }
+        });
+
+        generatePassword();
+
+        function toggleDropdown() {
             const dropdown = document.getElementById('profileDropdown');
             dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
         }
 
-        // Close dropdown when clicking outside
         window.addEventListener('click', (e) => {
             const dropdown = document.getElementById('profileDropdown');
             if (!e.target.closest('.profile-container')) {
                 dropdown.style.display = 'none';
             }
         });
-   
-        function generatePassword() {
-            const characters = 'ABCDEF1235fg789@#$!';
-            const passwordLength = 12;
-            let password = '';
-            for (let i = 0; i < passwordLength; i++) {
-                const randomIndex = Math.floor(Math.random() * characters.length);
-                password += characters[randomIndex];
-            }
-            document.getElementById('password').value = password;
-        }
-  
-    async function submitForm(event) {
-        event.preventDefault(); // Prevent the default form submission
-
-        const username = document.getElementById('username').value;
-        const password = document.getElementById('password').value;
-// acceder  a la valeur de l id de lentreprise dasn le token afin de la stoquer et la passeer a la route 
-        // Validate inputs
-        if (!username || !password) {
-            alert("Both username and password are required.");
-            return;
-        }
-
-        try {
-            const response = await fetch('http://localhost:4000/ajouter-gestionnaire', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    nom: username,
-                    mdp_gest: password,
-                }),
-            });
-
-            if (response.ok) {
-                const result = await response.text();
-                alert(result); // Show success message
-                //document.getElementById('addGestionnaireForm').reset(); // Reset the form
-            } else {
-                const errorData = await response.json();
-                alert(errorData.error || "An error occurred.");
-            }
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Failed to create account. Please try again.");
-        }
-    }
-</script>
--->
-<script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
-
-<script > 
-        // Fonction pour ajouter un gestionnaire
-async function ajouterGestionnaire(username, password) {
-    try { 
-    // Récupération du token à partir de sessionStorage
-    console.log('Tous les cookies disponibles :', document.cookie);
-const token = document.cookie
-    .split('; ')
-    .find((row) => row.startsWith('access_token='))
-    ?.split('=')[1];
-console.log('Token extrait des cookies :', token);
-    console.log('Token récupéré depuis sessionStorage:', token);
-
-    if (!token) {
-        console.error('Token non trouvé.');
-        alert('Vous devez être connecté pour effectuer cette action.');
-        return;
-    }
-
-    // Décoder le token pour récupérer l'ID de l'entreprise
-    const decodedToken = jwt_decode(token); // Utiliser jwt-decode pour décoder le token JWT
-    console.log('ID Entreprise:', decodedToken.entrepriseid); // Affiche l'ID de l'entreprise extrait du token
-
-    const entrepriseId = decodedToken.entrepriseid; // // ID de l'entreprise stockée dans le token
-
-        // Envoi de la requête POST au backend
-        const response = await fetch('http://localhost:3001/ajouter-gestionnaire', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            credentials: 'include', // Inclure les cookies dans la requête
-            body: JSON.stringify({
-                nom: username, 
-                mdp_gest: password,
-                entreprise_id: entrepriseId // Inclure l'ID de l'entreprise dans le corps de la requête
-            }),
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            alert(data.message); // Message de succès renvoyé par le backend
-        } else {
-            const error = await response.json();
-            console.error('Erreur lors de l’ajout du gestionnaire :', error.error);
-            alert(`Erreur : ${error.error}`);
-        }
-    } catch (err) {
-        console.error('Erreur lors de l’ajout du gestionnaire :', err);
-        alert('Une erreur est survenue. Veuillez réessayer plus tard.');
-    }
-}
-
-// Soumission du formulaire
-async function submitForm(event) {
-    event.preventDefault(); // Empêcher le comportement par défaut du formulaire
-
-    const username = document.getElementById('username').value;
-    const password = document.getElementById('password').value;
-
-    // Validation des champs
-    if (!username || !password) {
-        alert("Les champs 'Nom d'utilisateur' et 'Mot de passe' sont obligatoires.");
-        return;
-    }
-
-    // Appel de la fonction ajouterGestionnaire
-    await ajouterGestionnaire(username, password);
-}
-
-// Fonction pour générer un mot de passe aléatoire
-function generatePassword() {
-    const characters = 'ABCDEF1235fg789@#$!';
-    const passwordLength = 12;
-    let password = '';
-    for (let i = 0; i < passwordLength; i++) {
-        const randomIndex = Math.floor(Math.random() * characters.length);
-        password += characters[randomIndex];
-    }
-    document.getElementById('password').value = password;
-}
-console.log("Script chargé !");
-
-</script>
+    </script>
 </body>
 </html>
