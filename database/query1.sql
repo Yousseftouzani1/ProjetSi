@@ -275,3 +275,6 @@ WHERE statut='EN_ATTENTE'AND id_entreprise=:id_entreprise;
 INSERT INTO Entreprise (id_entreprise, nom, mdp_entreprise, secteur_activite, nom_connexion, type_entreprise, date_creation, adresse) 
 VALUES (Entreprise_seq.NEXTVAL, 'TestNom', 'hashedPassword', 'Secteur', 'NomConnexion', 'Type', TO_DATE('2024-01-01', 'YYYY-MM-DD'), 'Adresse');
 SELECT * FROM Entreprise WHERE nom = 'TestNom';
+UPDATE ETUDIANT
+SET age = 21, filiere = 'genie logiciel', annee = '2'
+WHERE ID_ETUDIANT = 4;

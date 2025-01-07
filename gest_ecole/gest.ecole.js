@@ -116,21 +116,22 @@ router.post('/students', async (req, res) => {
     }
     const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_KEY);
         const id_ecole = decodedToken.ecoleid;
-    const { username, email, telephone, password, date_nes } = req.body;
+    const { username, email, telephone, password, date_nes,age,annee,filiere } = req.body;
  
     if (!username || !email || !telephone || !password || !date_nes) {
         return res.status(400).json({ error: 'Tous les champs sont requis.' });
     }
-
+ 
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     let connection;
     try {
+        //filiere age annne
         connection = await oracledb.getConnection(dbConfig);
         await connection.execute(
-            `INSERT INTO Etudiant (id_etudiant, username, email, telephone, password, date_nes,id_ecole) 
-             VALUES (Etudiant_seq.NEXTVAL, :username, :email, :telephone, :password, TO_DATE(:date_nes, 'YYYY-MM-DD'),:id_ecole)`,
-            { username, email, telephone, password: hashedPassword, date_nes,id_ecole },
+            `INSERT INTO Etudiant (id_etudiant, username, email, telephone, password, date_nes,id_ecole,age,annee,filiere) 
+             VALUES (Etudiant_seq.NEXTVAL, :username, :email, :telephone, :password, TO_DATE(:date_nes, 'YYYY-MM-DD'),:id_ecole,:age,:annee,:filiere)`,
+            { username, email, telephone, password: hashedPassword, date_nes,id_ecole,age,annee,filiere },
             { autoCommit: true }
         );
 

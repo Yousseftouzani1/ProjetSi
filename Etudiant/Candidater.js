@@ -74,6 +74,7 @@ router.post('/deposer', async (req, res) => {
     res.status(500).json({ error: 'Une erreur est survenue lors de la postulation.' });
   }
 });*/
+//deposer candidature par etudiant
 router.post('/deposer', async (req, res) => {
   console.log('Cookies reçus :', req.cookies);
 
@@ -111,6 +112,7 @@ router.post('/deposer', async (req, res) => {
       res.status(500).json({ error: 'Une erreur est survenue lors de la postulation.' });
   }
 });
+//modifier le cv par l etudiant
 router.post('/cv', async (req, res) => {
   const { experiences, competences, languages, formation, idEtudiant } = req.body;
 
@@ -161,6 +163,7 @@ router.post('/cv', async (req, res) => {
     res.status(500).json({ error: 'Une erreur est survenue lors de l\'opération.' });
   }
 });
+//donne pour le tableaude bord etudiant 
 router.get("/etudiant/:id", async (req, res) => {
   const { id } = req.params;
 
@@ -169,7 +172,7 @@ router.get("/etudiant/:id", async (req, res) => {
     console.log("Connexion OracleDB établie.");
 
     const query = `
-      SELECT username, email, telephone, formation, experiences, competences, languages
+      SELECT username, email, telephone, formation, experiences, competences, languages,filiere,annee
       FROM Etudiant
       WHERE id_etudiant = :id
     `;
@@ -180,7 +183,7 @@ router.get("/etudiant/:id", async (req, res) => {
       return res.status(404).json({ message: "Étudiant non trouvé." });
     }
 
-    const [nom, email, telephone, formation, experiences, competences, languages] =
+    const [nom, email, telephone, formation, experiences, competences, languages,filiere,annee] =
       result.rows[0];
 
     res.status(200).json({
@@ -191,12 +194,112 @@ router.get("/etudiant/:id", async (req, res) => {
       experiences,
       competences,
       languages,
+      filiere,
+      annee,
     });
 
     await connection.close();
   } catch (err) {
     console.error("Erreur lors de l'extraction des données :", err);
     res.status(500).json({ error: "Erreur lors de l'extraction des données." });
+  }
+});
+// get les candidature associe a l etudiant en attente 
+router.get("/candidatures/en-attente", async (req, res) => {
+  const token = req.cookies.access_token;
+
+  try {
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_KEY);
+      console.log('Token décodé :', decoded);
+
+      const idEtudiant = decoded.studentId;
+    const connection = await oracledb.getConnection(dbConfig);
+    console.log("Connexion OracleDB établie.");
+
+    const query = `
+      SELECT 
+        C.ID_CANDIDATURE, 
+        C.DATE_SOUMISSION, 
+        C.STATUT, 
+        O.TITRE, 
+        O.DUREE, 
+        E.NOM AS ENTREPRISE
+      FROM CANDIDATURE C
+      JOIN OFFRE_STAGE O ON C.ID_STAGE = O.ID_STAGE
+      JOIN ENTREPRISE E ON O.ID_ENTREPRISE = E.ID_ENTREPRISE
+      WHERE C.ID_ETUDIANT = :idEtudiant AND C.STATUT = 'EN_ATTENTE'
+    `;
+
+    const result = await connection.execute(query, { idEtudiant });
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Aucune candidature en attente trouvée." });
+    }
+
+    const candidatures = result.rows.map(([idCandidature, dateSoumission, statut, titre, duree, entreprise]) => ({
+      idCandidature,
+      dateSoumission,
+      statut,
+      titre,
+      duree,
+      entreprise,
+    }));
+
+    res.status(200).json(candidatures);
+
+    await connection.close();
+  } catch (err) {
+    console.error("Erreur lors de l'extraction des candidatures en attente :", err);
+    res.status(500).json({ error: "Erreur lors de l'extraction des candidatures en attente." });
+  }
+});
+//get les cnadidature refusé
+router.get("/candidatures/refusees", async (req, res) => {
+  const token = req.cookies.access_token;
+
+  try {
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_KEY);
+      console.log('Token décodé :', decoded);
+
+      const idEtudiant = decoded.studentId;
+    const connection = await oracledb.getConnection(dbConfig);
+    console.log("Connexion OracleDB établie.");
+
+    const query = `
+      SELECT 
+        C.ID_CANDIDATURE, 
+        C.DATE_SOUMISSION, 
+        C.STATUT, 
+        O.TITRE, 
+        O.DUREE, 
+        E.NOM AS ENTREPRISE
+      FROM CANDIDATURE C
+      JOIN OFFRE_STAGE O ON C.ID_STAGE = O.ID_STAGE
+      JOIN ENTREPRISE E ON O.ID_ENTREPRISE = E.ID_ENTREPRISE
+      WHERE C.ID_ETUDIANT = :idEtudiant AND C.STATUT = 'REFUSE'
+    `;
+
+    const result = await connection.execute(query, { idEtudiant });
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Aucune candidature refusée trouvée." });
+    }
+
+    const candidatures = result.rows.map(([idCandidature, dateSoumission, statut, titre, duree, entreprise]) => ({
+      idCandidature,
+      dateSoumission,
+      statut,
+      titre,
+      duree,
+      entreprise,
+    }));
+   console.log(candidatures);
+    res.status(200).json(candidatures);
+
+    await connection.close();
+  } catch (err) {
+    console.error("Erreur lors de l'extraction des candidatures refusées :", err);
+    res.status(500).json({ error: "Erreur lors de l'extraction des candidatures refusées." });
   }
 });
 

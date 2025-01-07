@@ -697,58 +697,83 @@
 
     <div class="main-content">
       <h1 class="welcome-message">Profil de l'Étudiant</h1>
-  
+    
       <div class="profile-grid">
+        <!-- Section CV -->
         <div class="profile-card cv-section">
           <h4>Curriculum Vitae</h4>
           <form id="cvForm">
             <div class="form-group">
               <label for="experienceInput">Expériences:</label>
-              <textarea id="experienceInput" class="form-control" rows="3" placeholder="Ajoutez vos expériences..."></textarea>
+              <textarea
+                id="experienceInput"
+                class="form-control"
+                rows="3"
+                placeholder="Ajoutez vos expériences..."
+              ></textarea>
             </div>
             <div class="form-group">
-                <label for="formationInput">Formations:</label>
-                <textarea id="formationInput" class="form-control" rows="3" placeholder="Ajoutez vos Formation..."></textarea>
-              </div>
+              <label for="formationInput">Formations:</label>
+              <textarea
+                id="formationInput"
+                class="form-control"
+                rows="3"
+                placeholder="Ajoutez vos formations..."
+              ></textarea>
+            </div>
             <div class="form-group">
               <label for="competencesInput">Compétences:</label>
-              <textarea id="competencesInput" class="form-control" rows="3" placeholder="Ajoutez vos compétences..."></textarea>
+              <textarea
+                id="competencesInput"
+                class="form-control"
+                rows="3"
+                placeholder="Ajoutez vos compétences..."
+              ></textarea>
             </div>
             <div class="form-group">
               <label for="languagesInput">Langues:</label>
-              <textarea id="languagesInput" class="form-control" rows="3" placeholder="Ajoutez vos langues..."></textarea>
+              <textarea
+                id="languagesInput"
+                class="form-control"
+                rows="3"
+                placeholder="Ajoutez vos langues..."
+              ></textarea>
             </div>
-            <button type="button" class="btn-custom" onclick="saveCV()">Enregistrer</button>
+            <button type="button" class="btn-custom" onclick="saveCV()">
+              Enregistrer
+            </button>
           </form>
         </div>
-  
+    
+        <!-- Section Informations personnelles -->
         <div class="profile-card profile-info">
           <h4>Informations Personnelles</h4>
           <div class="profile-details">
             <div class="info-item">
               <div class="info-label">Nom complet</div>
-              <div class="info-value">Jean Dupont</div>
+              <div class="info-value" id="nom"></div>
             </div>
             <div class="info-item">
               <div class="info-label">Email</div>
-              <div class="info-value">jean.dupont@example.com</div>
+              <div class="info-value" id="email"></div>
             </div>
             <div class="info-item">
               <div class="info-label">Téléphone</div>
-              <div class="info-value">+212 6 12345678</div>
+              <div class="info-value" id="telephone"></div>
             </div>
             <div class="info-item">
-              <div class="info-label">Formation</div>
-              <div class="info-value">Ingénieur Informatique</div>
+              <div class="info-label">Filière</div>
+              <div class="info-value" id="filiere"></div>
             </div>
             <div class="info-item">
               <div class="info-label">Année d'études</div>
-              <div class="info-value">4ème année</div>
+              <div class="info-value" id="annee"></div>
             </div>
           </div>
         </div>
       </div>
-   
+    
+      <!-- Statistiques -->
       <div class="stats-section">
         <div class="stat-card">
           <div class="stat-value">12</div>
@@ -758,106 +783,117 @@
           <div class="stat-value">5</div>
           <div class="stat-label">Entretiens Programmés</div>
         </div>
-        
       </div>
     </div>
+    
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
-
-  
+    
     <script>
       async function loadStudentData() {
-          try {
-              const token = document.cookie
-                  .split("; ")
-                  .find((row) => row.startsWith("access_token="))
-                  ?.split("=")[1];
-
-              if (!token) {
-                  alert("Vous devez être connecté pour effectuer cette action.");
-                  return;
-              }
-
-              const decodedToken = jwt_decode(token);
-              const studentId = decodedToken.studentId;
-
-              const response = await fetch(`/etudiant/${studentId}`, {
-                  method: "GET",
-                  headers: {
-                      "Content-Type": "application/json",
-                  },
-              });
-
-              if (response.ok) {
-                  const data = await response.json();
-
-                  document.getElementById("formationInput").value = data.formation;
-                  document.getElementById("experienceInput").value = data.experiences;
-                  document.getElementById("competencesInput").value = data.competences;
-                  document.getElementById("languagesInput").value = data.languages;
-              } else {
-                  const error = await response.json();
-                  alert(error.message || "Erreur lors du chargement des données.");
-              }
-          } catch (error) {
-              console.error("Erreur lors de la récupération des données :", error);
-              alert("Une erreur est survenue lors du chargement des données.");
-          }
-      }
-
-      async function saveCV() {
-          try {
-              const token = document.cookie
-                  .split("; ")
-                  .find((row) => row.startsWith("access_token="))
-                  ?.split("=")[1];
-
-              if (!token) {
-                  alert("Vous devez être connecté pour effectuer cette action.");
-                  return;
-              }
-
-              const decodedToken = jwt_decode(token);
-              const studentId = decodedToken.studentId;
-
-              const formation = document.getElementById("formationInput").value.trim();
-              const experiences = document.getElementById("experienceInput").value.trim();
-              const competences = document.getElementById("competencesInput").value.trim();
-              const languages = document.getElementById("languagesInput").value.trim();
-
-              const requestData = {
-                  formation,
-                  experiences,
-                  competences,
-                  languages,
-                  idEtudiant: studentId,
-              };
-
-              const response = await fetch("/cv", {
-                  method: "POST",
-                  headers: {
-                      "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify(requestData),
-              });
-
-              const result = await response.json();
-
-              if (response.ok) {
-                  alert(result.message);
-              } else {
-                  alert(result.error || "Erreur lors de l'enregistrement des données.");
-              }
-          } catch (error) {
-              console.error("Erreur lors de l'enregistrement des données :", error);
-              alert("Une erreur est survenue lors de l'enregistrement des données.");
-          }
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
-          loadStudentData();
-      });
-  </script>
+        try {
+          const token = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("access_token="))
+            ?.split("=")[1];
     
+          if (!token) {
+            alert("Vous devez être connecté pour effectuer cette action.");
+            return;
+          }
+    
+          const decodedToken = jwt_decode(token);
+          const studentId = decodedToken.studentId;
+    
+          const response = await fetch(`/etudiant/${studentId}`, {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          });
+    
+          if (response.ok) {
+            const data = await response.json();
+    console.log(data);
+            // Affichage des données personnelles
+            document.getElementById("nom").innerText = data.nom;
+            document.getElementById("telephone").innerText = data.telephone;
+            document.getElementById("email").innerText = data.email;
+            document.getElementById("filiere").innerText = data.filiere;
+            document.getElementById("annee").innerText = data.annee;
+    
+            // Remplissage des champs modifiables
+            document.getElementById("formationInput").value = data.formation || "";
+            document.getElementById("experienceInput").value =
+              data.experiences || "";
+            document.getElementById("competencesInput").value =
+              data.competences || "";
+            document.getElementById("languagesInput").value = data.languages || "";
+          } else {
+            const error = await response.json();
+            alert(error.message || "Erreur lors du chargement des données.");
+          }
+        } catch (error) {
+          console.error("Erreur lors de la récupération des données :", error);
+          alert("Une erreur est survenue lors du chargement des données.");
+        }
+      }
+    
+      async function saveCV() {
+        try {
+          const token = document.cookie
+            .split("; ")
+            .find((row) => row.startsWith("access_token="))
+            ?.split("=")[1];
+    console.log('i found the token '+ token)
+          if (!token) {
+            alert("Vous devez être connecté pour effectuer cette action.");
+            return;
+          }
+    
+          const decodedToken = jwt_decode(token);
+          const studentId = decodedToken.studentId;
+    
+          const formation = document.getElementById("formationInput").value.trim();
+          const experiences =
+            document.getElementById("experienceInput").value.trim();
+          const competences =
+            document.getElementById("competencesInput").value.trim();
+          const languages = document.getElementById("languagesInput").value.trim();
+    
+          const requestData = {
+            formation,
+            experiences,
+            competences,
+            languages,
+            idEtudiant: studentId,
+          };
+    
+          const response = await fetch("http://localhost:3001/cv", {
+            method: "POST",
+            credentials: "include",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestData),
+          });
+    
+          const result = await response.json();
+          if (response.ok) {
+            alert(result.message);
+          } else {
+            alert(result.error || "Erreur lors de l'enregistrement des données.");
+          }
+        } catch (error) {
+          console.error("Erreur lors de l'enregistrement des données :", error);
+          alert("Une erreur est survenue lors de l'enregistrement des données.");
+        }
+      }
+    
+      document.addEventListener("DOMContentLoaded", () => {
+        loadStudentData();
+      });
+    </script>
+        
     
 </body>
 </html>

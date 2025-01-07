@@ -340,6 +340,10 @@
 
     // Récupérer les champs du formulaire
     const username = document.getElementById('username').value.trim();
+    const age = document.getElementById('age').value.trim();
+    const annee = document.getElementById('annee').value.trim();
+    const filiere = document.getElementById('filiere').value.trim();
+
     const email = document.getElementById('email').value.trim();
     const telephone = document.getElementById('telephone').value.trim();
     const password = document.getElementById('password').value.trim();
@@ -375,7 +379,7 @@ console.log(token);
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ username, email, telephone, password, date_nes }),
+            body: JSON.stringify({ username, email, telephone, password, date_nes,age,annee,filiere }),
         });
 
         const result = await response.json();
@@ -389,8 +393,8 @@ console.log(token);
         console.error(error);
         alert("Erreur lors de la création de l'étudiant.");
     }
-}
-
+} 
+ 
 // Ajouter un événement à la soumission du formulaire
 document.getElementById('studentForm').addEventListener('submit', submitForm);
 

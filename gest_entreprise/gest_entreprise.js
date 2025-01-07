@@ -107,6 +107,9 @@ app.get('/stage', (req, res) => {
 app.get('/sta', (req, res) => {
   res.sendFile(path.join(__dirname, '../Etudiant/STAGE.html'));
 });
+app.get('/can', (req, res) => {
+  res.sendFile(path.join(__dirname, '../Etudiant/candidature.html'));
+});
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../admin/ht.html'));
 });
