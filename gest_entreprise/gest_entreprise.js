@@ -10,11 +10,12 @@ const ecole =require('../Ecole/Ecole')
 const offreRoutes = require('./offre');
 const candidature =require('./Candidature');
 const tuteur =require('./tuteur');
-const stage =require ('./Stage');
+const Stage =require ('./Stage');
 const convocation=require('../Etudiant/Convocation');
 const gest_ecole=require('../gest_ecole/gest.ecole')
 const candidater =require('../Etudiant/Candidater')
 const entreprise =require('../Entreprise/Entreprise');
+const stage=require('../Etudiant/stage');
 // Configuration de la base de données Oracle
 const dbConfig = require('../database/dbConfig');
 const jwt = require('jsonwebtoken');
@@ -41,6 +42,7 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(entreprise);
+app.use(Stage);
 app.use(stage);
 app.use(ecole);
 app.use(gest_ecole);
@@ -98,6 +100,12 @@ app.get('/bbbbb', (req, res) => {
 });
 app.get('/conv', (req, res) => {
   res.sendFile(path.join(__dirname, '../Etudiant/Convocation.html'));
+});
+app.get('/stage', (req, res) => {
+  res.sendFile(path.join(__dirname, '../gest_entreprise/Stage.html'));
+});
+app.get('/sta', (req, res) => {
+  res.sendFile(path.join(__dirname, '../Etudiant/STAGE.html'));
 });
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../admin/ht.html'));

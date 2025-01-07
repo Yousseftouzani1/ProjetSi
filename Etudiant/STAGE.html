@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Suivi des Stages</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Calibri&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+      font-family: 'Calibri Light', sans-serif;
+      background: linear-gradient(135deg, #FEF1E6, #F9D8B7);
+    }
+
+    .navbar-custom {
+      background: linear-gradient(90deg, #ff7936, #ff8d54);
+      height: 100px;
+      position: fixed;
+      width: 100%;
+      z-index: 1000;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .leaf {
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0.2);
+      clip-path: polygon(50% 0%, 75% 25%, 100% 50%, 75% 75%, 50% 100%, 25% 75%, 0% 50%, 25% 25%);
+      transform-origin: center;
+      animation: floatLeaf 6s infinite ease-in-out;
+    }
+
+    @keyframes floatLeaf {
+      0%, 100% { transform: translateY(0) rotate(var(--rotation)); }
+      50% { transform: translateY(-10px) rotate(var(--rotation)); }
+    }
+
+    .leaf-1 { width: 100px; height: 60px; top: 10px; left: 20px; --rotation: 30deg; }
+    .leaf-2 { width: 80px; height: 50px; top: 20px; right: 50px; --rotation: -30deg; }
+    .leaf-3 { width: 140px; height: 90px; bottom: 0; left: 60px; --rotation: 15deg; }
+    .leaf-4 { width: 60px; height: 40px; top: -10px; left: 150px; --rotation: -45deg; }
+    .leaf-5 { width: 120px; height: 70px; bottom: 0; right: 150px; --rotation: 45deg; }
+
+    .profile-container {
+      position: relative;
+      margin-left: auto;
+    }
+
+    .profile-icon {
+      width: 40px;
+      height: 40px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .profile-icon:hover {
+      background-color: #fdc19d;
+      transform: scale(1.1);
+    }
+
+    .profile-dropdown {
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 0;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      min-width: 180px;
+      z-index: 1000;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .profile-dropdown a {
+      display: block;
+      padding: 12px 20px;
+      color: #333;
+      text-decoration: none;
+      font-size: 14px;
+      transition: all 0.2s ease;
+    }
+
+    .profile-dropdown a:hover {
+      background-color: #f8f8f8;
+      padding-left: 25px;
+    }
+
+    .profile-dropdown .logout {
+      color: #dc3545;
+      border-top: 1px solid #eee;
+    }
+
+    .side-menu {
+      position: fixed;
+      top: 100px;
+      left: 0;
+      width: 200px;
+      height: calc(100% - 100px);
+      background: linear-gradient(180deg, #ff7936, #ff8d54);
+      padding: 20px;
+      color: white;
+      box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .transition-shape {
+      position: fixed;
+      top: 100px;
+      left: 0;
+      width: 200px;
+      height: 50px;
+      background: linear-gradient(180deg, #ff7936, #ff8d54);
+      clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 50%);
+      z-index: 999;
+    }
+
+    .side-menu ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    .side-menu li {
+      margin: 15px 0;
+    }
+
+    .side-menu a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      padding: 10px 15px;
+      border-radius: 5px;
+      transition: all 0.3s ease;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .side-menu i {
+      min-width: 20px;
+      margin-right: 8px;
+    }
+
+    .side-menu a:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+
+    .main-content {
+      margin-left: 220px;
+      padding-top: 120px;
+      padding-right: 20px;
+    }
+
+    .internship-section {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .section-title {
+      color: #193A6F;
+      font-size: 1.8rem;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #ff7936;
+    }
+
+    .internship-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .internship-card {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 20px;
+      border: 2px solid #ff7936;
+      cursor: pointer;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .internship-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .company-name {
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: #193A6F;
+      margin-bottom: 10px;
+    }
+
+    .internship-details {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    .internship-details p {
+      margin-bottom: 8px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      margin-top: 10px;
+    }
+
+    .status-active {
+      background-color: #e1f7e1;
+      color: #28a745;
+    }
+
+    .status-completed {
+      background-color: #e8eaed;
+      color: #6c757d;
+    }
+
+    .load-more {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .load-more-btn {
+      background-color: transparent;
+      border: 2px solid #ff7936;
+      color: #ff7936;
+      padding: 8px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .load-more-btn:hover {
+      background-color: #ff7936;
+      color: white;
+    }
+
+    /* New styles for detail modal */
+    .detail-modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      z-index: 2000;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .detail-content {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 600px;
+      position: relative;
+    }
+
+    .close-button {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      font-size: 24px;
+      cursor: pointer;
+      color: #666;
+    }
+
+    .detail-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 30px;
+    }
+
+    .detail-button {
+      background: #ff7936;
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .detail-button:hover {
+      background: #ff8d54;
+      transform: translateY(-3px);
+    }
+
+    .detail-button i {
+      font-size: 24px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-custom">
+    <div class="container-fluid">
+      <a class="navbar-brand text-white" href="#">Internship Management</a>
+      <div class="profile-container">
+        <div class="profile-icon" onclick="toggleDropdown()">
+          <span style="font-size: 20px; color: #FE691E;">👤</span>
+        </div>
+        <div class="profile-dropdown" id="profileDropdown">
+          <a href="#" id="userName">User Name</a>
+          <a href="#">Settings</a>
+          <a href="#" class="logout">Log Out</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="leaf leaf-1"></div>
+    <div class="leaf leaf-2"></div>
+    <div class="leaf leaf-3"></div>
+    <div class="leaf leaf-4"></div>
+    <div class="leaf leaf-5"></div>
+  </nav>
+
+  <div class="transition-shape"></div>
+
+  <div class="side-menu">
+    <ul>
+      <li><a href="student-Offres.html"><i class="fas fa-briefcase me-2"></i>Offers publié</a></li>
+      <li><a href="student-profile.html"><i class="fas fa-user me-2"></i>Profile</a></li>
+      <li><a href="sudent-candidature.html"><i class="fas fa-file me-2"></i>Candidatures</a></li>
+      <li><a href="student-convocation.html"><i class="fas fa-graduation-cap me-2"></i>Convocations</a></li>
+      <li><a href="student-suivis-de-stage.html"><i class="fas fa-graduation-cap me-2"></i>Stage</a></li>
+    </ul>
+  </div>
+  <div class="main-content">
+    <div class="internship-section">
+      <h2 class="section-title">Stage Possible</h2>
+      <div class="internship-grid" id="currentInternships">
+        <!-- ici les stages qui ont besoin d'être acceptés ou refusés -->
+      </div>
+    </div>
+  
+    <div class="internship-section">
+      <h2 class="section-title">Stage En cours</h2>
+      <div class="internship-grid" id="completedInternships">
+        <!-- ici les stages acceptés -->
+      </div>
+    </div>
+  </div>
+  
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      // Charger les stages au chargement de la page
+      fetchCurrentStages();
+      fetchAcceptedStages();
+    });
+  
+    // Fonction pour récupérer et afficher les stages en cours
+    async function fetchCurrentStages() {
+      try {
+        const response = await fetch("http://localhost:3001/stagee", {
+          method: "GET",
+          credentials: "include", // Inclure les cookies
+        });
+  
+        if (!response.ok) {
+          throw new Error("Erreur lors de la récupération des stages en cours.");
+        }
+  
+        const stages = await response.json();
+        const currentInternshipsGrid = document.getElementById("currentInternships");
+  
+        // Vider la grille des stages en cours
+        currentInternshipsGrid.innerHTML = "";
+  
+        // Ajouter chaque stage en cours
+        stages.forEach((stage) => {
+          const card = document.createElement("div");
+          card.className = "internship-card";
+  
+          card.innerHTML = `
+            <div class="company-name">${stage.companyName}</div>
+            <div class="internship-details">
+              <p><i class="fas fa-map-marker-alt me-2"></i>${stage.companyAddress}</p>
+              <p><i class="fas fa-user-tie me-2"></i>Étudiant: ${stage.studentUsername}</p>
+              <p><i class="fas fa-tasks me-2"></i>${stage.internshipTitle}</p>
+              <p>${stage.description}</p>
+            </div>
+            <div class="status-actions">
+              <button class="accept-btn" data-id="${stage.internshipId}">Accepter</button>
+              <button class="reject-btn" data-id="${stage.internshipId}">Refuser</button>
+            </div>
+          `;
+  
+          currentInternshipsGrid.appendChild(card);
+        });
+  
+        // Ajouter des gestionnaires pour les boutons d'action
+        document.querySelectorAll(".accept-btn").forEach((btn) => {
+          btn.addEventListener("click", () => updateInternshipStatus(btn.dataset.id, "Accepté"));
+        });
+  
+        document.querySelectorAll(".reject-btn").forEach((btn) => {
+          btn.addEventListener("click", () => updateInternshipStatus(btn.dataset.id, "Refusé"));
+        });
+      } catch (error) {
+        console.error(error.message);
+        alert("Une erreur s'est produite lors du chargement des stages en cours.");
+      }
+    }
+  
+    // Fonction pour récupérer et afficher les stages acceptés
+    async function fetchAcceptedStages() {
+      try {
+        const response = await fetch("http://localhost:3001/stageA", {
+          method: "GET",
+          credentials: "include", // Inclure les cookies
+        });
+  
+        if (!response.ok) {
+          throw new Error("Erreur lors de la récupération des stages acceptés.");
+        }
+  
+        const stages = await response.json();
+        const completedInternshipsGrid = document.getElementById("completedInternships");
+  
+        // Vider la grille des stages acceptés
+        completedInternshipsGrid.innerHTML = "";
+  
+        // Ajouter chaque stage accepté
+        stages.forEach((stage) => {
+          const card = document.createElement("div");
+          card.className = "internship-card";
+  
+          card.innerHTML = `
+            <div class="company-name">${stage.companyName}</div>
+            <div class="internship-details">
+              <p><i class="fas fa-map-marker-alt me-2"></i>${stage.companyAddress}</p>
+              <p><i class="fas fa-user-tie me-2"></i>Étudiant: ${stage.studentUsername}</p>
+              <p><i class="fas fa-tasks me-2"></i>${stage.internshipTitle}</p>
+              <span class="status-badge status-completed">Accepté</span>
+            </div>
+          `;
+  
+          completedInternshipsGrid.appendChild(card);
+        });
+      } catch (error) {
+        console.error(error.message);
+        alert("Une erreur s'est produite lors du chargement des stages acceptés.");
+      }
+    }
+  
+    // Fonction pour mettre à jour le statut d'un stage (en cours)
+    async function updateInternshipStatus(id, status) {
+      try {
+        const response = await fetch(`/stage/${id}/status`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          credentials: "include",
+          body: JSON.stringify({ status }),
+        });
+  
+        if (!response.ok) {
+          const errorText = await response.text();
+          throw new Error(errorText);
+        }
+  
+        const result = await response.json();
+        alert(result.message);
+  
+        // Recharger les stages après modification
+        fetchCurrentStages();
+        fetchAcceptedStages();
+      } catch (error) {
+        console.error(error.message);
+        alert("Une erreur s'est produite lors de la mise à jour du statut du stage.");
+      }
+    }
+  </script>
+  

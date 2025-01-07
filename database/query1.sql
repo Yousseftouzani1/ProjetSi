@@ -272,3 +272,6 @@ WHERE statut='EN_ATTENTE'AND id_entreprise=:id_entreprise;
 --id_entreprise lie la table offre_stage et entreprise 
 --id 
  --offre_stage lie par id_stage a candidature 
+INSERT INTO Entreprise (id_entreprise, nom, mdp_entreprise, secteur_activite, nom_connexion, type_entreprise, date_creation, adresse) 
+VALUES (Entreprise_seq.NEXTVAL, 'TestNom', 'hashedPassword', 'Secteur', 'NomConnexion', 'Type', TO_DATE('2024-01-01', 'YYYY-MM-DD'), 'Adresse');
+SELECT * FROM Entreprise WHERE nom = 'TestNom';

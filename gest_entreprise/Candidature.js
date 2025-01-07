@@ -21,9 +21,6 @@ async function executeQuery(query, binds = {}, options = { autoCommit: true }) {
     }
   }
 }
-
-
-
 // avoir l email de l eleve associer a la candidature 
 router.get('/getmail/:id',async(req,res)=>{
   const idCandidature = req.params.id;
@@ -43,7 +40,6 @@ try {
   res.status(500).send('Erreur lors de l\'acceptation de la candidature.');
 }
 });
-
 // Refuser une candidature
 router.post('/refuser/:id', async (req, res) => {
   const idCandidature = req.params.id;
@@ -72,7 +68,7 @@ router.post('/refuser/:id', async (req, res) => {
       // Décoder le token pour récupérer l'id_entreprise
       const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_KEY);
       const id_entreprise = decodedToken.entrepriseIdg;
-      console.log('ID de l’entreprise :', id_entreprise);
+      console.log('ID de l’entreprise via la route /candidature :', id_entreprise);
       if (!id_entreprise) {
           return res.status(400).json({ error: 'ID de l\'entreprise non valide.' });
       }

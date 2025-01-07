@@ -86,7 +86,9 @@ ALTER TABLE Entreprise ADD date_creation DATE;
 
 
 --modif stage 
-ALTER TABLE Stage ADD status_stage varchar(30) DEFAULT 'en cours';
+ALTER TABLE Stage ADD status_stage varchar(30) DEFAULT 'en attente de validation eleve';
+ALTER TABLE Stage DROP COLUMN status_stage;
+
 ALTER TABLE Stage DROP COLUMN ID_CANDIDATURE;
 ALTER TABLE Stage ADD id_entreprise INT ;
 ALTER TABLE Stage ADD FOREIGN KEY (id_entreprise) REFERENCES Entreprise(id_entreprise);
@@ -94,8 +96,12 @@ ALTER TABLE Stage ADD ID_ETUDIANT INT ;
 ALTER TABLE Stage ADD FOREIGN KEY (ID_ETUDIANT) REFERENCES ETUDIANT(ID_ETUDIANT);
 ALTER TABLE Stage ADD id_offre INT ;
 ALTER TABLE Stage ADD FOREIGN KEY (id_offre) REFERENCES Offre_Stage(id_stage);
+ALTER TABLE Stage ADD noter INT ;
+ALTER TABLE Stage ADD remarques varchar(200) ;
+
+
 SELECT *FROM STAGE;
-SELECT * FROM CONVOCATION;
+SELECT * FROM CANDIDATURE;
 COMMIT;
 --modif offre_stage 
 ALTER TABLE Offre_Stage ADD status_offre varchar(20) DEFAULT 'disponible ';
@@ -114,6 +120,7 @@ ALTER TABLE Offre_Stage ADD competence9 varchar(70) ;
 ALTER TABLE Offre_Stage ADD competence10 varchar(70) ;
 COMMIT;
 SELECT * FROM  CONVOCATION ;
+SELECT * FROM STAGE;
 ALTER TABLE Offre_Stage ADD id_entreprise INT;
 ALTER TABLE Offre_Stage ADD FOREIGN KEY (id_entreprise) REFERENCES Entreprise(id_entreprise);
 
@@ -183,3 +190,48 @@ JOIN CONVOCATION C ON C.ID_STAGE=O.ID_STAGE
 WHERE S.ID_ENTREPRISE=8 AND C.STATUS='Accepté';
 -------
 UPDATE Stage SET STATUS_STAGE='acceptée' WHERE Stage.ID_STAGE=:id_stage;--obtenue de la route qui les display
+SELECT S.ID_STAGE,S.ID_ENTREPRISE,E.USERNAME,S.ID_OFFRE,En.NOM,O.TITRE,O.DESCRIPTION,En.adresse FROM STAGE S
+JOIN ETUDIANT E ON S.ID_ETUDIANT=E.ID_ETUDIANT
+JOIN ENTREPRISE En ON En.ID_ENTREPRISE=S.ID_ENTREPRISE
+JOIN OFFRE_STAGE O ON O.ID_STAGE=S.ID_OFFRE
+WHERE S.ID_ETUDIANT=4;--:studentId;
+--stage a noter par le gestionaire 
+ SELECT 
+        E.username, 
+        O.titre, 
+        C.date_acceptation, 
+        E.email, 
+        S.id_stage,
+        S.noter,
+        S.remarques
+      FROM 
+        Stage S
+        JOIN Etudiant E ON E.ID_ETUDIANT = S.ID_ETUDIANT
+        JOIN OFFRE_STAGE O ON O.ID_STAGE = S.ID_OFFRE
+        JOIN CONVOCATION C ON C.ID_STAGE = O.ID_STAGE
+      WHERE 
+        S.ID_ENTREPRISE = 8
+        AND C.STATUS = 'Accepté' AND S.ETAT_VALIDATION='validé' AND S.STATUS_STAGE='Accepté';
+        ------------------
+SELECT 
+  E.username, 
+  O.titre, 
+  C.date_acceptation, 
+  E.email, 
+  S.id_stage,
+  S.noter,
+  S.id_entreprise,
+  S.remarques,
+  C.STATUS,
+  S.STATUS_STAGE,
+  S.ETAT_VALIDATION
+FROM 
+  Stage S
+  JOIN Etudiant E ON E.ID_ETUDIANT = S.ID_ETUDIANT
+  JOIN OFFRE_STAGE O ON O.ID_STAGE = S.ID_OFFRE
+  JOIN CONVOCATION C ON C.ID_STAGE = O.ID_STAGE
+  WHERE S.ID_ENTREPRISE=8 AND C.STATUS = 'Accepté' AND S.STATUS_STAGE='Accepté' --AND S.ETAT_VALIDATION='validé'
+  -----------
+WHERE 
+  S.ID_ENTREPRISE = 8
+  AND C.STATUS = 'Accepté' AND S.ETAT_VALIDATION='validé' AND S.STATUS_STAGE='Accepté';

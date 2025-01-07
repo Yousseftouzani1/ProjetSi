@@ -360,21 +360,418 @@
       <li><a href="entreprise-suivis-des-stages.html"><i class="fas fa-folder-open me-2"></i>Mes Stages</a></li>
     </ul>
   </div>
-
-  <div class="main-content">
-    <div class="internship-section">
-      <h2 class="section-title">Stage Courant</h2>
-      <div class="internship-grid">
-        <div class="internship-card">
-
-        </div>
-    </div>
+ <!-- Section des stages à confirmer -->
+ <div class="main-content">
+  <div class="internship-section">
+    <h2 class="section-title">Stages Possible à Confirmer</h2>
+    <div id="internship-grid"></div>
+  </div>
 </div>
-          
-      </div>
-      
 
-  <script>
+<!-- Section des stages en cours -->
+<div class="main-content">
+  <div class="internship-section">
+    <h2 class="section-title">Stages En Cours</h2>
+    <div id="in-progress-internship-grid"></div>
+  </div>
+</div>
+    <!--
+    <script>
+      // Fonction pour récupérer les stages nécessitant une note
+      async function fetchStagesToBeNoted() {
+        try {
+          const response = await fetch("http://localhost:3001/stagesAnoter", {
+            method: "GET",
+            credentials: "include", // Inclure les cookies (token)
+          });
+    
+          if (!response.ok) {
+            throw new Error("Erreur lors de la récupération des stages à noter.");
+          }
+    
+          const stages = await response.json();
+    
+          // Sélectionner la section "Stage En cours"
+          const internshipGrid = document.getElementById("in-progress-internship-grid");
+    
+          // Vider le contenu précédent
+          internshipGrid.innerHTML = "";
+    
+          // Ajouter les stages
+          stages.forEach((stage) => {
+            const card = document.createElement("div");
+            card.className = "internship-card";
+    
+            card.innerHTML = `
+              <div class="company-name">${stage.titre}</div>
+              <div class="internship-details">
+                <p><strong>Étudiant:</strong> ${stage.username}</p>
+                <p><strong>Email:</strong> ${stage.email}</p>
+                <p><strong>Date d'acceptation:</strong> ${stage.date_acceptation}</p>
+                <p><strong>Note actuelle:</strong> ${stage.noter || "Non noté"}</p>
+                <textarea placeholder="Ajoutez des remarques..." class="remarks-field">${stage.remarques || ""}</textarea>
+                <input type="number" class="note-field" placeholder="Note (sur 20)" min="0" max="20" value="${stage.noter || ""}" />
+                <button class="complete-btn" data-id="${stage.id_stage}">Terminer</button>
+              </div>
+            `;
+    
+            internshipGrid.appendChild(card);
+          });
+    
+          // Ajouter des gestionnaires pour les boutons "Terminer"
+          document.querySelectorAll(".complete-btn").forEach((button) => {
+            button.addEventListener("click", async () => {
+              const idStage = button.dataset.id;
+              const card = button.closest(".internship-card");
+              const noteField = card.querySelector(".note-field").value;
+              const remarksField = card.querySelector(".remarks-field").value;
+    
+              // Appeler la fonction pour mettre à jour la note et terminer le stage
+              await completeStage(idStage, noteField, remarksField);
+            });
+          });
+        } catch (error) {
+          console.error(error.message);
+          alert("Une erreur est survenue lors du chargement des stages.");
+        }
+      }
+    
+      // Fonction pour terminer un stage
+      async function completeStage(idStage, note, remarks) {
+        try {
+          const response = await fetch(`http://localhost:3001/stages/${idStage}/note`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include", // Inclure les cookies
+            body: JSON.stringify({
+              note,
+              remarques: remarks,
+              terminer: "Terminé",
+            }),
+          });
+    
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText);
+          }
+    
+          const result = await response.json();
+          alert(result.message);
+    
+          // Recharger la liste des stages après modification
+          fetchStagesToBeNoted();
+        } catch (error) {
+          console.error(error.message);
+          alert("Erreur lors de la mise à jour du stage.");
+        }
+      }
+    
+      // Charger les stages au chargement de la page
+      document.addEventListener("DOMContentLoaded", fetchStagesToBeNoted);
+    </script>
+    -->
+    <script>
+      // Fonction pour récupérer les stages nécessitant une note
+      async function fetchStagesToBeNoted() {
+        try {
+          const response = await fetch("http://localhost:3001/stagesAnoter", {
+            method: "GET",
+            credentials: "include", // Inclure les cookies (token)
+          });
+    
+          if (!response.ok) {
+            throw new Error("Erreur lors de la récupération des stages à noter.");
+          }
+    
+          const stages = await response.json();
+    
+          // Sélectionner la section "Stage En cours"
+          const internshipGrid = document.getElementById("in-progress-internship-grid");
+    
+          // Vider le contenu précédent
+          internshipGrid.innerHTML = "";
+    
+          // Ajouter les stages
+          stages.forEach((stage) => {
+            const card = document.createElement("div");
+            card.className = "internship-card";
+    
+            card.innerHTML = `
+              <div class="company-name">${stage.titre}</div>
+              <div class="internship-details">
+                <p><strong>Étudiant:</strong> ${stage.username}</p>
+                <p><strong>Email:</strong> ${stage.email}</p>
+                <p><strong>Date d'acceptation:</strong> ${stage.date_acceptation}</p>
+                <p><strong>Note actuelle:</strong> ${stage.noter || "Non noté"}</p>
+                <textarea placeholder="Ajoutez des remarques..." class="remarks-field">${stage.remarques || ""}</textarea>
+                <input type="number" class="note-field" placeholder="Note (sur 20)" min="0" max="20" value="${stage.noter || ""}" />
+                <button class="note-btn" data-id="${stage.id_stage}">Noter</button>
+                <button class="complete-btn" data-id="${stage.id_stage}" style="background-color: #4CAF50; color: white; border: none; padding: 10px 15px; cursor: pointer; border-radius: 5px;">Terminer</button>
+              </div>
+            `;
+    
+            internshipGrid.appendChild(card);
+          });
+    
+          // Ajouter des gestionnaires pour les boutons "Noter"
+          document.querySelectorAll(".note-btn").forEach((button) => {
+            button.addEventListener("click", async () => {
+              const idStage = button.dataset.id;
+              const card = button.closest(".internship-card");
+              const noteField = card.querySelector(".note-field").value;
+              const remarksField = card.querySelector(".remarks-field").value;
+    
+              // Appeler la fonction pour enregistrer la note et les remarques
+              await submitNote(idStage, noteField, remarksField);
+            });
+          });
+    
+          // Ajouter des gestionnaires pour les boutons "Terminer"
+          document.querySelectorAll(".complete-btn").forEach((button) => {
+            button.addEventListener("click", async () => {
+              const idStage = button.dataset.id;
+              const card = button.closest(".internship-card");
+              const noteField = card.querySelector(".note-field").value;
+    
+              if (!noteField) {
+                alert("Veuillez entrer une note avant de terminer.");
+                return;
+              }
+    
+              // Appeler la fonction pour marquer le stage comme terminé
+              await completeStage(idStage);
+            });
+          });
+        } catch (error) {
+          console.error(error.message);
+          alert("Une erreur est survenue lors du chargement des stages.");
+        }
+      }
+    
+      // Fonction pour enregistrer la note et les remarques
+      async function submitNote(idStage, note, remarks) {
+        try {
+          const response = await fetch(`http://localhost:3001/stages/${idStage}/note`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include", // Inclure les cookies
+            body: JSON.stringify({
+              note,
+              remarques: remarks,
+            }),
+          });
+    
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText);
+          }
+    
+          const result = await response.json();
+          alert(result.message);
+        } catch (error) {
+          console.error(error.message);
+          alert("Erreur lors de l'enregistrement de la note.");
+        }
+      }
+    
+      // Fonction pour marquer un stage comme terminé
+      async function completeStage(idStage) {
+        try {
+          const response = await fetch(`http://localhost:3001/stages/${idStage}/complete`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            credentials: "include", // Inclure les cookies
+            body: JSON.stringify({
+              terminer: "Terminé",
+            }),
+          });
+    
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(errorText);
+          }
+    
+          const result = await response.json();
+          alert(result.message);
+    
+          // Recharger la liste des stages après modification
+          fetchStagesToBeNoted();
+        } catch (error) {
+          console.error(error.message);
+          alert("Erreur lors de la mise à jour du stage.");
+        }
+      }
+    
+      // Charger les stages au chargement de la page
+      document.addEventListener("DOMContentLoaded", fetchStagesToBeNoted);
+    </script>
+    
+      <script>
+        document.addEventListener('DOMContentLoaded', () => {
+  async function fetchStages() {
+    try {
+      const response = await fetch('http://localhost:3001/stages', {
+        method: 'GET',
+        credentials: 'include',
+      });
+      const stages = await response.json();
+
+      const internshipGrid = document.getElementById('internship-grid');
+
+      if (!internshipGrid) {
+        console.error('Erreur : élément internship-grid introuvable dans le DOM.');
+        return;
+      }
+
+      internshipGrid.innerHTML = ''; // Vider le conteneur avant de l'injecter
+
+      stages.forEach((stage) => {
+        // Créer la carte pour chaque stage
+        const stageCard = document.createElement('div');
+        stageCard.className = 'internship-card';
+
+        stageCard.innerHTML = `
+          <h3>${stage.titre}</h3>
+          <p><strong>Étudiant :</strong> ${stage.username}</p>
+          <p><strong>Email :</strong> ${stage.email}</p>
+          <p><strong>Date Acceptation :</strong> ${stage.date_acceptation}</p>
+        `;
+
+        const buttonContainer = document.createElement('div');
+        buttonContainer.className = 'button-container';
+
+        // Bouton Valider
+        const validateButton = document.createElement('button');
+        validateButton.className = 'btn btn-validate';
+        validateButton.textContent = 'Valider';
+        validateButton.onclick = () => updateStageStatus(stage.id_stage, 'Validé');
+
+        // Bouton Refuser
+        const rejectButton = document.createElement('button');
+        rejectButton.className = 'btn btn-reject';
+        rejectButton.textContent = 'Refuser';
+        rejectButton.onclick = () => updateStageStatus(stage.id_stage, 'Refusé');
+
+        buttonContainer.appendChild(validateButton);
+        buttonContainer.appendChild(rejectButton);
+
+        stageCard.appendChild(buttonContainer);
+        internshipGrid.appendChild(stageCard);
+      });
+    } catch (error) {
+      console.error('Erreur lors de la récupération des stages :', error);
+      alert('Impossible de charger les stages.');
+    }
+  }
+
+  async function updateStageStatus(idStage, statut) {
+    try {
+      const response = await fetch(`http://localhost:3001/stages/${idStage}/etat`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ statut }),
+      });
+
+      const result = await response.json();
+      alert(result.message);
+
+      // Recharger les stages après mise à jour
+      fetchStages();
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du statut :', error);
+      alert('Erreur lors de la mise à jour du statut.');
+    }
+  }
+
+  // Charger les stages au démarrage
+  fetchStages();
+});
+
       </script>
-</body>
+      <!--
+      <script>
+        async function fetchStages() {
+          try {
+            const response = await fetch('http://localhost:3001/stages', {
+             method: 'GET',
+             credentials:"include" 
+            
+            
+            });
+            const stages = await response.json();
+      
+            const internshipGrid = document.getElementById('internship-grid');
+            internshipGrid.innerHTML = ''; // Vider le conteneur avant de l'injecter
+      
+            stages.forEach(stage => {
+              // Créer la carte pour chaque stage
+              const stageCard = document.createElement('div');
+              stageCard.className = 'internship-card';
+      
+              stageCard.innerHTML = `
+                <h3>${stage.titre}</h3>
+                <p><strong>Étudiant :</strong> ${stage.username}</p>
+                <p><strong>Email :</strong> ${stage.email}</p>
+                <p><strong>Date Acceptation :</strong> ${stage.date_acceptation}</p>
+              `;
+      
+              const buttonContainer = document.createElement('div');
+              buttonContainer.className = 'button-container';
+      
+              // Bouton Valider
+              const validateButton = document.createElement('button');
+              validateButton.className = 'btn btn-validate';
+              validateButton.textContent = 'Valider';
+              validateButton.onclick = () => updateStageStatus(stage.id_stage, 'Validé');
+      
+              // Bouton Refuser
+              const rejectButton = document.createElement('button');
+              rejectButton.className = 'btn btn-reject';
+              rejectButton.textContent = 'Refuser';
+              rejectButton.onclick = () => updateStageStatus(stage.id_stage, 'Refusé');
+      
+              buttonContainer.appendChild(validateButton);
+              buttonContainer.appendChild(rejectButton);
+      
+              stageCard.appendChild(buttonContainer);
+              internshipGrid.appendChild(stageCard);
+            });
+          } catch (error) {
+            console.error('Erreur lors de la récupération des stages :', error);
+            alert('Impossible de charger les stages.');
+          }
+        }
+      
+        async function updateStageStatus(idStage, statut) {
+          try {
+            const response = await fetch(`http://localhost:3001/stages/${idStage}/etat`, {
+              method: 'POST',
+              credentials:"include",
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ statut }),
+            });
+      
+            const result = await response.json();
+            alert(result.message);
+      
+            // Recharger les stages après mise à jour
+            fetchStages();
+          } catch (error) {
+            console.error('Erreur lors de la mise à jour du statut :', error);
+            alert('Erreur lors de la mise à jour du statut.');
+          }
+        }
+      
+        // Charger les stages au démarrage
+        fetchStages();
+      </script>
+      -->
+      </body>
 </html>

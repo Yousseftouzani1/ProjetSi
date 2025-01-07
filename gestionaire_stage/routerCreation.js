@@ -41,15 +41,16 @@ router.post('/register_Entreprise', async (req, res) => {
         return res.status(400).json({ error: 'Tous les champs sont requis.' });
     }
 */
+console.log(req.body);
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(mdp_entreprise, saltRounds);
     let connection;
 
     try {
         connection = await oracledb.getConnection(dbConfig);
-        await connection.execute(
-            `INSERT INTO Entreprise (id_entreprise, nom, mdp_entreprise, secteur_activite, nom_connexion, type_entreprise, date_creation,adresse) 
-             VALUES (Entreprise_seq.NEXTVAL, :nom, :mdp_entreprise, :secteur_activite, :nom_connexion, :type_entreprise, TO_DATE(:date_creation, 'YYYY-MM-DD'),:adresse)`,
+        const result=await connection.execute(
+            `INSERT INTO Entreprise ( id_entreprise , nom , mdp_entreprise, secteur_activite, nom_connexion, type_entreprise, date_creation,adresse) 
+             VALUES ( Entreprise_seq.NEXTVAL , :nom , :mdp_entreprise , :secteur_activite, :nom_connexion, :type_entreprise, TO_DATE(:date_creation, 'YYYY-MM-DD'),:adresse)`,
             { 
                 nom, 
                 mdp_entreprise: hashedPassword,
@@ -58,9 +59,10 @@ router.post('/register_Entreprise', async (req, res) => {
                 type_entreprise,
                 date_creation,
                 adresse
-            },
+            }, 
             { autoCommit: true }
         );
+        console.log("Résultat de l'insertion :", result);
         res.status(201).json({ message: 'Entreprise enregistrée avec succès!' });
     } catch (err) {
         console.error('Erreur lors de l\'enregistrement:', err);
