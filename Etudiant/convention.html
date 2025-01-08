@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Convention de Stage</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      padding: 0;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      background: #f9f9f9;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #333;
+    }
+    .section {
+      margin-bottom: 20px;
+    }
+    .section strong {
+      font-weight: bold;
+    }
+    .signatures {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 40px;
+    }
+    .signature-box {
+      text-align: center;
+    }
+    .signature-box span {
+      display: block;
+      margin-top: 10px;
+      font-weight: bold;
+    }
+    @media print {
+      body {
+        margin: 0;
+        padding: 0;
+      }
+      .container {
+        border: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Convention de Stage</h1>
+    <h2>Entre les soussignés</h2>
+
+    <div class="section">
+      <strong>L'établissement d'enseignement :</strong> <span id="school-name">Université XYZ</span>
+    </div>
+    <div class="section">
+      <strong>L'organisme d'accueil :</strong> <span id="company-name"></span>
+    </div>
+    <div class="section">
+      <strong>L'étudiant :</strong> <span id="student-name"></span>
+    </div>
+
+    <h2>Il est convenu ce qui suit :</h2>
+
+    <div class="section">
+      <strong>Article 1 : Objet</strong><br>
+      La présente convention a pour objet de définir les conditions dans lesquelles <span id="student-name-obj"></span> effectuera un stage au sein de <span id="company-name-obj"></span>.
+    </div>
+
+    <div class="section">
+      <strong>Article 2 : Durée et horaires</strong><br>
+      Le stage se déroulera pour une durée de <span id="internship-duration"></span>. Les horaires de travail seront convenus entre les parties.
+    </div>
+
+    <div class="section">
+      <strong>Article 3 : Missions</strong><br>
+      L'étudiant sera chargé de <span id="internship-missions"></span>.
+    </div>
+
+   
+
+    <div class="section">
+      <strong>Article 4 : Engagements</strong><br>
+      Chaque partie s'engage à respecter les termes de la présente convention.
+    </div>
+
+    <div class="section">
+      Fait à <span id="city">[Ville]</span>, le <span id="date">[Date]</span>.
+    </div>
+
+    <div class="signatures">
+      <div class="signature-box">
+        Pour l'étudiant :<br>
+        <span>Signature</span>
+      </div>
+      <div class="signature-box">
+        Pour l'établissement :<br>
+        <span>Signature</span>
+      </div>
+      <div class="signature-box">
+        Pour l'organisme d'accueil :<br>
+        <span>Signature</span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Récupérer l'ID de stage depuis l'URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const stageId = urlParams.get('idStage');
+
+      if (!stageId) {
+        alert('ID du stage non spécifié dans l\'URL.');
+        return;
+      }
+
+      try {
+        // Fetch des données depuis le serveur
+        const response = await fetch(`http://localhost:3001/doc/stages/${stageId}`);
+        if (!response.ok) throw new Error('Erreur lors de la récupération des données.');
+
+        const data = await response.json();
+        if (data.length === 0) {
+          alert('Aucune donnée trouvée pour cet ID.');
+          return;
+        }
+
+        const stage = Array.isArray(data) ? data[0] : data;
+
+        // Remplir les données dans le DOM
+        document.getElementById('student-name').textContent = stage.studentUsername || 'Non spécifié';
+        document.getElementById('student-name-obj').textContent = stage.studentUsername || 'Non spécifié';
+        document.getElementById('company-name').textContent = stage.companyName || 'Non spécifié';
+        document.getElementById('company-name-obj').textContent = stage.companyName || 'Non spécifié';
+        document.getElementById('internship-duration').textContent = stage.internshipDuration || 'Non spécifiée';
+        document.getElementById('internship-missions').textContent = stage.internshipTitle || 'Non spécifié';
+        document.getElementById('internship-remuneration').textContent = stage.note || 'Non spécifiée';
+        document.getElementById('city').textContent = 'Paris'; // Exemple
+        document.getElementById('date').textContent = new Date().toLocaleDateString();
+      } catch (error) {
+        console.error('Erreur:', error);
+        alert('Une erreur s\'est produite lors de la récupération des données.');
+      }
+    });
+  </script>
+</body>
+</html>

@@ -41,7 +41,7 @@ router.get('/api/offers', async (req, res) => {
       if (isNaN(offerId)) {
         return res.status(400).json({ error: 'Invalid ID format' });
       }
-  
+     
       const connection = await oracledb.getConnection(dbConfig);
   
       const query = `

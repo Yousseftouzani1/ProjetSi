@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fiche d'Évaluation de Stage</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .fiche-container {
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .section {
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            font-size: 18px;
+            color: #555;
+            border-bottom: 2px solid #4CAF50;
+            padding-bottom: 5px;
+            margin-bottom: 10px;
+        }
+        .section p {
+            margin: 5px 0;
+        }
+        .section p strong {
+            color: #333;
+        }
+        .buttons {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .buttons button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 5px;
+            font-size: 16px;
+        }
+        .buttons button:hover {
+            background-color: #45a049;
+        }
+        @media print {
+            .buttons {
+                display: none;
+            }
+            body {
+                border: none;
+                box-shadow: none;
+            }
+        }
+    </style>
+    <!-- Bibliothèque html2pdf.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+</head>
+<body>
+
+    <div class="fiche-container">
+        <h1>Fiche d'Évaluation de Stage</h1>
+      
+        <div class="section">
+          <h2>Informations de l'Élève</h2>
+          <p><strong>Nom de l'Élève :</strong> <span id="student-name">Jean Dupont</span></p>
+          <p><strong>Titre de l'Offre de Stage :</strong> <span id="offer-title">Développeur Web</span></p>
+        </div>
+      
+        <div class="section">
+          <h2>Informations de l'Entreprise</h2>
+          <p><strong>Nom de l'Entreprise :</strong> <span id="company-name">TechCorp</span></p>
+          <p><strong>Durée du Stage :</strong> <span id="stage-duration">3 mois</span></p>
+          <p><strong>Type de Stage :</strong> <span id="stage-type">Professionnalisation</span></p>
+        </div>
+      
+        <div class="section">
+          <h2>Évaluation</h2>
+          <p><strong>Note :</strong> <span id="stage-note">16/20</span></p>
+          <p><strong>Remarques :</strong> 
+            <span id="stage-remarks">
+              L'élève a fait preuve d'une grande autonomie et d'un excellent esprit d'équipe. 
+              Les compétences techniques acquises sont solides et applicables en milieu professionnel.
+            </span>
+          </p>
+        </div>
+      </div>
+      
+      <div class="buttons">
+        <button onclick="window.print()">Imprimer la Fiche</button>
+        <button onclick="generatePDF()">Télécharger en PDF</button>
+      </div>
+      <script>
+      document.addEventListener('DOMContentLoaded', async () => {
+        // Récupération de l'idStage depuis l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const stageId = urlParams.get('idStage');
+        console.log('idStage est :' + stageId);
+      
+        if (!stageId) {
+          console.error('ID du stage non trouvé');
+          return;
+        }
+      
+        try {
+          // Appel de l'API pour récupérer les détails du stage
+          const response = await fetch(`http://localhost:3001/doc/stages/${stageId}`, {
+            credentials: 'include',
+          });
+      
+          if (!response.ok) {
+            throw new Error('Erreur lors de la récupération des détails du stage.');
+          }
+      
+          const stageDetails = await response.json();
+      
+          if (!stageDetails || stageDetails.length === 0) {
+            throw new Error('Aucune donnée trouvée pour ce stage.');
+          }
+      
+          // Utilisation du premier élément (si l'API retourne un tableau)
+          const data = Array.isArray(stageDetails) ? stageDetails[0] : stageDetails;
+      
+          // Utilisation des données pour remplir le contenu HTML
+          document.getElementById('student-name').textContent = data.studentUsername || 'Non spécifié';
+          document.getElementById('offer-title').textContent = data.internshipTitle || 'Non spécifié';
+          document.getElementById('company-name').textContent = data.companyName || 'Non spécifié';
+          document.getElementById('stage-duration').textContent = data.internshipDuration || 'Non spécifiée';
+          document.getElementById('stage-type').textContent = data.internshipType || 'Non spécifié';
+          document.getElementById('stage-note').textContent = data.note || 'Non notée';
+          document.getElementById('stage-remarks').textContent = data.remarks || 'Aucune remarque';
+      
+          console.log('Données récupérées et affichées :', data);
+        } catch (error) {
+          console.error('Erreur:', error);
+          alert('Une erreur s\'est produite lors du chargement des données de la fiche.');
+        }
+      });
+    </script>
+</body>
+</html>

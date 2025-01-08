@@ -436,13 +436,13 @@
     }
   
     // Fonction pour récupérer et afficher les stages acceptés
-    async function fetchAcceptedStages() {
+async function fetchAcceptedStages() {
       try {
         const response = await fetch("http://localhost:3001/stageA", {
           method: "GET",
           credentials: "include", // Inclure les cookies
         });
-  
+   
         if (!response.ok) {
           throw new Error("Erreur lors de la récupération des stages acceptés.");
         }
@@ -466,6 +466,10 @@
               <p><i class="fas fa-tasks me-2"></i>${stage.internshipTitle}</p>
               <span class="status-badge status-completed">Accepté</span>
             </div>
+             <div class="button-group">
+          <button class="btn btn-primary" onclick="viewInternshipAgreement(${stage.internshipId})">fiche d evaluation </button>
+          <button class="btn btn-secondary" onclick="viewEvaluationForm(${stage.internshipId})">Convention de stage </button>
+        </div>
           `;
   
           completedInternshipsGrid.appendChild(card);
@@ -475,6 +479,16 @@
         alert("Une erreur s'est produite lors du chargement des stages acceptés.");
       }
     }
+function viewInternshipAgreement(internshipId) { //fonction pour rediriger vers la convention de stage 
+  const url = `/ficheDevaluation?idStage=${internshipId}`;
+  window.location.href = url;
+}
+
+function viewEvaluationForm(internshipId) {
+  window.location.href = `/convention?idStage=${internshipId}`;
+}
+
+
   
     // Fonction pour mettre à jour le statut d'un stage (en cours)
     async function updateInternshipStatus(id, status) {

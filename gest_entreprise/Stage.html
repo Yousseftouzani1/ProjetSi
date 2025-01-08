@@ -375,6 +375,12 @@
     <div id="in-progress-internship-grid"></div>
   </div>
 </div>
+<div class="main-content">
+  <div class="internship-section">
+    <h2 class="section-title">Stages Terminé</h2>
+    <div id="in-progress-internshipp-grid"></div>
+  </div>
+</div>
     <!--
     <script>
       // Fonction pour récupérer les stages nécessitant une note
@@ -534,9 +540,10 @@
               const idStage = button.dataset.id;
               const card = button.closest(".internship-card");
               const noteField = card.querySelector(".note-field").value;
-    
-              if (!noteField) {
-                alert("Veuillez entrer une note avant de terminer.");
+              const remarksField = card.querySelector(".remarks-field").value;
+
+              if (!noteField || !remarksField) {
+                alert("Veuillez entrer une note et une remarque avant de terminer.");
                 return;
               }
     
@@ -669,7 +676,7 @@
       alert('Impossible de charger les stages.');
     }
   }
-
+ 
   async function updateStageStatus(idStage, statut) {
     try {
       const response = await fetch(`http://localhost:3001/stages/${idStage}/etat`, {
@@ -695,83 +702,63 @@
 });
 
       </script>
-      <!--
+
+
+
       <script>
-        async function fetchStages() {
+        document.addEventListener('DOMContentLoaded', async () => {
           try {
-            const response = await fetch('http://localhost:3001/stages', {
-             method: 'GET',
-             credentials:"include" 
-            
-            
-            });
+            // Fetch completed internships from the backend
+            const response = await fetch('http://localhost:3001/stagesTermine');
+            if (!response.ok) {
+              throw new Error('Erreur lors de la récupération des stages.');
+            }
+      
             const stages = await response.json();
       
-            const internshipGrid = document.getElementById('internship-grid');
-            internshipGrid.innerHTML = ''; // Vider le conteneur avant de l'injecter
+            // Get the internship grid element
+            const internshipGrid = document.getElementById('in-progress-internshipp-grid');
       
-            stages.forEach(stage => {
-              // Créer la carte pour chaque stage
+            if (stages.length === 0) {
+              internshipGrid.innerHTML = '<p>Aucun stage terminé trouvé.</p>';
+              return;
+            }
+      
+            // Populate the grid with the stages
+            stages.forEach((stage) => {
               const stageCard = document.createElement('div');
-              stageCard.className = 'internship-card';
-      
+              stageCard.classList.add('stage-card');
               stageCard.innerHTML = `
                 <h3>${stage.titre}</h3>
                 <p><strong>Étudiant :</strong> ${stage.username}</p>
                 <p><strong>Email :</strong> ${stage.email}</p>
-                <p><strong>Date Acceptation :</strong> ${stage.date_acceptation}</p>
+                <p><strong>Date d'acceptation :</strong> ${new Date(stage.date_acceptation).toLocaleDateString()}</p>
+                <p><strong>Remarques :</strong> ${stage.remarques || 'Aucune'}</p>
+                <div class="tag">Terminé</div>
+                <div class="buttons">
+                  <button onclick="redirectToConvention(${stage.id_stage})">Convention de Stage</button>
+                  <button onclick="redirectToEvaluation(${stage.id_stage})">Fiche d'évaluation</button>
+                </div>
               `;
-      
-              const buttonContainer = document.createElement('div');
-              buttonContainer.className = 'button-container';
-      
-              // Bouton Valider
-              const validateButton = document.createElement('button');
-              validateButton.className = 'btn btn-validate';
-              validateButton.textContent = 'Valider';
-              validateButton.onclick = () => updateStageStatus(stage.id_stage, 'Validé');
-      
-              // Bouton Refuser
-              const rejectButton = document.createElement('button');
-              rejectButton.className = 'btn btn-reject';
-              rejectButton.textContent = 'Refuser';
-              rejectButton.onclick = () => updateStageStatus(stage.id_stage, 'Refusé');
-      
-              buttonContainer.appendChild(validateButton);
-              buttonContainer.appendChild(rejectButton);
-      
-              stageCard.appendChild(buttonContainer);
               internshipGrid.appendChild(stageCard);
             });
           } catch (error) {
-            console.error('Erreur lors de la récupération des stages :', error);
-            alert('Impossible de charger les stages.');
+            console.error('Erreur:', error);
+            const internshipGrid = document.getElementById('in-progress-internship-grid');
+            internshipGrid.innerHTML = '<p>Une erreur s\'est produite lors de la récupération des stages.</p>';
           }
+        });
+      
+        // Redirect to Convention de Stage page
+        function redirectToConvention(stageId) {
+          window.location.href = `http://localhost:3001/convention?idStage=${stageId}`;
         }
       
-        async function updateStageStatus(idStage, statut) {
-          try {
-            const response = await fetch(`http://localhost:3001/stages/${idStage}/etat`, {
-              method: 'POST',
-              credentials:"include",
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ statut }),
-            });
-      
-            const result = await response.json();
-            alert(result.message);
-      
-            // Recharger les stages après mise à jour
-            fetchStages();
-          } catch (error) {
-            console.error('Erreur lors de la mise à jour du statut :', error);
-            alert('Erreur lors de la mise à jour du statut.');
-          }
+        // Redirect to Fiche d'évaluation page
+        function redirectToEvaluation(stageId) {
+          window.location.href = `http://localhost:3001/ficheDevaluation?idStage=${stageId}`;
         }
-      
-        // Charger les stages au démarrage
-        fetchStages();
       </script>
-      -->
+      
       </body>
 </html>

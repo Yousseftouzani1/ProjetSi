@@ -265,4 +265,90 @@ router.post('/stages/:idStage/note', async (req, res) => {
       res.status(500).send('Erreur lors de la mise à jour du statut.');
     }
   });
+  // noter le stage comme terminé
+router.post('/stages/:idStage/complete', async (req, res) => {
+    const { idStage } = req.params;
+    const { terminer } = req.body;
+  
+    try {
+      const connection = await oracledb.getConnection(dbConfig);
+  
+      await connection.execute(
+        `
+        UPDATE Stage 
+        SET STATUS_STAGE=:terminer 
+        WHERE id_stage = :idStage
+        `,
+        [terminer,idStage],
+        { autoCommit: true }
+      );
+  
+      await connection.close();
+  
+      res.json({ message: `Statut mis à jour avec succès .` });
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour du statut:', error);
+      res.status(500).send('Erreur lors de la mise à jour du statut.');
+    }
+  });
+  // aficher les stage termine associe a l entreprise
+router.get('/stagesTermine', async (req, res) => {
+    const token = req.cookies.access_token;
+    try {
+      // Décoder le token pour récupérer l'id_entreprise
+      const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_KEY);
+      const id_entreprise = parseInt(decodedToken.entrepriseIdg, 10);
+  
+      if (isNaN(id_entreprise)) {
+        return res.status(400).send('ID de l’entreprise invalide.');
+      }
+  
+      console.log('ID de l’entreprise de Anoter dans Stage  :', id_entreprise);
+  
+      const connection = await oracledb.getConnection(dbConfig);
+  
+      const result = await connection.execute(
+        `
+        SELECT 
+    E.username, 
+    O.titre, 
+    C.date_acceptation, 
+    E.email, 
+    S.id_stage,
+    S.noter,
+    S.id_entreprise,
+    S.remarques,
+    C.STATUS,
+    S.STATUS_STAGE,
+    S.ETAT_VALIDATION
+  FROM 
+    Stage S
+    JOIN Etudiant E ON E.ID_ETUDIANT = S.ID_ETUDIANT
+    JOIN OFFRE_STAGE O ON O.ID_STAGE = S.ID_OFFRE
+    JOIN CONVOCATION C ON C.ID_STAGE = O.ID_STAGE
+    WHERE S.ID_ENTREPRISE=:id_entreprise AND C.STATUS = 'Accepté' AND S.STATUS_STAGE='Terminé'
+        `,
+        [id_entreprise],
+        { outFormat: oracledb.OUT_FORMAT_OBJECT }
+      );
+  
+      await connection.close();
+  
+      // Structurer les résultats pour les rendre lisibles pour le frontend
+      const stages = result.rows.map((row) => ({
+        username: row.USERNAME,
+        titre: row.TITRE,
+        date_acceptation: row.DATE_ACCEPTATION,
+        email: row.EMAIL,
+        id_stage: row.ID_STAGE,
+        noter:row.NOTER,
+        remarques:row.REMARQUES,
+      }));
+  console.log(stages);
+      res.json(stages);
+    } catch (error) {
+      console.error('Erreur lors de la récupération des stages:', error);
+      res.status(500).send('Erreur lors de la récupération des stages.');
+    }
+  });
 module.exports = router;

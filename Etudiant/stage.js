@@ -119,7 +119,7 @@ router.get('/stageA', async (req, res) => {
     }
 
     const connection = await oracledb.getConnection(dbConfig);
-    
+     
     const result = await connection.execute(`
       SELECT 
         S.ID_STAGE,
@@ -129,6 +129,8 @@ router.get('/stageA', async (req, res) => {
         En.NOM,
         O.TITRE,
         O.DESCRIPTION,
+        S.noter,
+        S.remarques,
         En.adresse
       FROM STAGE S
       JOIN ETUDIANT E ON S.ID_ETUDIANT = E.ID_ETUDIANT
@@ -152,6 +154,8 @@ router.get('/stageA', async (req, res) => {
       companyName: row.NOM,
       internshipTitle: row.TITRE,
       description: row.DESCRIPTION,
+      note:row.NOTER,
+      remarques:row.REMARQUES,
       companyAddress: row.ADRESSE
     }));
 
@@ -165,7 +169,6 @@ router.get('/stageA', async (req, res) => {
 });
 
 //accepter ou refuser celon l etat passer par la fct 
-// UPDATE STAGE SET STATUS_STAGE='Accepté' WHERE ID_STAGE =:id_stage
 router.put('/stage/:id_stage/status', async (req, res) => {
   const token = req.cookies.access_token;
   const { status } = req.body; // Expected status: 'Accepté' or 'Refusé'
@@ -232,5 +235,67 @@ router.put('/stage/:id_stage/status', async (req, res) => {
     res.status(500).send('Erreur lors de la mise à jour du statut du stage.');
   }
 });
+//fetchdata pour convention de stage  
+router.get('/doc/stages/:idStage', async (req, res) => {
+  const { idStage } = req.params;
+
+  try {
+    const connection = await oracledb.getConnection(dbConfig);
+
+    // Exécuter la requête SQL
+    const result = await connection.execute(
+      `
+      SELECT 
+        E.USERNAME, 
+        E.EMAIL, 
+        E.FILIERE, 
+        E.ANNEE, 
+        O.TITRE, 
+        O.MODE_STAGE, 
+        O.TYPE_STAGE, 
+        O.DUREE, 
+        S.NOTER, 
+        S.REMARQUES, 
+        En.NOM
+      FROM STAGE S
+      JOIN ETUDIANT E ON S.ID_ETUDIANT = E.ID_ETUDIANT
+      JOIN OFFRE_STAGE O ON O.ID_STAGE = S.ID_OFFRE
+      JOIN ENTREPRISE En ON En.ID_ENTREPRISE = S.ID_ENTREPRISE
+      WHERE S.ID_STAGE = :id_stage
+      `,
+      {
+        id_stage: idStage, // Liaison des paramètres pour sécuriser la requête
+      },
+      {
+        outFormat: oracledb.OUT_FORMAT_OBJECT, // Format des résultats sous forme d'objets
+      }
+    );
+
+    // Mapper les résultats à un format lisible
+    const mappedResults = result.rows.map(row => ({
+      studentUsername: row.USERNAME,
+      studentEmail: row.EMAIL,
+      studentFiliere: row.FILIERE,
+      studentAnnee: row.ANNEE,
+      internshipTitle: row.TITRE,
+      internshipMode: row.MODE_STAGE,
+      internshipType: row.TYPE_STAGE,
+      internshipDuration: row.DUREE,
+      note: row.NOTER,
+      remarks: row.REMARQUES,
+      companyName: row.NOM,
+    }));
+console.log('from stage.js here is the data fetched'+mappedResults.internshipDuration);
+    // Fermer la connexion à la base de données
+    await connection.close();
+
+    // Retourner les résultats sous forme de JSON
+    res.json(mappedResults);
+  } catch (error) {
+    console.error('Erreur lors de la récupération des données:', error);
+    res.status(500).send('Erreur lors de la récupération des données.');
+  }
+});
+
 
 module.exports = router;

@@ -113,7 +113,12 @@ app.get('/can', (req, res) => {
 app.get('/admin', (req, res) => {
   res.sendFile(path.join(__dirname, '../admin/ht.html'));
 });
-
+app.get('/ficheDevaluation', async (req, res) => {
+  res.sendFile(path.join(__dirname, '../Etudiant/fichevaluation.html'));
+});
+app.get('/convention', async (req, res) => {
+  res.sendFile(path.join(__dirname, '../Etudiant/convention.html'));
+});
 
 
 
