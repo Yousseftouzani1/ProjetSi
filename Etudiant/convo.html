@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+   <meta charset="UTF-8">
+   <title>Convocation à l'entretien de stage</title>
+   <style>
+       body {
+           font-family: Arial, sans-serif;
+           line-height: 1.6;
+           margin: 40px;
+       }
+       .header {
+           text-align: right;
+           margin-bottom: 50px;
+       }
+       .footer {
+           margin-top: 50px;
+           text-align: center;
+       }
+       .signature {
+           margin-top: 50px;
+           text-align: right;
+       }
+       .logo {
+           text-align: center;
+           margin-bottom: 30px;
+       }
+       .content {
+           text-align: justify;
+       }
+       .subject {
+           font-weight: bold;
+           margin: 30px 0;
+       }
+       .buttons {
+           margin-top: 20px;
+           text-align: center;
+       }
+       .buttons button {
+           margin: 0 10px;
+           padding: 10px 20px;
+       }
+       @media print {
+           .buttons {
+               display: none;
+           }
+           body {
+               margin: 0;
+               padding: 20px;
+           }
+           @page {
+               margin: 2cm;
+           }
+       }
+   </style>
+</head>
+<body>
+  <div class="logo">
+  </div>
+
+  <div class="header">
+      <p>Effectué , le <span id="dateConvocation"></span></p>
+  </div>
+
+  <div class="content">
+      <p>À l'attention de l'étudiant(e): <strong><span id="nomEtudiant"></span></strong></p>
+      <p>Filière: <strong><span id="filiereEtudiant"></span></strong></p>
+
+      <div class="subject">
+          Objet: Convocation à un entretien de stage
+      </div>
+
+      <p>Cher(e) étudiant(e),</p>
+
+      <p>Suite à votre candidature pour un stage intitulé "<span id="titreStage"></span>" au sein de l'entreprise <strong><span id="nomEntreprise"></span></strong>, nous avons le plaisir de vous convoquer à un entretien qui se déroulera:</p>
+
+      <p style="text-align: center; margin: 30px 0;">
+          <strong>Le <span id="dateEntretien"></span></strong><br>
+          à l'adresse suivante:<br>
+          <strong><span id="adresseEntreprise"></span></strong>
+      </p>
+
+      <p>Nous vous prions de bien vouloir vous présenter muni(e) de:</p>
+      <ul>
+          <li>Votre pièce d'identité</li>
+          <li>Votre certificat de scolarité</li>
+      </ul>
+
+      <p>En cas d'empêchement, merci de nous prévenir dans les plus brefs délais.</p>
+
+      <p>Nous vous souhaitons bonne réception de ce courrier et restons à votre disposition pour tout renseignement complémentaire.</p>
+  </div>
+
+  <div class="signature">
+      <p>Le service des stages<br>
+      </p>
+  </div>
+
+  <div class="buttons">
+      <button id="downloadPdf">Télécharger en PDF</button>
+      <button id="printPage">Imprimer</button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        try {
+            // Récupérer les paramètres de l'URL
+            const urlParams = new URLSearchParams(window.location.search);
+            const idconv = urlParams.get('idconv');
+            const titre = urlParams.get('convotitre');
+            console.log('here is the id '+idconv+'titre est :'+titre);
+            document.getElementById('titreStage').textContent = titre;
+ 
+            // Fetch les données
+            if (idconv) {
+                const response = await fetch(`http://localhost:3001/getconv/${idconv}`, {
+                    credentials: 'include',
+                });
+ 
+                if (!response.ok) {
+                    if (response.status === 404) {
+                        throw new Error("Convocation non trouvée");
+                    }
+                    throw new Error("Erreur serveur");
+                }
+ 
+                const data = await response.json();
+ console.log(data +'hello ');
+                if (data) {
+                    // Remplir les informations
+                    document.getElementById('nomEtudiant').textContent = data.username || '[Nom de l\'étudiant]';
+                    document.getElementById('filiereEtudiant').textContent = data.filiere || '[Filière]';
+                    document.getElementById('nomEntreprise').textContent = data.nomEntreprise || '[Nom de l\'entreprise]';
+                    document.getElementById('adresseEntreprise').textContent = data.adresse || '[Adresse de l\'entreprise]';
+                    document.getElementById('dateEntretien').textContent =  data.date_entretien 
+      ? new Date(data.date_entretien).toLocaleDateString('fr-FR', { year: 'numeric', month: 'long', day: 'numeric' }) 
+      : '[Date de l\'entretien]';
+                }
+            } else {
+                console.error("ID de convocation non fourni dans l'URL.");
+            }
+        } catch (error) {
+            console.error("Erreur:", error);
+            console.log('erreur ici   !!!');
+            alert(`Erreur: ${error.message}`);
+        }
+ 
+        // Date du jour
+        const today = new Date().toLocaleDateString('fr-FR');
+        document.getElementById('dateConvocation').textContent = today;
+ 
+        // Télécharger en PDF
+        document.getElementById('downloadPdf').addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+ 
+            // Ajouter le contenu de manière formatée
+            doc.setFontSize(16);
+            doc.text('École Supérieure de Technologie', 105, 20, { align: 'center' });
+ 
+            doc.setFontSize(12);
+            doc.text(`Agadir, le ${document.getElementById('dateConvocation').textContent}`, 190, 40, { align: 'right' });
+ 
+            doc.text(`À l'attention de l'étudiant(e): ${document.getElementById('nomEtudiant').textContent}`, 20, 60);
+            doc.text(`Filière: ${document.getElementById('filiereEtudiant').textContent}`, 20, 70);
+ 
+            doc.setFontSize(14);
+            doc.text('Objet: Convocation à un entretien de stage', 20, 90);
+ 
+            doc.setFontSize(12);
+            doc.text(`Suite à votre candidature pour un stage intitulé "${document.getElementById('titreStage').textContent}"`, 20, 110);
+            doc.text(`au sein de l'entreprise ${document.getElementById('nomEntreprise').textContent},`, 20, 120);
+            doc.text('nous avons le plaisir de vous convoquer à un entretien qui se déroulera:', 20, 130);
+ 
+            doc.text(`Le ${document.getElementById('dateEntretien').textContent}`, 105, 150, { align: 'center' });
+            doc.text(`à l'adresse suivante:`, 105, 160, { align: 'center' });
+            doc.text(`${document.getElementById('adresseEntreprise').textContent}`, 105, 170, { align: 'center' });
+ 
+            doc.save('convocation.pdf');
+        });
+ 
+        // Imprimer la page
+        document.getElementById('printPage').addEventListener('click', () => {
+            window.print();
+        });
+    });
+ </script>
+ 
+</body>
+</html>

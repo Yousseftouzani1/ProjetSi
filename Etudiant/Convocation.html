@@ -286,7 +286,7 @@
     }
     .action-button{
       color: #FE691E;
-      c
+      
     }
   </style>
 </head>
@@ -440,12 +440,16 @@ async function displayConvocations(convocations) {
       <p>Date d'acceptation: ${convocation.dateAcceptation ? convocation.dateAcceptation : 'Non encore acceptée'}</p>
       <button onclick="handleAction('accept', ${convocation.id})">Accepter</button>
       <button onclick="handleAction('reject', ${convocation.id})">Refuser</button>
+   <button class="btn btn-secondary" onclick="viewconvForm(${convocation.id}, '${convocation.titre}')">Convocation de stage</button>
     `;
     
     cardsWrapper.appendChild(card);
   });
 }
-
+ function viewconvForm(convoid, convtitre) {
+  const url = `/convvv?idconv=${convoid}&convotitre=${convtitre}`;
+  window.location.href = url;
+}
 // Fonction pour charger les convocations depuis l'API
 async function loadConvocations() {
   try {

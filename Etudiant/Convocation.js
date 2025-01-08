@@ -134,5 +134,44 @@ router.post('/convocations/:idConvocation/:action', async (req, res) => {
   }
 });
 
+//obtenir les info de convocation pour un eleve 
+router.get('/getconv/:idconv', async (req, res) => {  // Correction du chemin de route
+  const { idconv } = req.params;  // Correspondre au paramètre de route
+  try {
+    const connection = await oracledb.getConnection(dbConfig);
+    const result = await connection.execute(
+      `SELECT E.USERNAME, E.FILIERE, En.NOM, En.ADRESSE, C.DATE_ACCEPTATION, C.ID_CONVOCATION 
+       FROM CONVOCATION C
+       JOIN ETUDIANT E ON E.ID_ETUDIANT = C.ID_ETUDIANT
+       JOIN OFFRE_STAGE O ON O.ID_STAGE = C.ID_STAGE
+       JOIN ENTREPRISE En ON O.ID_ENTREPRISE = En.ID_ENTREPRISE
+       WHERE C.ID_CONVOCATION = :idconv`,  // Correction du paramètre bind
+      {
+        idconv: idconv,  // Correspondre au nom du paramètre
+      },
+      {
+        outFormat: oracledb.OUT_FORMAT_OBJECT,
+      }
+    );
 
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: 'Convocation non trouvée' });
+    }
+
+    const mappedResults = result.rows.map(row => ({
+      username: row.USERNAME,
+      filiere: row.FILIERE,
+      nomEntreprise: row.NOM,
+      adresse: row.ADRESSE,
+      date_entretien: row.DATE_ACCEPTATION
+    }));
+
+    await connection.close();
+    res.json(mappedResults[0]);  // Renvoyer directement le premier résultat car ID est unique
+
+  } catch (error) {
+    console.error('Erreur lors de l\'impression de la convocation:', error);
+    res.status(500).json({ message: 'Erreur serveur' });  // Ajout d'une réponse d'erreur
+  }
+});
 module.exports = router;

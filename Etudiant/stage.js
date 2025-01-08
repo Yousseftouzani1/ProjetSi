@@ -262,7 +262,7 @@ router.get('/doc/stages/:idStage', async (req, res) => {
       JOIN OFFRE_STAGE O ON O.ID_STAGE = S.ID_OFFRE
       JOIN ENTREPRISE En ON En.ID_ENTREPRISE = S.ID_ENTREPRISE
       WHERE S.ID_STAGE = :id_stage
-      `,
+      `, 
       {
         id_stage: idStage, // Liaison des paramètres pour sécuriser la requête
       },

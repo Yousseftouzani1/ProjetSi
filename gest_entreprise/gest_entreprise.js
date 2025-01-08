@@ -119,6 +119,10 @@ app.get('/ficheDevaluation', async (req, res) => {
 app.get('/convention', async (req, res) => {
   res.sendFile(path.join(__dirname, '../Etudiant/convention.html'));
 });
+app.get('/convvv', async (req, res) => {
+  res.sendFile(path.join(__dirname, '../Etudiant/convo.html'));
+});
+
 
 
 
