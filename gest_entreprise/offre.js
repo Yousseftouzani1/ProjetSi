@@ -12,20 +12,22 @@ router.get('/api/offers', async (req, res) => {
       const connection = await oracledb.getConnection(dbConfig);
   
       const query = `
-        SELECT id_stage, titre, description, competence1, competence2, competence3, competence4, competence5, 
-               competence6, competence7, competence8, competence9, competence10
-        FROM offre_stage
+        SELECT O.id_stage, O.titre, O.description, O.competence1, O.competence2, O.competence3, O.competence4, O.competence5, 
+               O.competence6, O.competence7, O.competence8, O.competence9, O.competence10, E.nom
+        FROM offre_stage O 
+        JOIN ENTREPRISE E ON E.ID_ENTREPRISE = O.ID_ENTREPRISE
       `;
   
       const result = await connection.execute(query);
       await connection.close();
-  
-      const offers = result.rows.map((row) => ({
-        id: row[0],
-        titre: row[1],
-        description: row[2],
-        competences: row.slice(3).filter((competence) => competence !== null), // Filter null competences
-      }));
+  // je voudrais recuperer le nom de l entreprise aussi 
+  const offers = result.rows.map((row) => ({
+    id: row[0],
+    titre: row[1],
+    description: row[2],
+    competences: row.slice(3, 13).filter((competence) => competence !== null), // Filter null competences
+    entreprise: row[13] // Ajout du nom de l'entreprise
+  }));
   
       res.json(offers);
     } catch (error) {

@@ -101,7 +101,7 @@ app.get('/bbbbb', (req, res) => {
 app.get('/conv', (req, res) => {
   res.sendFile(path.join(__dirname, '../Etudiant/Convocation.html'));
 });
-app.get('/stage', (req, res) => {
+app.get('/stage', (req, res) => { 
   res.sendFile(path.join(__dirname, '../gest_entreprise/Stage.html'));
 });
 app.get('/sta', (req, res) => {
@@ -122,9 +122,15 @@ app.get('/convention', async (req, res) => {
 app.get('/convvv', async (req, res) => {
   res.sendFile(path.join(__dirname, '../Etudiant/convo.html'));
 });
-
-
-
+app.get('/data_eleve', async (req, res) => {
+  res.sendFile(path.join(__dirname, '../gest_ecole/data_etudiant.html'));
+});
+app.get('/d1', async (req, res) => {
+  res.sendFile(path.join(__dirname, '../Ecole/d1.html'));
+});
+app.get('/ent', async (req, res) => {
+  res.sendFile(path.join(__dirname, '../Ecole/ent.html'));
+});
 
 /*
 app.get('/', (req, res) => {

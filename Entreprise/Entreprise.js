@@ -129,6 +129,92 @@ router.get('/entreprise/:idEntreprise/stagiaires', async (req, res) => {
   }
 });
 // voir les statistiques des eleves 
+/*
+router.get('/enterprise-stats', async (req, res) => {
+    try {
+        const token = req.cookies.access_token;
+        if (!token) {
+            return res.status(401).json({ error: 'Accès non autorisé. Veuillez vous connecter.' });
+        }
 
+        const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_KEY);
+        const id_entreprise = decodedToken.entrepriseid;
+
+        const connection = await oracledb.getConnection(dbConfig);
+
+        // Requête pour le nombre total de stages acceptés
+        const totalInternsQuery = `
+            SELECT COUNT(*) AS total_interns 
+            FROM STAGE S 
+            WHERE TRIM(S.STATUS_STAGE) = 'Accepté' AND S.ID_ENTREPRISE = :id_entreprise
+        `;
+        const totalInternsResult = await connection.execute(totalInternsQuery, { id_entreprise });
+        const totalInterns = totalInternsResult.rows[0][0];
+
+        // Requête pour les statistiques par école
+        const schoolStatsQuery = `
+            SELECT COUNT(EL.NOM) AS nombre_etudiants, EL.NOM AS ecole
+            FROM ETUDIANT E
+            JOIN STAGE S ON S.ID_ETUDIANT = E.ID_ETUDIANT
+            JOIN ECOLE EL ON EL.ID_ECOLE = E.ID_ECOLE
+            WHERE S.ID_ENTREPRISE = :id_entreprise AND S.STATUS_STAGE = 'Accepté'
+            GROUP BY EL.NOM
+        `;
+        const schoolStatsResult = await connection.execute(schoolStatsQuery, { id_entreprise });
+
+        const schoolStats = schoolStatsResult.rows.map(row => ({
+            ecole: row[1],
+            nombre_etudiants: row[0],
+        }));
+
+        // Envoyer les données au frontend
+        res.json({ totalInterns, schoolStats });
+    } catch (error) {
+        console.error('Erreur lors de la récupération des statistiques :', error);
+        res.status(500).json({ error: 'Erreur lors de la récupération des statistiques.' });
+    }
+});*/
+
+
+///
+router.get('/enterprise-stats', async (req, res) => {
+    try {
+        const token = req.cookies.access_token;
+        const decodedToken = jwt.verify(token, process.env.ACCESS_TOKEN_KEY);
+        const id_entreprise = decodedToken.entrepriseid; // ID de l'entreprise depuis le token
+
+
+        // Récupération des statistiques à partir de l'ID de l'entreprise
+        const connection = await oracledb.getConnection(dbConfig);
+        const totalInternsQuery = `
+            SELECT COUNT(*) AS total_interns
+            FROM STAGE
+            WHERE TRIM(STATUS_STAGE) = 'Accepté' AND ID_ENTREPRISE = :id_entreprise
+        `;
+
+        const schoolStatsQuery = `
+            SELECT EL.NOM AS ecole, COUNT(*) AS nombre_etudiants
+            FROM ETUDIANT E
+            JOIN STAGE S ON S.ID_ETUDIANT = E.ID_ETUDIANT
+            JOIN ECOLE EL ON EL.ID_ECOLE = E.ID_ECOLE
+            WHERE S.ID_ENTREPRISE = :id_entreprise AND S.STATUS_STAGE = 'Accepté'
+            GROUP BY EL.NOM
+        `;
+
+        const totalInternsResult = await connection.execute(totalInternsQuery, { id_entreprise });
+        const schoolStatsResult = await connection.execute(schoolStatsQuery, { id_entreprise });
+
+        const totalInterns = totalInternsResult.rows[0][0];
+        const schoolStats = schoolStatsResult.rows.map(row => ({
+            ecole: row[0],
+            nombre_etudiants: row[1],
+        }));
+
+        res.json({ totalInterns, schoolStats });
+    } catch (err) {
+        console.error('Erreur lors de la récupération des statistiques :', err);
+        res.status(500).json({ error: 'Erreur serveur.' });
+    }
+});
 module.exports = router;
 

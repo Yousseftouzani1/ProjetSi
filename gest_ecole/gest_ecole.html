@@ -216,13 +216,20 @@
     </nav>
  
     <div class="transition-shape"></div>
-
+  
     <!-- Side Menu -->
     <div class="side-menu">
         <ul>
             <ul>
-                <li><a href="gest-add-student.html"><i class="fas fa-user-graduate me-2"></i>Add Students</a></li>
-                <li><a href="gest-add-prof.html"><i class="fas fa-chart-bar me-2"></i>Add Professeur</a></li>
+                <li><a href="gest-add-student.html" onclick="RedirectTo('/bbb'); return false;">
+                <i class="fas fa-user-graduate me-2">
+
+                </i>Ajouter Etudiants</a>
+                </li>
+                <li><a href="gest-add-prof.html" onclick="RedirectTo('/data_eleve'); return false;">
+                    <i class="fas fa-chart-bar me-2">
+                    </i>Données Etudiants</a>
+                </li>
             </ul>
         </ul>
     </div>
@@ -300,8 +307,13 @@
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 
     <script>
+            function RedirectTo(url) {
+     // Stocker le token avant la redirection
+    const baseURL = 'http://localhost:3001';
+    window.location.href = baseURL + url; // Redirige vers l'URL spécifiée
+}
         function generatePassword() {
-            const chars = 'ABCDEFGHIJKLMtuvwxyz0123456789!@#$%^&*';
+            const chars = 'ABCDEFGHIJKLMtuvwxyz0123456789!@';
             const password = Array.from({length: 12}, () => chars[Math.floor(Math.random() * chars.length)]).join('');
             document.getElementById('password').value = password;
         }

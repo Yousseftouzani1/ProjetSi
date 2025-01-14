@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion des Étudiants</title>
+    <style>
+        /* Leaf Animation */
+.leaf {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.15);
+    clip-path: polygon(50% 0%, 75% 25%, 100% 50%, 75% 75%, 50% 100%, 25% 75%, 0% 50%, 25% 25%);
+    transform-origin: center;
+    animation: floatLeaf 6s infinite ease-in-out;
+}
+
+@keyframes floatLeaf {
+    0%, 100% { transform: translateY(0) rotate(var(--rotation)); }
+    50% { transform: translateY(-10px) rotate(var(--rotation)); }
+}
+
+.leaf-1 { width: 60px; height: 40px; top: 10px; left: 20px; --rotation: 30deg; }
+.leaf-2 { width: 50px; height: 30px; top: 15px; right: 40px; --rotation: -20deg; }
+.leaf-3 { width: 70px; height: 45px; top: 5px; left: 40%; --rotation: 15deg; }
+.leaf-4 { width: 40px; height: 25px; top: 20px; left: 60%; --rotation: -25deg; }
+.leaf-5 { width: 55px; height: 35px; top: 8px; right: 20%; --rotation: 40deg; }
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .side-menu {
+        width: 200px;
+    }
+    
+    .container {
+        margin-left: 200px;
+    }
+}
+
+@media (max-width: 576px) {
+    .side-menu {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .container {
+        margin-left: 0;
+    }
+    
+    .side-menu.active {
+        transform: translateX(0);
+    }
+}
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 30;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+        .container {
+            width: 80%;
+            max-width: 1100px;
+            margin: 30px auto;
+            text-align: center;
+        }
+        .search-bar {
+            margin-bottom: 20px;
+        }
+        .search-bar input {
+            width: 100%;
+            max-width: 400px;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .students-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .student-box {
+            background: #fff;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        .student-box h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        .student-box p {
+            margin: 10px 0;
+        }
+        .actions {
+            margin-top: 15px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .actions button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .delete-btn {
+            background-color: #ff4d4d;
+            color: #fff;
+        }
+        .delete-btn:hover {
+            background-color: #e60000;
+        }
+        .edit-btn {
+            background-color: #4caf50;
+            color: #fff;
+        }
+        .edit-btn:hover {
+            background-color: #3e8e41;
+        }
+        .navbar-custom {
+    background: linear-gradient(90deg, #654321, #8B4513);
+    height: 60px;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+    padding: 0 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    top: 0; /* Add this line */
+    left: 0;
+}
+
+.navbar-brand {
+    font-size: 24px;
+    font-weight: 600;
+}
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .side-menu {
+        width: 200px;
+    }
+    
+    .container {
+        margin-left: 200px;
+    }
+}
+
+@media (max-width: 576px) {
+    .side-menu {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .container {
+        margin-left: 0;
+        margin-top: 50%;
+    }
+    
+    .side-menu.active {
+        transform: translateX(0);
+    }
+}
+/* Side Menu */
+.side-menu {
+    position: fixed;
+    top: 80px;
+    left: 0;
+    width: 100px;
+    height: calc(100% - 80px);
+    background: linear-gradient(90deg, #654321, #8B4513);
+    padding: 20px;
+    color: white;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.side-menu ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.side-menu li {
+    margin: 15px 0;
+}
+
+.side-menu a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: block;
+    padding: 10px 15px;
+    border-radius: 8px;
+}
+
+.side-menu a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white" >Internship Management</a>
+            <div class="profile-container">
+                <div class="profile-icon" onclick="toggleDropdown()">
+                </div>
+                <div class="profile-dropdown" id="profileDropdown">
+                </div>
+            </div>
+        </div>
+
+        <div class="leaf leaf-1"></div>
+        <div class="leaf leaf-2"></div>
+        <div class="leaf leaf-3"></div>
+        <div class="leaf leaf-4"></div>
+        <div class="leaf leaf-5"></div>
+    </nav>
+
+
+    <div class="transition-shape"></div>
+    <div class="container">
+        
+        <h1>Gestion des Étudiants</h1>
+        <div class="search-bar">
+            <input type="text" id="search" placeholder="Rechercher un étudiant par nom...">
+        </div>
+        <div class="students-grid" id="students-grid">
+            <!-- Les étudiants seront affichés ici -->
+        </div>
+    </div>
+
+    <script>
+        const studentsGrid = document.getElementById('students-grid');
+        const searchInput = document.getElementById('search');
+
+        async function fetchStudents(query = '') {
+            try {
+                const response = await fetch(`/api/studentss`);
+                const students = await response.json();
+                displayStudents(students, query);
+            } catch (error) {
+                console.error('Erreur lors de la récupération des étudiants :', error);
+            }
+        }
+
+        function displayStudents(students, query) {
+            studentsGrid.innerHTML = '';
+            students
+                .filter(student => student.username.toLowerCase().startsWith(query.toLowerCase()))
+                .forEach(student => {
+                    const studentBox = document.createElement('div');
+                    studentBox.classList.add('student-box');
+
+                    studentBox.innerHTML = `
+                        <h3>${student.username}</h3>
+                        <p><strong>Filière :</strong> ${student.filiere}</p>
+                        <p><strong>Email :</strong> ${student.email}</p>
+                        <p><strong>Téléphone :</strong> ${student.telephone}</p>
+                        <div class="actions">
+                            <button class="edit-btn" onclick="editStudent('${student.id}', '${student.filiere}')">Modifier la filière</button>
+                            <button class="delete-btn" onclick="deleteStudent('${student.id}')">Supprimer</button>
+                        </div>
+                    `;
+
+                    studentsGrid.appendChild(studentBox);
+                });
+        }
+
+        async function editStudent(id, currentFiliere) {
+            const newFiliere = prompt('Entrez la nouvelle filière:', currentFiliere);
+            if (newFiliere && newFiliere !== currentFiliere) {
+                try {
+                    const response = await fetch(`/change_filiere/${id}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ filiere: newFiliere })
+                    });
+
+                    const result = await response.json();
+                    alert(result.message || 'Filière modifiée avec succès.');
+                    fetchStudents(searchInput.value);
+                } catch (error) {
+                    console.error('Erreur lors de la modification de la filière :', error);
+                }
+            }
+        }
+
+        async function deleteStudent(id) {
+            if (confirm('Êtes-vous sûr de vouloir supprimer cet étudiant ?')) {
+                try {
+                    const response = await fetch(`/delete_etudiant/${id}`, {
+                        method: 'DELETE'
+                    });
+
+                    const result = await response.json();
+                    alert(result.message || 'Étudiant supprimé avec succès.');
+                    fetchStudents(searchInput.value);
+                } catch (error) {
+                    console.error('Erreur lors de la suppression de l’étudiant :', error);
+                }
+            }
+        }
+
+        searchInput.addEventListener('input', () => {
+            fetchStudents(searchInput.value);
+        });
+
+        // Charger initialement tous les étudiants
+        fetchStudents();
+    </script>
+</body>
+</html>

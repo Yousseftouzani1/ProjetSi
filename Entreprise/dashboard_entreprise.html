@@ -283,8 +283,8 @@
                 <thead>
                     <tr>
                         <th>School</th>
-                        <th>Number of Interns</th>
-                        <th>Percentage</th>
+                        <th></th>
+                        <th>number of interns </th>
                     </tr>
                 </thead>
                 <tbody id="statsTableBody">
@@ -298,7 +298,107 @@
         </button>
         
     </div> 
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+    try {
+        // Appeler la route pour récupérer les données
+        const response = await fetch('http://localhost:3001/enterprise-stats', {
+            method: 'GET',
+            credentials: 'include', // Inclure les cookies (token d'authentification)
+        });        
+        if (!response.ok) {
+            throw new Error('Erreur lors de la récupération des données');
+        }
 
+        const { totalInterns, schoolStats } = await response.json();
+
+        // Mettre à jour le total des stagiaires
+        document.getElementById('totalInterns').innerText = totalInterns;
+console.log(totalInterns);
+        // Mettre à jour le tableau avec les statistiques par école
+        const statsTableBody = document.getElementById('statsTableBody');
+        statsTableBody.innerHTML = ''; // Vider le tableau avant de le remplir
+        schoolStats.forEach(stat => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${stat.ecole}</td>
+                <td></td>
+                <td>${stat.nombre_etudiants}</td>
+            `;
+            statsTableBody.appendChild(row);
+        });
+
+        // Préparer les données pour les graphiques
+        const labels = schoolStats.map(stat => stat.ecole);
+        const data = schoolStats.map(stat => stat.nombre_etudiants);
+
+        // Graphique en barres
+        const barChartCtx = document.getElementById('barChart').getContext('2d');
+        new Chart(barChartCtx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Nombre d\'étudiants',
+                    data: data,
+                    backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                }],
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        display: false,
+                    },
+                },
+                scales: {
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Écoles',
+                        },
+                    },
+                    y: {
+                        title: {
+                            display: true,
+                            text: 'Nombre d\'étudiants',
+                        },
+                        beginAtZero: true,
+                    },
+                },
+            },
+        });
+
+        // Graphique circulaire
+        const pieChartCtx = document.getElementById('pieChart').getContext('2d');
+        new Chart(pieChartCtx, {
+            type: 'pie',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: data,
+                    backgroundColor: [
+                        '#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF', '#FF9F40',
+                    ],
+                }],
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    },
+                },
+            },
+        });
+    } catch (error) {
+        console.error('Erreur lors du chargement des statistiques :', error);
+    }
+});
+
+</script>
     <script>
         function debugCookies() {
             
@@ -310,7 +410,6 @@
     console.log('Token extrait des cookies :', token);
     return token;
 }
-debugCookies();
         // Toggle dropdown function
         function toggleDropdown() {
             const dropdown = document.getElementById('profileDropdown');
@@ -357,4 +456,4 @@ function RedirectTo(url) {
 
     </script>
 </body>
-</html>
+</html>    

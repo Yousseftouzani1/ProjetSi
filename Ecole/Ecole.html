@@ -6,8 +6,257 @@
     <title>Créer un Gestionnaire d'École</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+ <style>
+    /* Global Styles */
+    * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+    min-height: 100vh;
+}
+
+/* Navbar Styles */
+.navbar-custom {
+    background: linear-gradient(90deg, #654321, #8B4513);
+    height: 80px;
+    position: fixed;
+    width: 100%;
+    z-index: 1000;
+    padding: 0 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+    top: 0; /* Add this line */
+    left: 0;
+}
+
+.navbar-brand {
+    font-size: 24px;
+    font-weight: 600;
+}
+
+/* Profile Styles */
+.profile-container {
+    position: relative;
+    margin-left: auto;
+}
+
+.profile-icon {
+    width: 45px;
+    height: 45px;
+    background-color: #fff;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.profile-icon:hover {
+    transform: scale(1.1);
+}
+
+.profile-dropdown {
+    display: none;
+    position: absolute;
+    top: 60px;
+    right: 0;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    min-width: 200px;
+    z-index: 1001;
+}
+
+.profile-dropdown a {
+    display: block;
+    padding: 12px 20px;
+    color: #333;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.profile-dropdown a:hover {
+    background-color: #f8f8f8;
+    padding-left: 25px;
+}
+
+.profile-dropdown .logout {
+    color: #dc3545;
+    border-top: 1px solid #eee;
+}
+
+/* Side Menu */
+.side-menu {
+    position: fixed;
+    top: 80px;
+    left: 0;
+    width: 250px;
+    height: calc(100% - 80px);
+    background: linear-gradient(180deg, #8B4513, #654321);
+    padding: 20px;
+    color: white;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.side-menu ul {
+    list-style: none;
+    padding: 0;
+    margin-top: 20px;
+}
+
+.side-menu li {
+    margin: 15px 0;
+}
+
+.side-menu a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    display: block;
+    padding: 12px 15px;
+    border-radius: 8px;
+}
+
+.side-menu a:hover {
+    background: rgba(255, 255, 255, 0.1);
+    transform: translateX(5px);
+}
+
+/* Main Content */
+.container {
+    margin-left: 250px;
+    padding-top: 100px;
+    padding-right: 20px;
+    padding-left: 20px;
+}
+
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+}
+
+.card-header {
+    background: linear-gradient(90deg, #8B4513, #654321) !important;
+    padding: 20px;
+    border-bottom: none;
+}
+
+.card-body {
+    padding: 30px;
+}
+
+/* Form Styles */
+.form-control {
+    border-radius: 8px;
+    padding: 12px;
+    border: 1px solid #ddd;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.2);
+    border-color: #8B4513;
+}
+
+.btn-primary {
+    background: linear-gradient(90deg, #8B4513, #654321);
+    border: none;
+    padding: 12px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(90deg, #654321, #8B4513);
+    transform: translateY(-2px);
+}
+
+/* Leaf Animation */
+.leaf {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.15);
+    clip-path: polygon(50% 0%, 75% 25%, 100% 50%, 75% 75%, 50% 100%, 25% 75%, 0% 50%, 25% 25%);
+    transform-origin: center;
+    animation: floatLeaf 6s infinite ease-in-out;
+}
+
+@keyframes floatLeaf {
+    0%, 100% { transform: translateY(0) rotate(var(--rotation)); }
+    50% { transform: translateY(-10px) rotate(var(--rotation)); }
+}
+
+.leaf-1 { width: 60px; height: 40px; top: 10px; left: 20px; --rotation: 40deg; }
+.leaf-2 { width: 50px; height: 30px; top: 15px; right: 40px; --rotation: -20deg; }
+.leaf-3 { width: 70px; height: 45px; top: 5px; left: 50%; --rotation: 15deg; }
+.leaf-4 { width: 70px; height: 45px; top: 20px; left: 60%; --rotation: -25deg; }
+.leaf-5 { width: 55px; height: 35px; top: 8px; right: 20%; --rotation: 40deg; }
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .side-menu {
+        width: 200px;
+    }
+    
+    .container {
+        margin-left: 200px;
+    }
+}
+
+@media (max-width: 576px) {
+    .side-menu {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .container {
+        margin-left: 0;
+    }
+    
+    .side-menu.active {
+        transform: translateX(0);
+    }
+}
+ </style>
 </head>
 <body>
+    <nav class="navbar navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white" href="#">Internship Management</a>
+            <div class="profile-container">
+   
+            </div>
+        </div>
+        <div class="leaf leaf-1"></div>
+        <div class="leaf leaf-2"></div>
+        <div class="leaf leaf-3"></div>
+        <div class="leaf leaf-4"></div>
+        <div class="leaf leaf-5"></div>
+    </nav>
+    <div class="transition-shape"></div>
+    <div class="side-menu">
+        <ul>
+            <ul>
+                <li><a href="gest-add-prof.html" onclick="RedirectTo('/d1'); return false;">
+                    <i class="fas fa-chart-bar me-2">
+                    </i>Mobilité Interne</a>
+                </li>
+                <li><a href="gest-add-prof.html" onclick="RedirectTo('/ent'); return false;">
+                    <i class="fas fa-chart-bar me-2">
+                    </i>Statistiques </a>
+                </li>
+            </ul>
+        </ul>
+    </div>
     <div class="container mt-5">
         <div class="row justify-content-center">
             <div class="col-md-6">
@@ -36,6 +285,24 @@
     <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
 
     <script>
+                 function RedirectTo(url) {
+     // Stocker le token avant la redirection
+    const baseURL = 'http://localhost:3001';
+    window.location.href = baseURL + url; // Redirige vers l'URL spécifiée
+}
+        function toggleDropdown() {
+    const dropdown = document.getElementById('profileDropdown');
+    dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+}
+
+// Close dropdown when clicking outside
+document.addEventListener('click', function(event) {
+    const dropdown = document.getElementById('profileDropdown');
+    const icon = document.querySelector('.profile-icon');
+    if (!icon.contains(event.target)) {
+        dropdown.style.display = 'none';
+    }
+});
         document.getElementById('createGestionnaireForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             try {

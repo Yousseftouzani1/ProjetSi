@@ -15,7 +15,10 @@
       background: linear-gradient(135deg, #FEF1E6, #F9D8B7);
       min-height: 100vh;
     }
-
+h2{
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-style: oblique;
+}
     .navbar-custom {
       background: linear-gradient(90deg, #ff7936, #ff8d54);
       height: 100px;
@@ -25,6 +28,8 @@
       display: flex;
       align-items: center;
       padding: 0 20px;
+      font-family: 'Times New Roman', Times, serif;
+      font-weight: 100;
     }
 
     .leaf {
@@ -37,7 +42,7 @@
 
     @keyframes floatLeaf {
       0%, 100% { transform: translateY(0) rotate(var(--rotation)); }
-      50% { transform: translateY(-10px) rotate(var(--rotation)); }
+      50% { transform: translateY(-20px) rotate(var(--rotation)); }
     }
 
     .leaf-1 { width: 100px; height: 60px; top: 10px; left: 20px; --rotation: 30deg; }
@@ -163,6 +168,7 @@
       color: #ff7936;
       text-align: center;
       margin-bottom: 40px;
+      font-family: Georgia, 'Times New Roman', Times, serif;
     }
 
     .cards-wrapper {
@@ -287,6 +293,11 @@
       background-color: #ffe6e6;
       color: #dc3545;
     }
+    .titre{
+      font-family: 'Times New Roman', Times, serif;
+      font-style: italic;
+      font-weight: lighter;
+    }
   </style>
 </head>
 <body>
@@ -316,11 +327,14 @@
 
   <div class="side-menu">
     <ul>
-      <li><a href="student-Offres.html"><i class="fas fa-briefcase me-2"></i>Offers publié</a></li>
-      <li><a href="student-profile.html"><i class="fas fa-user me-2"></i>Profile</a></li>
-      <li><a href="sudent-candidature.html"><i class="fas fa-file me-2"></i>Candidatures</a></li>
-      <li><a href="student-convocation.html"><i class="fas fa-graduation-cap me-2"></i>Convocations</a></li>
-      <li><a href="student-suivis-de-stage.html"><i class="fas fa-graduation-cap me-2"></i>Stage</a></li>
+      <li>
+        <a href="student-Offres.html" onclick="RedirectTo('/g'); return false;">
+            <i class="fas fa-briefcase me-2"></i>
+            Offre publié
+        </a>
+    </li>      <li><a href="student-profile.html" onclick="RedirectTo('/bbb'); return false;"><i class="fas fa-user me-2"></i>Profile</a></li>
+      <li><a href="student-convocation.html"onclick="RedirectTo('/conv'); return false;"><i class="fas fa-graduation-cap me-2"></i>Convocations</a></li>
+      <li><a href="student-suivis-de-stage.html"onclick="RedirectTo('/sta'); return false;"><i class="fas fa-graduation-cap me-2"></i>Stage</a></li>
     </ul>
   </div>
 
@@ -583,6 +597,11 @@ document.addEventListener('DOMContentLoaded', () => {
     </script>
     -->
     <script>
+         function RedirectTo(url) {
+     // Stocker le token avant la redirection
+    const baseURL = 'http://localhost:3001';
+    window.location.href = baseURL + url; // Redirige vers l'URL spécifiée
+}
     document.addEventListener('DOMContentLoaded', () => {
         // Récupérer les candidatures en attente
         fetchCandidatures('/candidatures/en-attente', 'pending-cards');
@@ -609,7 +628,7 @@ document.addEventListener('DOMContentLoaded', () => {
               card.classList.add('dashboard-card');
       
               card.innerHTML = `
-                <h3>${candidature.titre}</h3>
+                <h3 class="titre">${candidature.titre}</h3>
                 <p><strong>Entreprise:</strong> ${candidature.entreprise}</p>
                 <p><strong>Durée:</strong> ${candidature.duree} mois</p>
                 <p><strong>Date de soumission:</strong> ${new Date(candidature.dateSoumission).toLocaleDateString()}</p>

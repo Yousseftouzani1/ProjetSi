@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Statistiques des Stages</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .navbar-custom {
+            background: linear-gradient(120deg, #654321, #8B4513);
+            height: 80px;
+            color: white;
+        }
+
+        .container {
+            padding-top: 100px;
+        }
+
+        .card-custom {
+            border: 2px solid red;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 4px 20px rgba(20, 20, 20, 0.2);
+        }
+
+        .card-header {
+            background: linear-gradient(90deg, #8B4513, #8b5a28);
+            color: white;
+        }
+
+        .stats-box {
+            background: #fff;
+            border: 2px solid red;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stats-box h3 {
+            color: red;
+        }
+
+        .chart-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 30px;
+            margin-left: 20%;
+        }
+
+        .chart-box {
+            width: 300px;
+            height: 300px;
+        }
+        /* Leaf Animation */
+.leaf {
+    position: absolute;
+    background-color: rgba(255, 255, 255, 0.15);
+    clip-path: polygon(50% 0%, 75% 25%, 100% 50%, 75% 75%, 50% 100%, 25% 75%, 0% 50%, 25% 25%);
+    transform-origin: center;
+    animation: floatLeaf 6s infinite ease-in-out;
+}
+
+@keyframes floatLeaf {
+    0%, 100% { transform: translateY(0) rotate(var(--rotation)); }
+    50% { transform: translateY(-10px) rotate(var(--rotation)); }
+}
+
+.leaf-1 { width: 60px; height: 40px; top: 10px; left: 20px; --rotation: 40deg; }
+.leaf-2 { width: 50px; height: 30px; top: 15px; right: 40px; --rotation: -20deg; }
+.leaf-3 { width: 70px; height: 45px; top: 5px; left: 50%; --rotation: 15deg; }
+.leaf-4 { width: 70px; height: 45px; top: 20px; left: 60%; --rotation: -25deg; }
+.leaf-5 { width: 55px; height: 35px; top: 8px; right: 20%; --rotation: 40deg; }
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .side-menu {
+        width: 200px;
+    }
+    
+    .container {
+        margin-left: 200px;
+    }
+}
+
+@media (max-width: 576px) {
+    .side-menu {
+        transform: translateX(-100%);
+        transition: transform 0.3s ease;
+    }
+    
+    .container {
+        margin-left: 0;
+    }
+    
+    .side-menu.active {
+        transform: translateX(0);
+    }
+}
+.navbar-brand{
+color: #e0e0e0;
+font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+}
+h3{
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    font-weight: lighter;
+    font-style: oblique;
+}
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-custom">
+        <div class="container-fluid">
+            <a class="navbar-brand text-white" >Internship Management</a>
+            <div class="profile-container">
+   
+            </div>
+        </div>
+        <div class="leaf leaf-1"></div>
+        <div class="leaf leaf-2"></div>
+        <div class="leaf leaf-3"></div>
+        <div class="leaf leaf-4"></div>
+        <div class="leaf leaf-5"></div>
+    </nav>
+
+    <div class="container">
+        <!-- Statistiques globales -->
+        <div id="stats-section" class="stats-box">
+            <h3>Statistiques des stages</h3>
+            <p>Total d'étudiants : <span id="total-etudiants"></span></p>
+            <p>Étudiants avec stage : <span id="etudiants-avec-stage"></span></p>
+            <p>Étudiants sans stage : <span id="etudiants-sans-stage"></span></p>
+            <p>Taux d'obtention de stage : <span id="taux-stage"></span>%</p>
+        </div>
+
+        <!-- Liste des étudiants sans stage -->
+        <div id="students-section">
+            <h3>Étudiants sans stage</h3>
+            <div id="students-list" class="card-custom p-3">
+                <p>Chargement des étudiants...</p>
+            </div>
+        </div>
+
+        <!-- Graphiques -->
+        <div id="charts-section">
+            <h3>Graphiques des entreprises</h3>
+            <div class="chart-container">
+                <!-- Chart 1: Répartition des étudiants par entreprise -->
+                <div class="chart-box">
+                    <canvas id="chart-entreprises"></canvas>
+                </div>
+                <!-- Chart 2: Exemple de second graphique (ajuster selon vos données) -->
+                <div class="chart-box">
+                    <canvas id="chart-example"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Charger les statistiques générales
+        async function loadStats() {
+            try {
+                const response = await axios.get('/stats/stages');
+                const stats = response.data;
+                document.getElementById('total-etudiants').innerText = stats.total_etudiants;
+                document.getElementById('etudiants-avec-stage').innerText = stats.etudiants_avec_stage;
+                document.getElementById('etudiants-sans-stage').innerText = stats.etudiants_sans_stage;
+                document.getElementById('taux-stage').innerText = stats.taux_obtention_stage.toFixed(2);
+            } catch (error) {
+                console.error('Erreur lors du chargement des statistiques :', error);
+            }
+        }
+
+        // Charger les étudiants sans stage
+        async function loadStudentsWithoutInternship() {
+            try {
+                const response = await axios.get('/students/no-internship');
+                const students = response.data;
+                const container = document.getElementById('students-list');
+                container.innerHTML = ''; // Vider le contenu précédent
+
+                if (students.length === 0) {
+                    container.innerHTML = '<p>Aucun étudiant sans stage trouvé.</p>';
+                } else {
+                    const list = document.createElement('ul');
+                    list.className = 'list-group';
+
+                    students.forEach(student => {
+                        const item = document.createElement('li');
+                        item.className = 'list-group-item d-flex justify-content-between align-items-center';
+                        item.innerHTML = `<strong>${student.username}</strong> - ${student.filiere}`;
+                        list.appendChild(item);
+                    });
+
+                    container.appendChild(list);
+                }
+            } catch (error) {
+                console.error('Erreur lors du chargement des étudiants :', error);
+            }
+        }
+
+        // Charger les données pour le graphique des entreprises
+        async function loadEnterpriseData() {
+            try {
+                const response = await axios.get('/entt');
+                const data = response.data;
+
+                // Préparer les données pour le graphique
+                const labels = data.map(item => item.entreprise);
+                const values = data.map(item => item.nombre_etudiants);
+
+                // Créer le graphique des entreprises
+                const ctx1 = document.getElementById('chart-entreprises').getContext('2d');
+                new Chart(ctx1, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Nombre d\'étudiants',
+                            data: values,
+                            backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'top' },
+                        }
+                    }
+                });
+/*
+                // Exemple d'un second graphique
+                const ctx2 = document.getElementById('chart-example').getContext('2d');
+                new Chart(ctx2, {
+                    type: 'pie',
+                    data: {
+                        labels: ['Option 1', 'Option 2', 'Option 3'],
+                        datasets: [{
+                            data: [30, 50, 20],
+                            backgroundColor: ['#FF5733', '#33FF57', '#3357FF'],
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { position: 'top' },
+                        }
+                    }
+                });
+*/
+            } catch (error) {
+                console.error('Erreur lors du chargement des données des entreprises :', error);
+            }
+        }
+
+        // Charger toutes les données au démarrage
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStats();
+            loadStudentsWithoutInternship();
+            loadEnterpriseData();
+        });
+    </script>
+</body>
+
+</html>

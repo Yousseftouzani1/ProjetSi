@@ -256,7 +256,7 @@ ALTER TABLE Gestionnaire_Entreprise MODIFY (mdp_gest VARCHAR2(100));
 SELECT ID_GEST_ENTREPRISE FROM Gestionnaire_Entreprise;--, mdp_gest
 SELECT * FROM GESTIONNAIRE_ENTREPRISE;
 SELECT * FROM OFFRE_STAGE; 
-
+SELECT *FROM Gestionnaire_Entreprise;  
 SELECT * FROM Entreprise; 
 SELECT * FROM CANDIDATURE;
 SELECT * FROM ETUDIANT;
@@ -276,5 +276,8 @@ INSERT INTO Entreprise (id_entreprise, nom, mdp_entreprise, secteur_activite, no
 VALUES (Entreprise_seq.NEXTVAL, 'TestNom', 'hashedPassword', 'Secteur', 'NomConnexion', 'Type', TO_DATE('2024-01-01', 'YYYY-MM-DD'), 'Adresse');
 SELECT * FROM Entreprise WHERE nom = 'TestNom';
 UPDATE ETUDIANT
-SET age = 21, filiere = 'genie logiciel', annee = '2'
-WHERE ID_ETUDIANT = 4;
+SET age = 21, filiere = 'genie electrique', annee = '4',id_ecole=6
+WHERE ID_ETUDIANT = 21;
+ SELECT * FROM ETUDIANT;
+ COMMIT;
+ SELECT * FROM STAGE ;

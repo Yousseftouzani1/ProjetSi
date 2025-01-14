@@ -167,7 +167,7 @@ router.post('/loginEcole', async (req, res) => {
     }
 
     let connection;
-    try {
+    try { 
         connection = await oracledb.getConnection(dbConfig);
         const result = await connection.execute(
             `SELECT id_ecole,mdp_ecole FROM Ecole WHERE nom_connexion = :username`,

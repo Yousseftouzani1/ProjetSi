@@ -180,6 +180,8 @@
       text-align: center;
       margin-bottom: 40px;
       animation: fadeInUp 0.8s ease-out;
+      font-family: Georgia, 'Times New Roman', Times, serif;
+
     }
 
     @keyframes fadeInUp {
@@ -281,8 +283,33 @@
 
     }
     .action-button{
-      background-color: #fe691e00;
-      
+      background: linear-gradient(135deg, #ff7936, #ff8d54);
+  color: white;
+  border: none;
+  font-size: 1.2rem;
+  padding: 15px 30px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(25, 58, 111, 0.3);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;      
+    }
+    .action-button:hover{
+      transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(25, 58, 111, 0.4);
+  background: linear-gradient(135deg, #e27a35, #dfb28e);
+    }
+    .action-button:active{
+      transform: translateY(1px);
+  box-shadow: 0 2px 10px rgba(25, 58, 111, 0.3);
+    }
+    .titre{
+font-family: Impact, Haettenschweiler, 'Arial Narrow Bold', sans-serif;
+    }
+    .titi{
+font-family: Verdana, Geneva, Tahoma, sans-serif;
     }
   </style>
 </head>
@@ -301,19 +328,28 @@
         </div>
       </div>
     </div>
+    <div class="leaf leaf-1"></div>
+    <div class="leaf leaf-2"></div>
+    <div class="leaf leaf-3"></div>
+    <div class="leaf leaf-4"></div>
+    <div class="leaf leaf-5"></div>
   </nav>
-
+ 
   <div class="side-menu">
     <ul>
-      <li><button class="action-button" onclick="RedirectTo('/bbb')">profil</button></li>
+      <li><button class="action-button" onclick="RedirectTo('/bbb')">profil
+        
+      </button></li>
       <li><button class="action-button" onclick="RedirectTo('/conv')">Convocations</button></li>
       <li><button class="action-button" onclick="RedirectTo('/can')">Candidatures</button></li>
       <li><button class="action-button" onclick="RedirectTo('/sta')">Suivie de stage</button></li>
+      <!--
 
       <li><a href="student-profile.html"><i class="fas fa-user me-2"></i></a></li>
       <li><a href="student-candidature.html"><i class="fas fa-file me-2"></i></a></li>
       <li><a href="student-convocation.html"><i class="fas fa-graduation-cap me-2"></i></a></li>
       <li><a href="student-suivi-stage.html"><i class="fas fa-clipboard me-2"></i> </a></li>
+      -->
     </ul>
   </div>
 
@@ -369,8 +405,9 @@ debugCookies();
           const card = document.createElement('div');
           card.classList.add('dashboard-card');
           card.innerHTML = `
-            <h3>${offer.titre}</h3>
-            <p>${offer.description.substring(0, 100)}...</p>
+            <h3 class="titre">${offer.entreprise}</h3>
+            <h4 class="titi">${offer.titre}</h4>
+            <p>${offer.description.substring(0, 1000)}...</p>
             <div class="competency-pills">
               ${offer.competences.map((competence) => `<span class="pill">${competence}</span>`).join('')}
             </div>
