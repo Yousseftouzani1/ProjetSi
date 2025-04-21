@@ -93,7 +93,7 @@ BEGIN
 END;
 /
 
--- Table: Admin_Systeme
+-- Table: Admin_Systeme ===========>    gest stage 
 CREATE TABLE Admin_Systeme (
     id_admin INT PRIMARY KEY,
     username VARCHAR2(30),
@@ -220,9 +220,9 @@ CREATE TABLE Offre_Stage (
     id_gest_entreprise INT,
     id_demande INT, 
     id_tuteur INT,
-    FOREIGN KEY (id_gest_entreprise) REFERENCES Gestionnaire_Entreprise(id_gest_entreprise),
-    FOREIGN KEY (id_demande) REFERENCES Demande(id_demande),
-    FOREIGN KEY (id_tuteur) REFERENCES Tuteur(id_tuteur)
+    FOREIGN KEY (id_gest_entreprise) REFERENCES Gestionnaire_Entreprise(id_gest_entreprise),--supprimer
+    FOREIGN KEY (id_demande) REFERENCES Demande(id_demande),--supprimer 
+    FOREIGN KEY (id_tuteur) REFERENCES Tuteur(id_tuteur) --suprrimer 
 );
 CREATE SEQUENCE Offre_Stage_seq START WITH 1;
 CREATE OR REPLACE TRIGGER Offre_Stage_trg
@@ -280,4 +280,39 @@ SET age = 21, filiere = 'genie electrique', annee = '4',id_ecole=6
 WHERE ID_ETUDIANT = 21;
  SELECT * FROM ETUDIANT;
  COMMIT;
- SELECT * FROM STAGE ;
+ SELECT * FROM OFFRE_STAGE ;
+SELECT * FROM CANDIDATURE;
+
+SELECT DISTINCT O.id_stage, O.titre, O.description, O.competence1, O.competence2, O.competence3, O.competence4, O.competence5, 
+O.competence6, O.competence7, O.competence8, O.competence9, O.competence10, E.nom
+FROM offre_stage O 
+JOIN ENTREPRISE E ON E.ID_ENTREPRISE = O.ID_ENTREPRISE 
+JOIN CANDIDATURE C ON C.ID_STAGE=O.ID_STAGE
+WHERE O.id_stage NOT IN (SELECT C.ID_STAGE FROM CANDIDATURE C WHERE C.ID_ETUDIANT=41 )
+----------------
+SELECT DISTINCT 
+    O.id_stage, 
+    O.titre, 
+    O.description, 
+    O.competence1, 
+    O.competence2, 
+    O.competence3, 
+    O.competence4, 
+    O.competence5, 
+    O.competence6, 
+    O.competence7, 
+    O.competence8, 
+    O.competence9, 
+    O.competence10, 
+    E.nom
+FROM offre_stage O 
+JOIN ENTREPRISE E ON E.ID_ENTREPRISE = O.ID_ENTREPRISE
+WHERE O.id_stage NOT IN (
+    SELECT C.ID_STAGE 
+    FROM CANDIDATURE C 
+    WHERE C.ID_ETUDIANT = 41
+) AND TRIM(O.STATUS_OFFRE)='active';
+ALTER TABLE OFFRE_STAGE DROP COLUMN ID_GEST_ENTREPRISE ;
+SELECT * FROM OFFRE_STAGE
+ALTER TABLE OFFRE_STAGE
+ADD CONSTRAINT unique_add UNIQUE (titre);

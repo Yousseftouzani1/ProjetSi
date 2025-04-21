@@ -393,21 +393,26 @@ debugCookies();
 
     async function fetchOffers() {
       try {
-        const response = await fetch('http://localhost:3001/api/offers');
-        if (!response.ok) {
+        const response = await fetch('http://localhost:3001/api/offers', {
+          method: 'GET',
+              credentials: 'include' // Inclure les cookies dans la requête
+           });       
+ if (!response.ok) {
           throw new Error('Failed to fetch offers');
         }
-        const offers = await response.json();
+        const offers = await response.json(); 
         const cardsWrapper = document.querySelector('.cards-wrapper');
         cardsWrapper.innerHTML = ''; // Clear existing cards
-
+console.log(offers);
         offers.forEach((offer) => {
+          console.log(offer.entreprise);
+
           const card = document.createElement('div');
           card.classList.add('dashboard-card');
           card.innerHTML = `
             <h3 class="titre">${offer.entreprise}</h3>
             <h4 class="titi">${offer.titre}</h4>
-            <p>${offer.description.substring(0, 1000)}...</p>
+            <p>${offer.description}...</p>
             <div class="competency-pills">
               ${offer.competences.map((competence) => `<span class="pill">${competence}</span>`).join('')}
             </div>

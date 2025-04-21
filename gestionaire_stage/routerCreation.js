@@ -4,7 +4,7 @@ const oracledb = require('oracledb');
 const bcrypt = require('bcrypt');
 const dbConfig = require('../database/dbConfig');
 // Route pour lister toutes les entreprises inscrites
-router.get('/entreprises', async (req, res) => {
+router.get('/entreprisess', async (req, res) => {
     let connection;
     try {
         connection = await oracledb.getConnection(dbConfig);

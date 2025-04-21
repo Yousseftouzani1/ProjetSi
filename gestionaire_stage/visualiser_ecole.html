@@ -269,15 +269,8 @@
 
     <div class="side-menu">
         <ul>
-            <li>
-                <button></button>
-            </li>
-            <button class="add-offer-btn" onclick="RedirectTo('/aa')" >Ecoles</button>
-
-            <li><a href="visualiser_ecole.html"><i class="fas fa-school me-2"></i></a></li>
-            <button class="add-offer-btn" onclick="RedirectTo('/bb')" >Entreprise</button>
-
-            <li><a href="visualiserEntreprise.html"><i class="fas fa-chart-bar me-2"></i>Entreprise</a></li>
+            <li><a href="visualiser_ecole.html" onclick="RedirectTo('/aa'); return false;"><i class="fas fa-school me-2"></i>Ecoles</a></li>
+            <li><a href="visualiserEntreprise.html" onclick="RedirectTo('/entrepriseV'); return false;"><i class="fas fa-chart-bar me-2"></i>Entreprise</a></li>
         </ul>
     </div>
 
@@ -327,10 +320,10 @@
                 const row = `
                     <tr>
                         <td>${school[1]}</td> <!-- NOM -->
-                        <td>${school[2]}</td> <!-- nom_connexion -->
+                        <td>${school[4]}</td> <!-- nom_connexion -->
                         <td>${school[3]}</td> <!-- adresse -->
 
-                        <td>${school[4]}</td> <!-- NOMBRE_ELEVE -->
+                        <td>${school[2]}</td> <!-- NOMBRE_ELEVE -->
                         <td>
                             <input type="password" id="password-${school[0]}" placeholder="Nouveau mot de passe" style="margin-right: 10px;" />
                             <button onclick="updatePassword(${school[0]})" style="background-color: #193A6F; color: white; border: none; padding: 6px 10px; border-radius: 5px; cursor: pointer;">

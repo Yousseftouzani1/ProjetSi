@@ -14,7 +14,7 @@
             padding: 0;
             font-family: 'Calibri Light', sans-serif;
             background: linear-gradient(135deg, #f5f5f5, #e0e0e0);
-            min-height: 100vh;
+            min-height: 100vh; 
         }
 
         /* Navbar Styles */
@@ -27,6 +27,7 @@
             display: flex;
             align-items: center;
             padding: 0 20px;
+            font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
         }
 
         /* Leaf Shapes with Animation */
@@ -193,14 +194,7 @@
         <div class="container-fluid">
             <a class="navbar-brand text-white" href="#">Internship Management</a>
             <div class="profile-container">
-                <div class="profile-icon" onclick="toggleDropdown()">
-                    <span style="font-size: 20px; color: #404040;">👤</span>
-                </div>
-                <div class="profile-dropdown" id="profileDropdown">
-                    <a href="#" id="userName">John Doe</a>
-                    <a href="#">Settings</a>
-                    <a href="#" class="logout">Log Out</a>
-                </div>
+             
             </div>
         </div>
 
@@ -216,8 +210,8 @@
     <!-- Side Menu -->
     <div class="side-menu">
         <ul>
-            <li><a href="visualiser_ecole.html"><i class="fas fa-school me-2"></i>Ecoles</a></li>
-            <li><a href="visualiserEntreprise.html"><i class="fas fa-chart-bar me-2"></i>Entreprise</a></li>
+            <li><a href="visualiser_ecole.html" onclick="RedirectTo('/ecoleV'); return false;"><i class="fas fa-school me-2"></i>Ecoles</a></li>
+            <li><a href="visualiserEntreprise.html"onclick="RedirectTo('/entrepriseV'); return false;"><i class="fas fa-chart-bar me-2"></i>Entreprise</a></li>
         </ul>
     </div>
 
@@ -284,6 +278,10 @@
     </div>
 
     <script>
+           function RedirectTo(url) {
+        const baseURL = 'http://localhost:3001';
+        window.location.href = baseURL + url; // Redirige vers l'URL spécifiée
+    }
         document.addEventListener('DOMContentLoaded', () => {
     const form = document.querySelector('form');
     const dateInput = document.getElementById('creation');

@@ -125,6 +125,9 @@ app.get('/convvv', async (req, res) => {
 app.get('/data_eleve', async (req, res) => {
   res.sendFile(path.join(__dirname, '../gest_ecole/data_etudiant.html'));
 });
+app.get('/datum', async (req, res) => {
+  res.sendFile(path.join(__dirname, '../gest_ecole/gest_ecole.html'));
+});
 app.get('/d1', async (req, res) => {
   res.sendFile(path.join(__dirname, '../Ecole/d1.html'));
 });
@@ -132,7 +135,7 @@ app.get('/ent', async (req, res) => {
   res.sendFile(path.join(__dirname, '../Ecole/ent.html'));
 });
 
-/*
+/* 
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'Creer_Offre.html'));
 });*/

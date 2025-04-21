@@ -176,7 +176,7 @@ router.get('/enterprise-stats', async (req, res) => {
 });*/
 
 
-///
+///stats
 router.get('/enterprise-stats', async (req, res) => {
     try {
         const token = req.cookies.access_token;
@@ -216,5 +216,66 @@ router.get('/enterprise-stats', async (req, res) => {
         res.status(500).json({ error: 'Erreur serveur.' });
     }
 });
+///gest 
+router.get('/gestionnaires', async (req, res) => {
+    try {
+        const connection = await oracledb.getConnection(dbConfig);
+
+        // Requête pour récupérer les noms des gestionnaires
+        const result = await connection.execute(
+            `SELECT id_gest_entreprise, Nom FROM Gestionnaire_Entreprise`
+        );
+
+        await connection.close();
+
+        // Transformer le résultat en un tableau lisible
+        const gestionnaires = result.rows.map(row => ({
+            id: row[0],
+            nom: row[1],
+        }));
+
+        res.status(200).json(gestionnaires);
+    } catch (error) {
+        console.error('Error fetching gestionnaires:', error);
+        res.status(500).json({ error: 'Failed to fetch gestionnaires.' });
+    }
+});
+////mdp
+router.put('/gestionnaire/update-password/:id', async (req, res) => {
+    const { id } = req.params;
+    const { newPassword } = req.body;
+
+    if (!newPassword) {
+        return res.status(400).json({ error: 'New password is required.' });
+    }
+
+    try {
+        // Hacher le nouveau mot de passe
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        const connection = await oracledb.getConnection(dbConfig);
+
+        // Requête pour mettre à jour le mot de passe
+        const result = await connection.execute(
+            `UPDATE Gestionnaire_Entreprise 
+             SET mdp_gest = :hashedPassword 
+             WHERE id_gest_entreprise = :id`,
+            { hashedPassword, id },
+            { autoCommit: true }
+        );
+
+        await connection.close();
+
+        if (result.rowsAffected > 0) {
+            res.status(200).json({ message: 'Password updated successfully.' });
+        } else {
+            res.status(404).json({ error: 'Gestionnaire not found.' });
+        }
+    } catch (error) {
+        console.error('Error updating password:', error);
+        res.status(500).json({ error: 'Failed to update the password.' });
+    }
+});
+
 module.exports = router;
 

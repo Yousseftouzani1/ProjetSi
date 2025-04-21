@@ -143,6 +143,7 @@
             margin-left: 220px;
             margin-top: 120px;
             padding: 20px;
+            font-family: Georgia, 'Times New Roman', Times, serif;
         }
 
         .table-container {
@@ -249,14 +250,8 @@
         <div class="container-fluid">
             <a class="navbar-brand text-white" href="#">Internship Management</a>
             <div class="profile-container">
-                <div class="profile-icon" onclick="toggleDropdown()">
-                    <span style="font-size: 20px; color: #193A6F;">👤</span>
                 </div>
-                <div class="profile-dropdown" id="profileDropdown">
-                    <a href="#" id="userName">John Doe</a>
-                    <a href="#">Settings</a>
-                    <a href="#" class="logout">Log Out</a>
-                </div>
+                
             </div>
         </div>
 
@@ -271,16 +266,13 @@
 
     <div class="side-menu">
         <ul>
-            <li><a href="visualiser_ecole.html"><i class="fas fa-school me-2"></i>Ecoles</a></li>
-            <li><a href="visualiserEntreprise.html"><i class="fas fa-chart-bar me-2"></i>Entreprise</a></li>
+            <li><a href="visualiser_ecole.html" onclick="RedirectTo('/ecoleC'); return false;"><i class="fas fa-school me-2"></i>Ecoles</a></li>
+            <li><a href="visualiserEntreprise.html"onclick="RedirectTo('/entrepriseC'); return false;"><i class="fas fa-chart-bar me-2"></i>Entreprise</a></li>
         </ul>
     </div>
 
     <div class="main-content">
-        <button class="add-button" onclick="RedirectTo('../gestionaire_stage/Creation_Entreprise.html')">
-            <i class="fas fa-plus"></i>
-            Ajouter entreprise
-        </button>
+        
 
         <div class="table-container">
             <table class="student-table" id="entrepriseTableBody">
@@ -325,7 +317,7 @@
         // Charger les entreprises depuis le serveur
         async function loadEntreprises() {
             try {
-                const response = await fetch('http://localhost:3001/entreprises');
+                const response = await fetch('http://localhost:3001/entreprisess');
                 const data = await response.json();
 
                 if (response.ok) {
@@ -338,7 +330,13 @@
                 alert('Erreur interne');
             }
         }
-
+        function formatDate(dateString) {
+    const date = new Date(dateString);
+    const day = String(date.getDate()).padStart(2, '0'); // Jour avec zéro initial
+    const month = String(date.getMonth() + 1).padStart(2, '0'); // Mois (0-indexé)
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+}
         // Remplir le tableau avec les entreprises
         function populateEntrepriseTable(entreprises) {
             const tableBody = document.querySelector('#entrepriseTableBody tbody');
@@ -351,7 +349,7 @@
                         <td>${entreprise.secteur_activite}</td>
                         <td>${entreprise.nom_connexion}</td>
                         <td>${entreprise.type_entreprise}</td>
-                        <td>${entreprise.date_creation}</td>
+                        <td>${formatDate(entreprise.date_creation)}</td>
                         <td>
                             <div class="password-cell">
                                 <input type="password" id="newPassword-${entreprise.id_entreprise}" placeholder="Nouveau mot de passe" />

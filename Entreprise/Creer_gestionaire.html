@@ -184,6 +184,94 @@
             clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 50%);
             z-index: 999;
         }
+        /* Styles généraux pour le tableau */
+.stats-card {
+    background-color: #f9f9f9;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    margin-top: 20px;
+    width: fit-content;
+}
+
+.stats-card h3 {
+    font-size: 20px;
+    color: #333;
+    margin-bottom: 15px;
+    font-weight: bold;
+    text-align: center;
+}
+
+/* Table Styles */
+.stats-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Arial', sans-serif;
+    font-size: 14px;
+    margin: 0;
+}
+
+.stats-table th, 
+.stats-table td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+}
+
+.stats-table th {
+    background-color: #193A6F; /* Couleur d'en-tête professionnelle */
+    color: white;
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+.stats-table tbody tr:hover {
+    background-color: #f1f1f1;
+    cursor: pointer;
+}
+
+.stats-table tbody tr:last-child td {
+    border-bottom: none; /* Supprime la ligne en bas pour le dernier élément */
+}
+
+/* Buttons dans la table */
+.stats-table button {
+    background-color: #007bff; /* Bleu professionnel */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 12px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.stats-table button:hover {
+    background-color: #0056b3;
+}
+
+.stats-table input[type="text"] {
+    padding: 5px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 13px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Responsiveness */
+@media (max-width: 768px) {
+    .stats-table th, 
+    .stats-table td {
+        font-size: 12px;
+        padding: 8px;
+    }
+    
+    .stats-card h3 {
+        font-size: 18px;
+    }
+}
+
     </style>
 </head>
 <body>
@@ -215,7 +303,7 @@
     <!-- Side Menu -->
     <div class="side-menu">
         <ul>
-            <li><a href="Dashboard-entreprise.html"><i class="fas fa-user me-2"></i>Profile</a></li>
+            <li><a href="Dashboard-entreprise.html"onclick="RedirectTo('/Entreprise/dashboard_entreprise.html'); return false;"><i class="fas fa-user me-2"></i>Profile</a></li>
         </ul>
     </div>
 
@@ -242,9 +330,29 @@
                         <button type="submit" class="btn btn-primary w-100">Create Account</button>
                     </form>
                 </div>
+                <div class="stats-card">
+                    <h3>Gestionnaires existant </h3>
+                    <table class="stats-table" id="gestionnaireTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Nom</th>
+                                <th>Nouvelle Mot de Passe</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Les lignes seront ajoutées dynamiquement via JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+
             </div>
         </div>
     </div>
+    
+    
 <!--
     <script>
          // Toggle dropdown function
@@ -312,8 +420,81 @@
 </script>
 -->
 <script src="https://cdn.jsdelivr.net/npm/jwt-decode/build/jwt-decode.min.js"></script>
+<script>
+    // URL de base pour les API
+    const baseUrl = "http://localhost:3001";
+
+    // Fonction pour récupérer les gestionnaires et remplir le tableau
+    async function fetchGestionnaires() {
+        try {
+            const response = await fetch(`${baseUrl}/gestionnaires`);
+            if (!response.ok) throw new Error("Erreur lors de la récupération des gestionnaires");
+
+            const gestionnaires = await response.json();
+            const tableBody = document.querySelector("#gestionnaireTable tbody");
+            tableBody.innerHTML = ""; // Nettoyer le tableau avant de le remplir
+
+            gestionnaires.forEach(gestionnaire => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${gestionnaire.id}</td>
+                    <td>${gestionnaire.nom}</td>
+                    <td>
+                        <input type="password" placeholder="Nouveau mot de passe" id="password-${gestionnaire.id}" />
+                    </td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="updatePassword(${gestionnaire.id})">Modifier</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        } catch (error) {
+            console.error("Erreur:", error);
+            alert("Impossible de récupérer les gestionnaires.");
+        }
+    }
+
+    // Fonction pour modifier le mot de passe d'un gestionnaire
+    async function updatePassword(gestionnaireId) {
+        const passwordInput = document.getElementById(`password-${gestionnaireId}`);
+        const newPassword = passwordInput.value.trim();
+
+        if (!newPassword) {
+            alert("Veuillez entrer un nouveau mot de passe.");
+            return;
+        }
+
+        try {
+            const response = await fetch(`${baseUrl}/gestionnaire/update-password/${gestionnaireId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ newPassword }),
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || "Erreur lors de la modification du mot de passe");
+            }
+
+            alert("Mot de passe modifié avec succès !");
+            passwordInput.value = ""; // Réinitialiser le champ mot de passe
+        } catch (error) {
+            console.error("Erreur:", error);
+            alert("Impossible de modifier le mot de passe.");
+        }
+    }
+
+    // Appeler fetchGestionnaires pour charger les gestionnaires au chargement de la page
+    document.addEventListener("DOMContentLoaded", fetchGestionnaires);
+</script>
+
+
 
 <script > 
+    function RedirectTo(url) {
+    const baseURL = 'http://localhost:3000';
+    window.location.href = baseURL + url; // Redirige vers l'URL spécifiée
+}
         // Fonction pour ajouter un gestionnaire
 async function ajouterGestionnaire(username, password) {
     try { 

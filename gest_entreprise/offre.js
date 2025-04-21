@@ -9,17 +9,41 @@ const jwt = require('jsonwebtoken'); // Assurez-vous d'avoir jwt installé
 // Get all offers
 router.get('/api/offers', async (req, res) => {
     try {
+      const token = req.cookies.access_token;
+      if (!token) {
+        return res.status(401).json({ error: 'Token is missing. Please log in.' });
+      }
+      const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_KEY);
+      const idEtudiant = decoded.studentId;
       const connection = await oracledb.getConnection(dbConfig);
   
       const query = `
-        SELECT O.id_stage, O.titre, O.description, O.competence1, O.competence2, O.competence3, O.competence4, O.competence5, 
-               O.competence6, O.competence7, O.competence8, O.competence9, O.competence10, E.nom
-        FROM offre_stage O 
-        JOIN ENTREPRISE E ON E.ID_ENTREPRISE = O.ID_ENTREPRISE
+SELECT DISTINCT 
+    O.id_stage, 
+    O.titre, 
+    O.description, 
+    O.competence1, 
+    O.competence2, 
+    O.competence3, 
+    O.competence4, 
+    O.competence5, 
+    O.competence6, 
+    O.competence7, 
+    O.competence8, 
+    O.competence9, 
+    O.competence10, 
+    E.nom
+FROM offre_stage O 
+JOIN ENTREPRISE E ON E.ID_ENTREPRISE = O.ID_ENTREPRISE
+WHERE O.id_stage NOT IN (
+    SELECT C.ID_STAGE 
+    FROM CANDIDATURE C 
+    WHERE C.ID_ETUDIANT = :idEtudiant 
+) AND TRIM(O.STATUS_OFFRE)='active'
+
       `;
   
-      const result = await connection.execute(query);
-      await connection.close();
+      const result = await connection.execute(query,{ idEtudiant });
   // je voudrais recuperer le nom de l entreprise aussi 
   const offers = result.rows.map((row) => ({
     id: row[0],
@@ -225,22 +249,34 @@ router.post("/add", async (req, res) => {
 
 
 // Supprimer une offre (DELETE)
-router.delete('/delete/:id', async (req, res) => {
-    const id_stage = parseInt(req.params.id);
-    try {
-        const connection = await oracledb.getConnection(dbConfig);
-        const result = await connection.execute(
-            `DELETE FROM Offre_Stage WHERE id_stage = :id_stage`,
-            { id_stage },
-            { autoCommit: true }
-        );
-        await connection.close();
-        res.status(200).json({ message: 'Offer deleted successfully.' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Failed to delete offer.' });
-    }
+router.put('/update-status/:id', async (req, res) => {
+  const { id } = req.params;
+
+  try {
+      const connection = await oracledb.getConnection(dbConfig);
+
+      // Mettre à jour le statut de l'offre
+      const result = await connection.execute(
+          `UPDATE offre_stage 
+           SET STATUS_OFFRE = 'cloturé' 
+           WHERE id_stage = :id AND TRIM(STATUS_OFFRE) = 'active'`,
+          { id },
+          { autoCommit: true } // Valider immédiatement les changements
+      );
+
+      await connection.close();
+
+      if (result.rowsAffected > 0) {
+          res.status(200).json({ message: 'Status updated successfully.' });
+      } else {
+          res.status(404).json({ error: 'No active offer found with the provided ID.' });
+      }
+  } catch (error) {
+      console.error('Error updating status:', error);
+      res.status(500).json({ error: 'An error occurred while updating the status.' });
+  }
 });
+
 
 // Mettre à jour une offre (PUT)
 router.put('/update/:id', async (req, res) => {
