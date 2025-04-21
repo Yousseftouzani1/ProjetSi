@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Candidatures</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Calibri&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Calibri Light', sans-serif;
+      background: linear-gradient(135deg, #E6F0FF, #B7D8F9);
+      min-height: 100vh;
+    }
+
+    .navbar-custom {
+      background: linear-gradient(90deg, #193A6F, #2C4F90);
+      height: 100px;
+      position: fixed;
+      width: 100%;
+      z-index: 10000;
+      display: flex;
+      align-items: center;
+      padding: 0 20px;
+    }
+
+    .leaf {
+      position: absolute;
+      background-color: rgba(255, 255, 255, 0.2);
+      clip-path: polygon(50% 0%, 75% 25%, 100% 50%, 75% 75%, 50% 100%, 25% 75%, 0% 50%, 25% 25%);
+      transform-origin: center;
+      animation: floatLeaf 6s infinite ease-in-out;
+    }
+
+    @keyframes floatLeaf {
+      0%, 100% { transform: translateY(0) rotate(var(--rotation)); }
+      50% { transform: translateY(-10px) rotate(var(--rotation)); }
+    }
+
+    .leaf-1 { width: 100px; height: 60px; top: 10px; left: 20px; --rotation: 30deg; }
+    .leaf-2 { width: 80px; height: 50px; top: 20px; right: 50px; --rotation: -30deg; }
+    .leaf-3 { width: 140px; height: 90px; bottom: 0; left: 60px; --rotation: 15deg; }
+    .leaf-4 { width: 60px; height: 40px; top: -10px; left: 150px; --rotation: -45deg; }
+    .leaf-5 { width: 120px; height: 70px; bottom: 0; right: 150px; --rotation: 45deg; }
+
+    .profile-container {
+      position: relative;
+      margin-left: auto;
+    }
+
+    .profile-icon {
+      width: 40px;
+      height: 40px;
+      background-color: white;
+      border-radius: 50%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .profile-icon:hover {
+      transform: scale(1.1);
+      background-color: #f0f0f0;
+    }
+
+    .profile-dropdown {
+      display: none;
+      position: absolute;
+      top: 50px;
+      right: 0;
+      background-color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      min-width: 150px;
+      z-index: 1000;
+      animation: fadeIn 0.2s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .profile-dropdown a {
+      display: block;
+      padding: 12px 20px;
+      color: #333;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .profile-dropdown a:hover {
+      background-color: #f8f8f8;
+      padding-left: 25px;
+    }
+
+    .profile-dropdown .logout {
+      color: #dc3545;
+      border-top: 1px solid #eee;
+    }
+
+    .side-menu {
+      position: fixed;
+      top: 100px;
+      left: 0;
+      width: 200px;
+      height: calc(100% - 100px);
+      background: linear-gradient(180deg, #193A6F, #2C4F90);
+      padding: 20px;
+      color: white;
+    }
+
+    .side-menu ul {
+      list-style: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+
+    .side-menu li {
+      margin: 15px 0;
+    }
+
+    .side-menu a {
+      color: white;
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      display: block;
+      padding: 10px 15px;
+      border-radius: 5px;
+    }
+
+    .side-menu a:hover {
+      background: rgba(255, 255, 255, 0.1);
+      transform: translateX(5px);
+    }
+
+    .main-content {
+      margin-left: 220px;
+      padding-top: 120px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .welcome-message {
+      font-size: 2.5rem;
+      font-weight: 300;
+      color: #193A6F;
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .iframe-container {
+      width: 90%;
+      height: 600px;
+      border-radius: 15px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .iframe-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .button-container {
+      display: flex;
+      gap: 15px;
+      margin-top: 20px;
+    }
+
+    .action-btn {
+      padding: 12px 30px;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .accept-btn {
+      background-color: #34c759;
+      color: white;
+    }
+
+    .accept-btn:hover {
+      background-color: #2db84f;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(52, 199, 89, 0.2);
+    }
+
+    .delete-btn {
+      background-color: #ff3b30;
+      color: white;
+    }
+
+    .delete-btn:hover {
+      background-color: #e6352b;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 8px rgba(255, 59, 48, 0.2);
+    }
+
+    .action-btn:active {
+      transform: translateY(1px);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .action-btn i {
+      font-size: 1.1rem;
+    }
+
+    /* Add a subtle loading animation */
+    .action-btn.loading {
+      opacity: 0.8;
+      cursor: wait;
+    }
+
+    .action-btn.loading::after {
+      content: '';
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      margin-left: 8px;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .transition-shape {
+      position: fixed;
+      top: 100px;
+      left: 0;
+      width: 200px;
+      height: 50px;
+      background: linear-gradient(180deg, #193A6F, #2C4F90);
+      clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 50%);
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-custom">
+    <div class="container-fluid">
+      <a class="navbar-brand text-white" href="#">Internship Management</a>
+      <div class="profile-container">
+        <div class="profile-icon" onclick="toggleDropdown()">
+          <span style="font-size: 20px; color: #193A6F;">👤</span>
+        </div>
+        <div class="profile-dropdown" id="profileDropdown">
+          <a href="#" id="userName">John Doe</a>
+          <a href="#">Settings</a>
+          <a href="#" class="logout">Log Out</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="leaf leaf-1"></div>
+    <div class="leaf leaf-2"></div>
+    <div class="leaf leaf-3"></div>
+    <div class="leaf leaf-4"></div>
+    <div class="leaf leaf-5"></div>
+  </nav>
+
+  <div class="transition-shape"></div>
+
+  <div class="side-menu">
+    <ul>
+      <li><a href="entreprise-offre-publié.html"><i class="fas fa-briefcase me-2"></i>Offers</a></li>
+      <li><a href="entreprise-candidature.html"><i class="fas fa-file me-2"></i>Candidatures</a></li>
+      <li><a href="entreprise-suivis-des-stages.html"><i class="fas fa-folder-open me-2"></i>Mes Stages</a></li>
+    </ul>
+  </div>
+
+  <div class="main-content">
+    <div class="welcome-message">Les candidatures</div>
+    <div class="iframe-container">
+      <iframe src="What is the need you are trying to address What value will your product bring to the target audience Convenient banking Security and trust.pdf" title="Content"></iframe>
+    </div>
+    <div class="button-container">
+        <button class="action-btn accept-btn" onclick="handleAction('accept')">
+          <i class="fas fa-check"></i>
+          Accepter
+        </button>
+        <button class="action-btn delete-btn" onclick="handleAction('delete')">
+          <i class="fas fa-trash"></i>
+          Rejeter
+        </button>
+      </div>
+  </div>
+
+  <script>
+    function toggleDropdown() {
+      const dropdown = document.getElementById('profileDropdown');
+      dropdown.style.display = dropdown.style.display === 'block' ? 'none' : 'block';
+    }
+
+    window.addEventListener('click', (e) => {
+      const dropdown = document.getElementById('profileDropdown');
+      if (!e.target.closest('.profile-container')) {
+        dropdown.style.display = 'none';
+      }
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulaire de Stage</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #E6F0FF, #B7D8F9);
+      min-height: 100vh;
+      padding: 40px 20px;
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Shape styles */
+    .shape {
+      position: fixed;
+      border-radius: 35%;
+      animation: float 15s infinite ease-in-out;
+      z-index: -1;
+      opacity: 0.15;
+    }
+
+    /* Original blue shapes */
+    .shape-1 {
+      width: 120px;
+      height: 70px;
+      bottom: 0;
+      right: 150px;
+      background: #ff8d54d2;
+      transform: rotate(45deg);
+    }
+
+    .shape-2 {
+      width: 150px;
+      height: 90px;
+      top: 10%;
+      left: 10%;
+      background: #ff8d54d2;
+      transform: rotate(20deg);
+      animation-delay: -2s;
+    }
+
+    .shape-3 {
+      width: 100px;
+      height: 60px;
+      top: 50%;
+      right: 5%;
+      background: rgba(183, 216, 249, 0.5);
+      transform: rotate(-30deg);
+      animation-delay: -4s;
+    }
+
+    .shape-4 {
+      width: 180px;
+      height: 100px;
+      bottom: 20%;
+      left: 5%;
+      background: #ff8d54d2;
+      transform: rotate(60deg);
+      animation-delay: -6s;
+    }
+
+    .shape-5 {
+      width: 140px;
+      height: 80px;
+      top: 30%;
+      right: 15%;
+      background: #ff8d54d2;
+      transform: rotate(-15deg);
+      animation-delay: -8s;
+    }
+
+    /* New purple/pink shapes */
+    .shape-6 {
+      width: 160px;
+      height: 95px;
+      top: 15%;
+      right: 25%;
+      background: #ff8d54d2;
+      transform: rotate(25deg);
+      animation-delay: -3s;
+    }
+
+    .shape-7 {
+      width: 130px;
+      height: 75px;
+      bottom: 15%;
+      left: 20%;
+      background: #ff8d54d2;
+      transform: rotate(-40deg);
+      animation-delay: -7s;
+    }
+
+    .shape-8 {
+      width: 200px;
+      height: 120px;
+      top: 40%;
+      left: 15%;
+      background: #ff8d54d2;
+      transform: rotate(10deg);
+      animation-delay: -5s;
+    }
+
+    .shape-9 {
+      width: 110px;
+      height: 65px;
+      bottom: 35%;
+      right: 10%;
+      background: #ff8d54d2;
+      transform: rotate(-20deg);
+      animation-delay: -9s;
+    }
+
+    .shape-10 {
+      width: 170px;
+      height: 100px;
+      top: 60%;
+      left: 30%;
+      background: #ff8d54d2;
+      transform: rotate(35deg);
+      animation-delay: -1s;
+    }
+
+    @keyframes float {
+      0%, 100% {
+        transform: translateY(0) rotate(var(--rotation, 0deg));
+      }
+      25% {
+        transform: translateY(-20px) rotate(calc(var(--rotation, 0deg) + 5deg));
+      }
+      50% {
+        transform: translateY(0) rotate(var(--rotation, 0deg));
+      }
+      75% {
+        transform: translateY(20px) rotate(calc(var(--rotation, 0deg) - 5deg));
+      }
+    }
+
+    .form-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 30px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+      animation: slideIn 0.5s ease-out;
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .form-title {
+      color: #193A6F;
+      font-size: 2.2rem;
+      font-weight: 600;
+      text-align: center;
+      margin-bottom: 30px;
+      padding-bottom: 15px;
+      border-bottom: 3px solid #FF7936;
+    }
+
+    .form-label {
+      color: #193A6F;
+      font-weight: 500;
+      margin-bottom: 8px;
+    }
+
+    .form-control {
+      border: 2px solid #e1e1e1;
+      border-radius: 10px;
+      padding: 12px;
+      transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+      border-color: #193A6F;
+      box-shadow: 0 0 0 0.2rem rgba(25, 58, 111, 0.25);
+    }
+
+    .competences-container {
+      margin-top: 15px;
+      max-height: 300px;
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+
+    .competence {
+      display: flex;
+      align-items: center;
+      margin-bottom: 15px;
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    .competence input {
+      flex: 1;
+      margin-right: 15px;
+    }
+
+    .remove-btn {
+      background: #dc3545;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .remove-btn:hover {
+      background: #c82333;
+      transform: translateY(-2px);
+    }
+
+    .add-competence-btn {
+      margin-top: 15px;
+      background: linear-gradient(135deg, #28a745, #218838);
+      color: white;
+      border: none;
+      padding: 12px 25px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 500;
+    }
+
+    .add-competence-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+    }
+
+    .add-competence-btn:active {
+      transform: translateY(0);
+    }
+
+    .submit-btn {
+      background: linear-gradient(135deg, #193A6F, #2C4F90);
+      color: white;
+      border: none;
+      padding: 15px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      margin-top: 20px;
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 15px rgba(25, 58, 111, 0.3);
+    }
+
+    .submit-btn:active {
+      transform: translateY(0);
+    }
+
+    .file-input-wrapper {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .file-input-wrapper .form-control {
+      padding-left: 40px;
+    }
+
+    .file-icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6c757d;
+    }
+
+    .error-message {
+      color: #dc3545;
+      font-size: 0.875rem;
+      margin-top: 5px;
+      display: none;
+    }
+
+    .invalid-input {
+      border-color: #dc3545;
+    }
+
+    .invalid-input + .error-message {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+  <!-- Background Shapes -->
+  <div class="shape shape-1" style="--rotation: 45deg"></div>
+  <div class="shape shape-2" style="--rotation: 20deg"></div>
+  <div class="shape shape-3" style="--rotation: -30deg"></div>
+  <div class="shape shape-4" style="--rotation: 60deg"></div>
+  <div class="shape shape-5" style="--rotation: -15deg"></div>
+  <div class="shape shape-6" style="--rotation: 25deg"></div>
+  <div class="shape shape-7" style="--rotation: -40deg"></div>
+  <div class="shape shape-8" style="--rotation: 10deg"></div>
+  <div class="shape shape-9" style="--rotation: -20deg"></div>
+  <div class="shape shape-10" style="--rotation: 35deg"></div>
+
+  <div class="form-container">
+    <h2 class="form-title">Formulaire de Stage</h2>
+    <form id="stageForm">
+      <div class="mb-4">
+        <label for="titre" class="form-label">Titre de Stage</label>
+        <input type="text" id="titre" class="form-control" placeholder="Ex: Stage en Développement Web" required>
+        <div class="error-message">Veuillez entrer un titre valide</div>
+      </div>
+
+      <div class="mb-4">
+        <label for="date" class="form-label">Date de Stage</label>
+        <input type="date" id="date" class="form-control" required>
+        <div class="error-message">Veuillez sélectionner une date valide</div>
+      </div>
+
+      <div class="mb-4">
+        <label for="description" class="form-label">Description du Stage</label>
+        <textarea id="description" class="form-control" rows="5" 
+          placeholder="Décrivez les responsabilités, objectifs et attentes du stage..." required></textarea>
+        <div class="error-message">Veuillez entrer une description détaillée</div>
+      </div>
+
+      <div class="mb-4">
+        <label for="pdf" class="form-label">Offre de Stage (PDF)</label>
+        <div class="file-input-wrapper">
+          <i class="fas fa-file-pdf file-icon"></i>
+          <input type="file" id="pdf" class="form-control" accept=".pdf" required>
+        </div>
+        <div class="error-message">Veuillez sélectionner un fichier PDF</div>
+      </div>
+
+      <div class="mb-4">
+        <label class="form-label">Compétences Demandées (Max: 10)</label>
+        <div class="competences-container" id="competencesContainer">
+          <!-- Competences will be added here -->
+        </div>
+        <button type="button" class="add-competence-btn" id="addCompetenceBtn">
+          <i class="fas fa-plus"></i>
+          Ajouter une Compétence
+        </button>
+      </div>
+
+      <button type="submit" class="submit-btn w-100">
+        <i class="fas fa-paper-plane me-2"></i>
+        Soumettre la Candidature
+      </button>
+    </form>
+  </div>
+
+  <script>
+    const competencesContainer = document.getElementById('competencesContainer');
+    const addCompetenceBtn = document.getElementById('addCompetenceBtn');
+    const form = document.getElementById('stageForm');
+
+    function addCompetenceField() {
+      const competenceCount = competencesContainer.children.length;
+
+      if (competenceCount >= 10) {
+        alert("Vous ne pouvez ajouter que 10 compétences au maximum.");
+        return;
+      }
+
+      const competenceDiv = document.createElement('div');
+      competenceDiv.className = 'competence';
+
+      const competenceInput = document.createElement('input');
+      competenceInput.type = 'text';
+      competenceInput.className = 'form-control';
+      competenceInput.placeholder = 'Ex: JavaScript, Communication, Gestion de Projet...';
+      competenceInput.required = true;
+
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'remove-btn';
+      removeBtn.innerHTML = '<i class="fas fa-trash-alt"></i> Supprimer';
+
+      removeBtn.addEventListener('click', () => {
+        competenceDiv.style.animation = 'fadeOut 0.3s ease-out';
+        setTimeout(() => {
+          competencesContainer.removeChild(competenceDiv);
+        }, 300);
+      });
+
+      competenceDiv.appendChild(competenceInput);
+      competenceDiv.appendChild(removeBtn);
+      competencesContainer.appendChild(competenceDiv);
+    }
+
+    function validateForm(e) {
+      e.preventDefault();
+      
+      let isValid = true;
+      const inputs = form.querySelectorAll('input, textarea');
+      
+      inputs.forEach(input => {
+        if (!input.value.trim()) {
+          input.classList.add('invalid-input');
+          isValid = false;
+        } else {
+          input.classList.remove('invalid-input');
+        }
+      });
+
+      if (isValid) {
+        // Here you would typically submit the form data
+        alert('Formulaire soumis avec succès!');
+        form.reset();
+        while (competencesContainer.firstChild) {
+          competencesContainer.removeChild(competencesContainer.firstChild);
+        }
+      }
+    }
+
+    addCompetenceBtn.addEventListener('click', addCompetenceField);
+    form.addEventListener('submit', validateForm);
+
+    // Add date validation
+    const dateInput = document.getElementById('date');
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.setAttribute('min', today);
+
+    // Add file type validation
+    const fileInput = document.getElementById('pdf');
+    fileInput.addEventListener('change', function() {
+      const file = this.files[0];
+      if (file && !file.type.includes('pdf')) {
+        this.value = '';
+        this.classList.add('invalid-input');
+      } else {
+        this.classList.remove('invalid-input');
+      }
+    });
+  </script>
+</body>
+</html>
